@@ -1,0 +1,54 @@
+{
+  "sources": [
+    {
+      "id": "penal",
+      "name": "مجموعة القانون الجنائي",
+      "source": "mandili.net/code/1-59-413/",
+      "articles": 705,
+      "type": "law"
+    },
+    {
+      "id": "doc",
+      "name": "قانون الالتزامات والعقود",
+      "source": "mandili.net/code/12-08-1913/",
+      "articles": 1274,
+      "type": "law"
+    },
+    {
+      "id": "commercial",
+      "name": "مدونة التجارة",
+      "source": "mandili.net/code/15-95/",
+      "articles": 809,
+      "type": "law"
+    },
+    {
+      "id": "family",
+      "name": "مدونة الأسرة",
+      "source": "mandili.net/code/03-70/",
+      "articles": 400,
+      "type": "law"
+    },
+    {
+      "id": "labour",
+      "name": "مدونة الشغل",
+      "source": "mandili.net/code/65-99/",
+      "articles": 589,
+      "type": "law"
+    },
+    {
+      "id": "juricaf",
+      "name": "محكمة النقض - اجتهادات",
+      "source": "juricaf.org",
+      "articles": 0,
+      "type": "jurisprudence"
+    },
+    {
+      "id": "data-gov",
+      "name": "البوابة الوطنية للمعطيات المفتوحة",
+      "source": "data.gov.ma",
+      "articles": 0,
+      "type": "open-data"
+    }
+  ],
+  "total_articles": 3777
+}

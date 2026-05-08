@@ -1,0 +1,44 @@
+{
+  "entities": [
+    {
+      "id": "sarl",
+      "name": "SARL - شركة ذات مسؤولية محدودة",
+      "description": "أنسب نوع للمقاولات الصغيرة والمتوسطة. الشركاء مسؤولين بقدر حصصهم.",
+      "min_capital": 10000,
+      "min_partners": 2,
+      "max_partners": 50,
+      "tax_rate": "20% إلى 31%",
+      "registration_fees": "تقريبا 2000 درهم"
+    },
+    {
+      "id": "sa",
+      "name": "SA - شركة مساهمة",
+      "description": "مناسبة للمشاريع الكبيرة. رأس المال مقسم لأسهم قابلة للتداول.",
+      "min_capital": 300000,
+      "min_partners": 5,
+      "max_partners": "غير محدود",
+      "tax_rate": "20% إلى 31%",
+      "registration_fees": "تقريبا 5000 درهم"
+    },
+    {
+      "id": "snc",
+      "name": "SNC - شركة التضامن",
+      "description": "الشركاء مسؤولين بالتضامن على جميع ديون الشركة.",
+      "min_capital": 0,
+      "min_partners": 2,
+      "max_partners": 20,
+      "tax_rate": "20% إلى 31%",
+      "registration_fees": "تقريبا 1500 درهم"
+    },
+    {
+      "id": "suarl",
+      "name": "SUARL - شركة ذات مسؤولية محدودة بشريك واحد",
+      "description": "نفس SARL ولكن بملاك واحد. مناسبة للمقاول الذاتي.",
+      "min_capital": 10000,
+      "min_partners": 1,
+      "max_partners": 1,
+      "tax_rate": "20% إلى 31%",
+      "registration_fees": "تقريبا 2000 درهم"
+    }
+  ]
+}

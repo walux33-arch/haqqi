@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي - من نحن</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#15803d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="حقي">
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+{% include '_navbar.html' %}
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+    <div class="flex flex-col items-center text-center mb-8">
+      <div class="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+        <span class="text-3xl font-bold text-white">ح</span>
+      </div>
+      <h1 class="text-3xl font-extrabold text-gray-900">منصة حقي</h1>
+      <p class="text-gray-500 mt-1">المساعد القانوني المغربي بالذكاء الاصطناعي</p>
+    </div>
+    <div class="text-gray-600 leading-relaxed space-y-4 text-sm">
+      <p>"حقي" هو أول منصة مغربية للذكاء القانوني تجاوب بالدارجة. كنديرو الذكاء الاصطناعي باش نعاونو المغاربة يفهمو القانون المغربي بسهولة و بدون تكاليف.</p>
+      <p>كيشمل المنصة 3,777 مادة قانونية من 5 مدونات: القانون الجنائي، ظهيرة الالتزامات والعقود، القانون التجاري، مدونة الأسرة، ومدونة الشغل.</p>
+      <p>مبني على تقنية RAG (Retrieval-Augmented Generation) — كايجيب المعلومات من النصوص القانونية الرسمية ويجاوب بالدارجة مع ذكر رقم المادة والقانون.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 my-6">
+        <div class="bg-green-50 rounded-xl p-3 text-center"><div class="text-2xl font-bold text-green-700">705</div><div class="text-xs text-green-600">جنائي</div></div>
+        <div class="bg-green-50 rounded-xl p-3 text-center"><div class="text-2xl font-bold text-green-700">1,274</div><div class="text-xs text-green-600">التزامات</div></div>
+        <div class="bg-green-50 rounded-xl p-3 text-center"><div class="text-2xl font-bold text-green-700">809</div><div class="text-xs text-green-600">تجاري</div></div>
+        <div class="bg-green-50 rounded-xl p-3 text-center"><div class="text-2xl font-bold text-green-700">400</div><div class="text-xs text-green-600">أسرة</div></div>
+        <div class="bg-green-50 rounded-xl p-3 text-center"><div class="text-2xl font-bold text-green-700">589</div><div class="text-xs text-green-600">شغل</div></div>
+      </div>
+      <div class="bg-amber-50 border-r-4 border-amber-500 p-4 rounded-xl">
+        <p class="text-sm text-amber-800 font-medium">تأسست المنصة على يد <strong>وليد فوزي</strong>، حاصل على ماستر المجتمع المدني والديمقراطية التشاركية من كلية العلوم القانونية والسياسية بسطات.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/static/service-worker.js'); }</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي - {{ 'تسجيل الدخول' if mode == 'login' else 'إنشاء حساب' }}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#15803d">
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50" x-data="{ mode: '{{ mode }}', email: '', password: '', loading: false, error: '', success: '' }">
+{% with %}{% include '_navbar.html' %}{% endwith %}
+<div class="max-w-md mx-auto px-4 py-16">
+  <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+    <div class="text-center mb-6">
+      <div class="w-12 h-12 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+        <svg width="20" height="20" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+      </div>
+      <h1 class="text-2xl font-extrabold text-gray-900" x-text="mode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب جديد'"></h1>
+      <p class="text-gray-500 text-sm mt-1" x-text="mode === 'login' ? 'مرحبا بعودتك!' : 'أنشئ حساب باش تستفيد من جميع الخدمات'"></p>
+    </div>
+
+    <form @submit.prevent="submit" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">البريد الإلكتروني</label>
+        <input type="email" x-model="email" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm text-right transition-all" placeholder="email@example.com" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">كلمة السر</label>
+        <input type="password" x-model="password" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm text-right transition-all" placeholder="••••••••" minlength="6" required>
+      </div>
+      <button type="submit" class="w-full py-3 bg-gradient-to-l from-green-600 to-green-700 text-white rounded-xl hover:shadow-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 font-medium text-sm" x-text="loading ? 'جاري...' : (mode === 'login' ? 'تسجيل الدخول' : 'إنشاء الحساب')"></button>
+    </form>
+
+    <div x-show="error" class="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-700" x-text="error"></div>
+    <div x-show="success" class="mt-4 p-3 bg-green-50 border border-green-100 rounded-xl text-sm text-green-700" x-text="success"></div>
+
+    <p class="mt-6 text-sm text-center text-gray-500">
+      <template x-if="mode === 'login'">
+        <span>ما عندكش حساب؟ <a :href="'/auth/signup'" class="text-green-600 hover:text-green-700 font-medium">أنشئ واحد</a></span>
+      </template>
+      <template x-if="mode === 'signup'">
+        <span>عندك حساب؟ <a :href="'/auth/login'" class="text-green-600 hover:text-green-700 font-medium">دخول</a></span>
+      </template>
+    </p>
+  </div>
+</div>
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/static/service-worker.js'); }
+async function submit() {
+  this.loading = true; this.error = ''; this.success = '';
+  try {
+    const r = await fetch('/auth/' + this.mode, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: this.email, password: this.password}) });
+    if (this.mode === 'signup') { this.success = 'تم التسجيل! تأكد من بريدك الإلكتروني'; }
+    else { if (r.redirected) window.location.href = r.url; }
+  } catch(e) { this.error = 'حدث خطأ تقني'; }
+  this.loading = false;
+}
+</script>
+</body>
+</html>

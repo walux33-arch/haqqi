@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي - تأسيس الشركات</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#15803d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="حقي">
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+{% with active='incorporation' %}{% include '_navbar.html' %}{% endwith %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900">تأسيس الشركات بالمغرب</h1>
+    <p class="text-gray-500 mt-2">اختر نوع الشركة لي بغيتي تؤسس باش تشوف التفاصيل</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="entity-list">
+    <div class="col-span-full text-center py-12 text-gray-400" id="loading-msg">جاري تحميل البيانات...</div>
+  </div>
+</div>
+<script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/static/service-worker.js'); }
+</script>
+<script>
+async function loadEntities() {
+  try {
+    const res = await fetch('/api/entities');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const list = document.getElementById('entity-list');
+    const entities = data.entities || data;
+    document.getElementById('loading-msg').style.display = 'none';
+    entities.forEach(e => {
+      const div = document.createElement('div');
+      div.className = 'bg-white rounded-2xl shadow-sm p-5 hover:shadow-md cursor-pointer transition-all border border-gray-200 hover:border-green-200';
+      div.innerHTML = `
+        <h3 class="font-bold text-lg text-green-700">${e.name}</h3>
+        <p class="text-sm text-gray-600 mt-2 leading-relaxed">${e.description}</p>
+        <div class="mt-3 flex flex-wrap gap-2 text-xs text-gray-500">
+          <span class="bg-gray-100 px-2 py-1 rounded">رأس المال: ${e.min_capital?.toLocaleString() || 0} درهم</span>
+          <span class="bg-gray-100 px-2 py-1 rounded">الشركاء: ${e.min_partners} - ${e.max_partners}</span>
+          <span class="bg-gray-100 px-2 py-1 rounded">الضريبة: ${e.tax_rate || 'غير محدد'}</span>
+        </div>
+      `;
+      div.onclick = () => showDetails(e);
+      list.appendChild(div);
+    });
+  } catch(err) {
+    document.getElementById('loading-msg').textContent = 'عذرا، حدث خطأ فتحميل البيانات';
+    console.error('Entities error:', err);
+  }
+}
+
+function showDetails(e) {
+  const details = [
+    ['الاسم', e.name],
+    ['الوصف', e.description],
+    ['الحد الأدنى لرأس المال', e.min_capital?.toLocaleString() + ' درهم'],
+    ['عدد الشركاء (الحد الأدنى)', e.min_partners],
+    ['عدد الشركاء (الحد الأقصى)', e.max_partners],
+    ['نسبة الضريبة', e.tax_rate || 'غير محدد'],
+    ['رسوم التسجيل', e.registration_fees || 'غير محدد'],
+  ];
+  let html = '<div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onclick="this.remove()"><div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()"><div class="flex items-center gap-3 mb-6"><div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-xl flex items-center justify-center"><span class="text-lg font-bold text-white">ش</span></div><h2 class="text-xl font-extrabold text-gray-900">' + e.name + '</h2></div><table class="w-full text-right">';
+  details.forEach(([label, value]) => {
+    html += '<tr class="border-b border-gray-100"><td class="py-3 font-medium text-gray-500 pl-4 w-1/3 text-xs">' + label + '</td><td class="py-3 text-gray-800 text-sm">' + value + '</td></tr>';
+  });
+  html += '</table><button onclick="this.closest(\'.fixed\').remove()" class="mt-6 w-full bg-gradient-to-l from-green-600 to-green-700 text-white px-4 py-3 rounded-xl hover:shadow-lg transition-all text-sm font-medium">إغلاق</button></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+loadEntities();
+</script>
+</body>
+</html>

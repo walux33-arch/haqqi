@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي - الإدارة</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#15803d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="حقي">
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50" x-data="adminApp()">
+{% with active='admin' %}{% include '_navbar.html' %}{% endwith %}
+<div class="max-w-6xl mx-auto px-4 py-8" x-init="init()">
+  <h1 class="text-3xl font-extrabold text-gray-900 mb-8">لوحة الإدارة</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+      <div class="text-xs text-gray-500 font-medium uppercase tracking-wide">مجموع المواد</div>
+      <div class="text-3xl font-extrabold text-gray-900 mt-1" x-text="stats.total_articles">0</div>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+      <div class="text-xs text-gray-500 font-medium uppercase tracking-wide">القوانين</div>
+      <div class="text-3xl font-extrabold text-gray-900 mt-1" x-text="lawsCount">0</div>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+      <div class="text-xs text-gray-500 font-medium uppercase tracking-wide">الأحكام</div>
+      <div class="text-3xl font-extrabold text-amber-600 mt-1" x-text="judgementsCount">0</div>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm">
+      <div class="text-xs text-gray-500 font-medium uppercase tracking-wide">العقود</div>
+      <div class="text-3xl font-extrabold text-purple-600 mt-1" x-text="contractsCount">0</div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+      <h2 class="font-bold text-gray-700">القوانين المرفوعة</h2>
+    </div>
+    <div class="divide-y divide-gray-100">
+      <template x-for="(law, key) in stats.laws" :key="key">
+        <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+          <span class="text-sm font-medium text-gray-700" x-text="law.name"></span>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500" x-text="(law.articles || 0) + ' مادة'"></span>
+            <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">مفعل</span>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/static/service-worker.js'); }
+function adminApp() {
+  return {
+    stats: { total_articles: 0, laws: {} },
+    judgementsCount: 0, contractsCount: 0,
+    get lawsCount() { return Object.keys(this.stats.laws).length; },
+    async init() {
+      try {
+        const r = await fetch('/api/stats');
+        this.stats = await r.json();
+      } catch(e) { console.error(e); }
+      try {
+        const r = await fetch('/api/judgements?per_page=1');
+        const d = await r.json();
+        this.judgementsCount = d.total;
+      } catch(e) {}
+      try {
+        const r = await fetch('/api/contracts');
+        const d = await r.json();
+        this.contractsCount = Object.keys(d).length;
+      } catch(e) {}
+    },
+  };
+}
+</script>
+</body>
+</html>
