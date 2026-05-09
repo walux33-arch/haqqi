@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي — عرض تقديمي</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Tajawal', sans-serif; background: #0a0a0a; color: #f5f5f5; overflow: hidden; height: 100vh; }
+.slide { display: none; width: 100vw; height: 100vh; padding: 60px 80px; position: relative; overflow-y: auto; }
+.slide.active { display: flex; flex-direction: column; justify-content: center; }
+.slide-num { position: absolute; bottom: 24px; left: 40px; font-size: 12px; color: #666; letter-spacing: 2px; }
+.nav-arrows { position: fixed; bottom: 24px; right: 40px; display: flex; gap: 12px; z-index: 100; }
+.nav-arrows button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #aaa; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px; transition: all .2s; }
+.nav-arrows button:hover { background: rgba(34,197,94,0.2); border-color: #22c55e; color: #22c55e; }
+.progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #22c55e, #16a34a); transition: width .4s ease; z-index: 100; }
+.gradient-text { background: linear-gradient(135deg, #22c55e, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; }
+.stat-card { text-align: center; padding: 20px; }
+.stat-card .num { font-size: 36px; font-weight: 800; }
+.stat-card .label { font-size: 13px; color: #888; margin-top: 4px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+.grid-2-custom { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+h1 { font-size: 56px; font-weight: 900; line-height: 1.3; }
+h2 { font-size: 40px; font-weight: 800; margin-bottom: 16px; line-height: 1.4; }
+h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.subtitle { font-size: 18px; color: #999; line-height: 1.7; }
+.tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: rgba(34,197,94,0.15); color: #4ade80; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+td, th { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: right; }
+th { color: #888; font-weight: 500; font-size: 12px; letter-spacing: 1px; }
+.timeline-item { display: flex; gap: 16px; margin-bottom: 20px; }
+.timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin-top: 6px; flex-shrink: 0; }
+.timeline-line { width: 2px; background: rgba(255,255,255,0.08); flex-shrink: 0; }
+.accent-green { color: #22c55e; }
+.accent-gold { color: #fbbf24; }
+.bg-accent { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.15); }
+.lang-toggle { position: fixed; top: 20px; left: 20px; z-index: 200; }
+.lang-toggle a { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; text-decoration: none; background: rgba(255,255,255,0.08); color: #aaa; border: 1px solid rgba(255,255,255,0.12); transition: all .2s; }
+.lang-toggle a:hover { background: rgba(34,197,94,0.2); border-color: #22c55e; color: #22c55e; }
+@media (max-width: 768px) { .slide { padding: 30px 24px; } h1 { font-size: 32px; } h2 { font-size: 26px; } .grid-3, .grid-4, .grid-2-custom { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; gap: 16px; } }
+</style>
+</head>
+<body>
+<div class="lang-toggle"><a href="/pitch">English</a></div>
+<div class="progress" id="progress" style="width: 10%"></div>
+<div class="nav-arrows">
+  <button onclick="prevSlide()">&#8592;</button>
+  <button onclick="nextSlide()">&#8594;</button>
+</div>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide active" data-index="0">
+  <div style="max-width: 800px">
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:32px">
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff">ح</div>
+      <div><div style="font-size:14px;color:#888;letter-spacing:3px">عرض تقديمي · 2026</div></div>
+    </div>
+    <h1>مساعدك القانوني<br><span class="gradient-text">المغربي بالذكاء الاصطناعي</span></h1>
+    <p class="subtitle" style="margin-top:20px;font-size:20px;line-height:1.7">القانون بالدارجة — باش يفهمو 37 مليون مغربي.<br>أول منصة قانونية مغربية تجاوب بالدارجة، مع المصادر الرسمية و الذكاء الاصطناعي.</p>
+    <div style="margin-top:40px;display:flex;gap:16px;flex-wrap:wrap">
+      <span class="tag">&#9654; حقي</span>
+      <span class="tag" style="background:rgba(255,255,255,0.06);color:#aaa">RAG + LLM</span>
+      <span class="tag" style="background:rgba(255,255,255,0.06);color:#aaa">3,777 مادة</span>
+      <span class="tag" style="background:rgba(255,255,255,0.06);color:#aaa">تجريبي جاهز</span>
+    </div>
+  </div>
+  <div class="slide-num">01 / 13</div>
+</div>
+
+<!-- SLIDE 2: PROBLEM -->
+<div class="slide" data-index="1">
+  <div style="max-width: 900px">
+    <span class="tag">المشكل</span>
+    <h2>المعرفة القانونية محبوسة<br>ورا حاجز اللغة</h2>
+    <div class="grid-2" style="margin-top:32px">
+      <div class="card">
+        <div style="font-size:40px;margin-bottom:12px">&#x1F4DC;</div>
+        <h3>الغة ما واصلةش</h3>
+        <p class="subtitle" style="font-size:14px">القوانين المغربية مكتوبة بالفصحى والفرنسية. 80% ديال المغاربا ما كي فهموهاش — كيهضرو الدارجة فقط.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:40px;margin-bottom:12px">&#x1F4B0;</div>
+        <h3>استشارات غالية</h3>
+        <p class="subtitle" style="font-size:14px">استشارة محامي كاتكلف 500-2,000 درهم. 60% ديال المغاربا كيعيشو بأقل من 5,000 درهم فالشهر.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:40px;margin-bottom:12px">&#x1F50D;</div>
+        <h3>ما كاينش بديل رقمي موثوق</h3>
+        <p class="subtitle" style="font-size:14px">المواقع القانونية الموجودة بالفرنسية أو الفصحى، قديمة، أو من مصادر غير موثوقة. ما كاينش منصة ذكاء اصطناعي عندها النصوص الرسمية المغربية.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:40px;margin-bottom:12px">&#x26A0;&#xFE0F;</div>
+        <h3>خطر المعلومات الغالطة</h3>
+        <p class="subtitle" style="font-size:14px">المغاربا كيدوّر على المعلومات القانونية فـ Facebook و WhatsApp — و كاينة معلومات غالطة بزاف.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">02 / 13</div>
+</div>
+
+<!-- SLIDE 3: SOLUTION -->
+<div class="slide" data-index="2">
+  <div style="max-width: 900px">
+    <span class="tag">الحل</span>
+    <h2>حقي — الذكاء الاصطناعي<br>القانوني بالدارجة المغربية</h2>
+    <p class="subtitle" style="margin-bottom:32px">منصة كاتجاوب على الأسئلة القانونية بالدارجة، مدعومة بالقوانين الرسمية المغربية و الأحكام القضائية.</p>
+    <div class="grid-3">
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F4AC;</div>
+        <h3 style="font-size:16px">شات بالدارجة</h3>
+        <p class="subtitle" style="font-size:13px">سول أي سؤال قانوني بالدارجة. حقي كيجاوبك مع ذكر المادة والقانون فالحال.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F4C4;</div>
+        <h3 style="font-size:16px">توليد العقود PDF</h3>
+        <p class="subtitle" style="font-size:13px">تولد عقود الكراء والشغل والشراكة بالعربية. PDF جاهز للتحميل والتوقيع.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F3ED;</div>
+        <h3 style="font-size:16px">تأسيس الشركات</h3>
+        <p class="subtitle" style="font-size:13px">دليل خطوة بخطوة لتسجيل SARL, SA, SNC, SUARL فالمغرب مع تقديرات التكاليف.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x2696;&#xFE0F;</div>
+        <h3 style="font-size:16px">الأحكام القضائية</h3>
+        <p class="subtitle" style="font-size:13px">تصفح 30+ قرار من محكمة النقض مع البحث والتصفية بالغرفة والسنة.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F4CA;</div>
+        <h3 style="font-size:16px">لوحة الإدارة</h3>
+        <p class="subtitle" style="font-size:13px">إحصائيات حية لـ 3,777 مادة + 83 مجموعة بيانات حكومية مدمجة في الوقت الحقيقي.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F30D;</div>
+        <h3 style="font-size:16px">PWA + SEO</h3>
+        <p class="subtitle" style="font-size:13px">تطبيق ويب تقدمي مع دعم دون اتصال، واجهة عربية، SEO كامل.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">03 / 13</div>
+</div>
+
+<!-- SLIDE 4: MARKET -->
+<div class="slide" data-index="3">
+  <div style="max-width: 900px">
+    <span class="tag">فرصة السوق</span>
+    <h2>سوق كبير ما عندو<br>خدمة كافية فالمغرب و الشرق الأوسط</h2>
+    <div class="grid-3" style="margin-top:32px">
+      <div class="card stat-card">
+        <div class="num gradient-text">37M</div>
+        <div class="label">مغربي محتاجين معلومات قانونية</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">12M</div>
+        <div class="label">مستعمل نشط للإنترنت</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">$2.8B</div>
+        <div class="label">سوق الخدمات القانونية فالشرق الأوسط</div>
+      </div>
+    </div>
+    <div style="margin-top:24px">
+      <div class="card" style="background:rgba(251,191,36,0.06);border-color:rgba(251,191,36,0.15)">
+        <p style="font-size:14px;color:#d4d4d4;line-height:1.7">
+          <strong class="accent-gold">معلومة مهمة:</strong> المغرب عندو أعلى نسبة استعمال للواتساب فالعالم (93%). 78% ديال المغاربا كيدوّرو على معلومات قانونية فالنيت قبل ما يمشيو لـ المحامي. <strong>صفر منصات ذكاء اصطناعي قانونية كاينة فالداريج اليوم.</strong>
+        </p>
+      </div>
+    </div>
+    <div class="grid-2-custom" style="margin-top:20px">
+      <div class="card" style="padding:16px">
+        <div style="font-size:12px;color:#888">المستهدفون</div>
+        <ul style="margin-top:8px;font-size:13px;color:#bbb;list-style:none;padding:0">
+          <li style="padding:4px 0">&#x2022; الطبقة المتوسطة (20 مليون)</li>
+          <li style="padding:4px 0">&#x2022; الجالية المغربية (5 مليون)</li>
+          <li style="padding:4px 0">&#x2022; أصحاب المقاولات الصغار (2 مليون)</li>
+          <li style="padding:4px 0">&#x2022; طلبة القانون والمساعدين القانونيين</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px">
+        <div style="font-size:12px;color:#888">التوسع</div>
+        <ul style="margin-top:8px;font-size:13px;color:#bbb;list-style:none;padding:0">
+          <li style="padding:4px 0">&#x2022; الجزائر، تونس (دارجة قريبة)</li>
+          <li style="padding:4px 0">&#x2022; مصر والشام (نسخ مخصصة)</li>
+          <li style="padding:4px 0">&#x2022; إفريقيا الفرنكوفونية</li>
+          <li style="padding:4px 0">&#x2022; ترخيص API للمؤسسات</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">04 / 13</div>
+</div>
+
+<!-- SLIDE 5: TECHNOLOGY -->
+<div class="slide" data-index="4">
+  <div style="max-width: 900px">
+    <span class="tag">التكنولوجيا</span>
+    <h2>RAG pipeline ب 3 مستويات<br>من الإحتياط</h2>
+    <div style="margin-top:24px;display:flex;gap:12px;flex-direction:column">
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">سؤال المستخدم</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#22c55e 100%,transparent 100%)"></div>
+        <span style="font-size:11px;color:#22c55e">~0.3s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">ChromaDB (أساسي)</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#22c55e 100%,transparent 100%)"></div>
+        <span style="font-size:11px;color:#22c55e">~0.5s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">Supabase (احتياط)</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#fbbf24 80%,transparent 80%)"></div>
+        <span style="font-size:11px;color:#fbbf24">~1.2s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">JSON (احتياط ثاني)</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#f97316 60%,transparent 60%)"></div>
+        <span style="font-size:11px;color:#f97316">~0.1s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">Groq Llama 3.3 70B</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#22c55e 100%,transparent 100%)"></div>
+        <span style="font-size:11px;color:#22c55e">~1.5s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">أول كلمة فالجواب</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#22c55e 100%,transparent 100%)"></div>
+        <span style="font-size:11px;color:#22c55e">~4.6s</span>
+      </div>
+    </div>
+    <div class="grid-4" style="margin-top:24px">
+      <div class="card" style="padding:12px;text-align:center">
+        <div style="font-size:12px;color:#888">التقنيات</div>
+        <div style="font-size:13px;font-weight:600;margin-top:4px">Python + FastAPI</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center">
+        <div style="font-size:12px;color:#888">قاعدة المتجهات</div>
+        <div style="font-size:13px;font-weight:600;margin-top:4px">ChromaDB + Supabase</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center">
+        <div style="font-size:12px;color:#888">نموذج اللغة</div>
+        <div style="font-size:13px;font-weight:600;margin-top:4px">Groq · Llama 3.3 70B</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center">
+        <div style="font-size:12px;color:#888">التضمين</div>
+        <div style="font-size:13px;font-weight:600;margin-top:4px">all-MiniLM-L6-v2</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">05 / 13</div>
+</div>
+
+<!-- SLIDE 6: DATA -->
+<div class="slide" data-index="5">
+  <div style="max-width: 900px">
+    <span class="tag">المعطيات القانونية</span>
+    <h2>3,777 مادة قانونية<br>من 5 مدونات مغربية</h2>
+    <div class="grid-3" style="margin-top:32px">
+      <div class="card stat-card">
+        <div class="num gradient-text">3,777</div>
+        <div class="label">مجموع المواد القانونية</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">5</div>
+        <div class="label">مدونات قانونية مفهرسة</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">83</div>
+        <div class="label">مجموعة بيانات حكومية</div>
+      </div>
+    </div>
+    <table style="margin-top:20px">
+      <tr><th>المدونة</th><th>المواد</th><th>الحالة</th></tr>
+      <tr><td>ظهيرة الالتزامات والعقود</td><td>1,274</td><td style="color:#22c55e">&#10003; مفهرسة</td></tr>
+      <tr><td>القانون التجاري</td><td>809</td><td style="color:#22c55e">&#10003; مفهرسة</td></tr>
+      <tr><td>القانون الجنائي</td><td>705</td><td style="color:#22c55e">&#10003; مفهرسة</td></tr>
+      <tr><td>مدونة الشغل</td><td>589</td><td style="color:#22c55e">&#10003; مفهرسة</td></tr>
+      <tr><td>مدونة الأسرة</td><td>400</td><td style="color:#22c55e">&#10003; مفهرسة</td></tr>
+    </table>
+    <p style="font-size:13px;color:#888;margin-top:12px">+ 30 قرار من محكمة النقض · 4 أنواع للشركات · 3 نماذج عقود · 83 مجموعة بيانات من data.gov.ma</p>
+  </div>
+  <div class="slide-num">06 / 13</div>
+</div>
+
+<!-- SLIDE 7: TRACTION -->
+<div class="slide" data-index="6">
+  <div style="max-width: 900px">
+    <span class="tag">الإنجازات</span>
+    <h2>مبني فـ أسابيع،<br>جاهز للإنتاج</h2>
+    <div class="grid-4" style="margin-top:32px">
+      <div class="card stat-card">
+        <div class="num gradient-text">25</div>
+        <div class="label">اختبارات ناجحة</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">57</div>
+        <div class="label">ملف مصدري</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">18k</div>
+        <div class="label">سطر كود</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">3</div>
+        <div class="label">نموذج عقد</div>
+      </div>
+    </div>
+    <div style="margin-top:24px">
+      <div class="card" style="padding:20px">
+        <h3 style="font-size:15px;margin-bottom:12px">أهم المراحل</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">الأسبوع 1</span>
+            <span style="font-size:13px;color:#d4d4d4">RAG pipeline: ChromaDB + Supabase + JSON</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">الأسبوع 2</span>
+            <span style="font-size:13px;color:#d4d4d4">FastAPI + Tailwind + الواجهة</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">الأسبوع 3</span>
+            <span style="font-size:13px;color:#d4d4d4">Streaming + demo mode + cache (~4.6s)</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">الأسبوع 4</span>
+            <span style="font-size:13px;color:#d4d4d4">عقود PDF + تأسيس الشركات + الأحكام</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">الأسبوع 5</span>
+            <span style="font-size:13px;color:#d4d4d4">تسجيل الدخول · لوحة الإدارة · SEO · PWA · data.gov.ma</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">07 / 13</div>
+</div>
+
+<!-- SLIDE 8: BUSINESS MODEL -->
+<div class="slide" data-index="7">
+  <div style="max-width: 900px">
+    <span class="tag">نموذج الأعمال</span>
+    <h2>إيرادات متعددة<br>مع جوهر مجاني</h2>
+    <div class="grid-3" style="margin-top:32px">
+      <div class="card" style="border-color:rgba(34,197,94,0.3)">
+        <div style="font-size:14px;font-weight:600;color:#22c55e">مجاني</div>
+        <div style="font-size:28px;font-weight:800;margin:8px 0">$0</div>
+        <ul style="font-size:13px;color:#bbb;list-style:none;padding:0;line-height:1.8">
+          <li>&#10003; 10 أسئلة/يوم</li>
+          <li>&#10003; تصفح الأحكام القضائية</li>
+          <li>&#10003; دليل تأسيس الشركات</li>
+          <li>&#10005; توليد العقود</li>
+          <li>&#10005; دعم ذو أولوية</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(34,197,94,0.5)">
+        <div style="font-size:14px;font-weight:600;color:#22c55e">مُحترف</div>
+        <div style="font-size:28px;font-weight:800;margin:8px 0">$9<small style="font-size:14px;color:#888">/شهر</small></div>
+        <ul style="font-size:13px;color:#bbb;list-style:none;padding:0;line-height:1.8">
+          <li>&#10003; أسئلة غير محدودة</li>
+          <li>&#10003; توليد العقود PDF</li>
+          <li>&#10003; سياق أكثر (مواد إضافية)</li>
+          <li>&#10003; تاريخ المحادثات والتصدير</li>
+          <li>&#10005; بوت واتساب</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.04)">
+        <div style="font-size:14px;font-weight:600;color:#fbbf24">مؤسسات</div>
+        <div style="font-size:28px;font-weight:800;margin:8px 0">$499<small style="font-size:14px;color:#888">/شهر</small></div>
+        <ul style="font-size:13px;color:#bbb;list-style:none;padding:0;line-height:1.8">
+          <li>&#10003; API (علامة بيضاء)</li>
+          <li>&#10003; بوت واتساب</li>
+          <li>&#10003; رفع قوانين مخصصة</li>
+          <li>&#10003; ضمان جودة الخدمة</li>
+          <li>&#10003; دعم مخصص</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:20px;text-align:center">
+      <p style="font-size:13px;color:#888">الإيراد الشهري المتوقع عند 1,000 محترف + 10 مؤسسات: <strong style="color:#22c55e">$13,990/شهر</strong></p>
+    </div>
+  </div>
+  <div class="slide-num">08 / 13</div>
+</div>
+
+<!-- SLIDE 9: COMPETITION -->
+<div class="slide" data-index="8">
+  <div style="max-width: 900px">
+    <span class="tag">المنافسة</span>
+    <h2>ما كاينش منافس مباشر<br>فـ مجال الذكاء الاصطناعي القانوني بالدارجة</h2>
+    <table style="margin-top:32px">
+      <tr><th>المنافس</th><th>النوع</th><th>الدارجة</th><th>الذكاء الاصطناعي</th><th>مجاني</th><th>RAG</th></tr>
+      <tr>
+        <td style="font-weight:600">حقي (Haqqi)</td>
+        <td>مساعد قانوني ذكي</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#22c55e">&#10003;</td>
+      </tr>
+      <tr style="color:#666">
+        <td>Avocats.ma</td>
+        <td>دليل المحامين</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#ef4444">&#10005;</td>
+      </tr>
+      <tr style="color:#666">
+        <td>Juripredis</td>
+        <td>قاعدة بيانات قانونية</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+      </tr>
+      <tr style="color:#666">
+        <td>ChatGPT / Gemini</td>
+        <td>ذكاء اصطناعي عام</td>
+        <td style="color:#fbbf24">جزئي</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#ef4444">&#10005;</td>
+      </tr>
+      <tr style="color:#666">
+        <td>Wathaeq.ma</td>
+        <td>خدمة وثائق</td>
+        <td style="color:#fbbf24">جزئي</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+      </tr>
+    </table>
+    <div class="card" style="margin-top:20px;background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15);padding:16px">
+      <p style="font-size:13px;color:#d4d4d4;line-height:1.7"><strong class="accent-green">ميزتنا التنافسية:</strong> (1) أول منصة بالدارجة — ما كاينش منافس كيجاوب بالدارجة المغربية، (2) RAG على النصوص القانونية الرسمية — مش معلومات عامة، (3) مبنية بميزانية صفر — كفاءة رأسمالية من اليوم الأول، (4) ربط حكومي — اتصال مباشر بـ data.gov.ma.</p>
+    </div>
+  </div>
+  <div class="slide-num">09 / 13</div>
+</div>
+
+<!-- SLIDE 10: DEMO -->
+<div class="slide" data-index="9">
+  <div style="max-width: 900px;text-align:center">
+    <span class="tag">عرض حي</span>
+    <h2>شوفوه كايخدم</h2>
+    <p class="subtitle" style="margin-bottom:24px">فتح التطبيق و سول سؤال قانوني بالدارجة. ما كاينش حاجة ديال API keys — الـ demo mode كيعطيك تجربة حية فالحال.</p>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+      <a href="/" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border-radius:12px;font-weight:600;font-size:16px;transition:transform .2s">&#9654; فتح التطبيق</a>
+      <a href="/" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:rgba(255,255,255,0.08);color:#d4d4d4;border-radius:12px;font-weight:500;font-size:16px;border:1px solid rgba(255,255,255,0.12);transition:transform .2s">&#x1F465; جرب DEMO</a>
+    </div>
+    <div style="margin-top:40px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 20px;text-align:center">
+        <div style="font-size:13px;color:#888">"شنو هو الطلاق فالمغرب؟"</div>
+        <div style="font-size:11px;color:#22c55e;margin-top:4px">&#10003; جواب فوري بالدارجة</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 20px;text-align:center">
+        <div style="font-size:13px;color:#888">"كيفاش نأسس شركة؟"</div>
+        <div style="font-size:11px;color:#22c55e;margin-top:4px">&#10003; دليل التأسيس</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 20px;text-align:center">
+        <div style="font-size:13px;color:#888">"عقد كراء"</div>
+        <div style="font-size:11px;color:#22c55e;margin-top:4px">&#10003; عقد PDF</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">10 / 13</div>
+</div>
+
+<!-- SLIDE 11: ROADMAP -->
+<div class="slide" data-index="10">
+  <div style="max-width: 900px">
+    <span class="tag">الخطة المستقبلية</span>
+    <h2>شنو جاي فـ حقي</h2>
+    <div style="margin-top:24px;display:flex;flex-direction:column;gap:0">
+      <div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="timeline-dot"></div>
+          <div class="timeline-line" style="height:40px"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#22c55e;font-weight:600">الربع الأول 2026</div>
+          <div style="font-size:14px;color:#d4d4d4">إطلاق MVP · 5 مدونات · شات + عقود + تأسيس شركات · عرض تجريبي</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="timeline-dot" style="background:#fbbf24"></div>
+          <div class="timeline-line" style="height:40px;background:rgba(255,255,255,0.08)"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#fbbf24;font-weight:600">الربع الثاني 2026</div>
+          <div style="font-size:14px;color:#d4d4d4">بوت واتساب · ربط الدفع · قانون السير والجمارك · جمع التمويل</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="timeline-dot" style="background:#fbbf24"></div>
+          <div class="timeline-line" style="height:40px;background:rgba(255,255,255,0.08)"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#fbbf24;font-weight:600">الربع الثالث 2026</div>
+          <div style="font-size:14px;color:#d4d4d4">API للمؤسسات · تطبيق الجوال · التوسع للجزائر وتونس · 50 ألف مستخدم</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="timeline-dot" style="background:#22c55e"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#22c55e;font-weight:600">الربع الرابع 2026</div>
+          <div style="font-size:14px;color:#d4d4d4">نقطة التعادل · نموذج NLP مخصص على الدارجة · التحضير للSeries A</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">11 / 13</div>
+</div>
+
+<!-- SLIDE 12: TEAM -->
+<div class="slide" data-index="11">
+  <div style="max-width: 900px">
+    <span class="tag">المؤسس</span>
+    <h2>مبني من عند واحد<br>عندو معرفة عميقة بالمغرب</h2>
+    <div style="margin-top:32px;display:flex;gap:32px;align-items:start;flex-wrap:wrap">
+      <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#fff;font-family:Tajawal;flex-shrink:0">و</div>
+      <div style="flex:1;min-width:240px">
+        <h3 style="font-size:24px;margin-bottom:4px">وليد فوزي</h3>
+        <div style="font-size:14px;color:#888;margin-bottom:16px">مؤسس و مطور كامل</div>
+        <p style="font-size:14px;color:#bbb;line-height:1.7">مطور مغربي عرف الفجوة القانونية بالدارجة بنفسو. بنى حقي من الصفر لـ MVP كامل فـ 5 أسابيع — بمفردو فـ backend (FastAPI)، AI/LLM (RAG)، frontend (Tailwind)، و DevOps (Docker، CI/CD، GitHub).</p>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">Python</span>
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">FastAPI</span>
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">AI/LLM</span>
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">DevOps</span>
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">قانون مغربي</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:24px;background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15);padding:16px">
+      <p style="font-size:13px;color:#d4d4d4;line-height:1.7"><strong class="accent-green">علاش أنا؟</strong> كيهضر الدارجة كلغة أم، بنى أنظمة ذكاء اصطناعي إنتاجية، و كيعرف النظام القانوني المغربي من الجوه. كيقدر يتحرك بسرعة بلا بيروقراطية.</p>
+    </div>
+  </div>
+  <div class="slide-num">12 / 13</div>
+</div>
+
+<!-- SLIDE 13: INVESTMENT ASK -->
+<div class="slide" data-index="12">
+  <div style="max-width: 900px;text-align:center">
+    <span class="tag">فرصة استثمارية</span>
+    <h2>انضم إلينا باش نوسعوا<br>الوصول للقانون فالمغرب</h2>
+    <div class="grid-3" style="margin-top:32px;text-align:left">
+      <div class="card stat-card" style="text-align:center">
+        <div class="num gradient-text">$50k</div>
+        <div class="label">استثمار أولي</div>
+      </div>
+      <div class="card stat-card" style="text-align:center">
+        <div class="num gradient-text">12%</div>
+        <div class="label">حصة مطلوبة</div>
+      </div>
+      <div class="card stat-card" style="text-align:center">
+        <div class="num gradient-text">18 شهر</div>
+        <div class="label">مدة التشغيل</div>
+      </div>
+    </div>
+    <div style="margin-top:24px;text-align:left">
+      <div class="card" style="padding:20px">
+        <h3 style="font-size:15px;margin-bottom:12px">استخدام الأموال</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-size:13px;color:#bbb">تطوير بدوام كامل</span>
+            <span style="font-size:13px;color:#22c55e">$25k</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-size:13px;color:#bbb">التسويق و الاستحواذ</span>
+            <span style="font-size:13px;color:#22c55e">$12k</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-size:13px;color:#bbb">التسجيل القانوني (علامة، حقوق التأليف)</span>
+            <span style="font-size:13px;color:#22c55e">$3k</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-size:13px;color:#bbb">البنية التحتية و APIs</span>
+            <span style="font-size:13px;color:#22c55e">$6k</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0">
+            <span style="font-size:13px;color:#bbb">المصاريف التشغيلية</span>
+            <span style="font-size:13px;color:#22c55e">$4k</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <span style="font-size:13px;padding:8px 16px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;color:#4ade80">&#x1F4E7; walid@haqqi.ma</span>
+    </div>
+  </div>
+  <div class="slide-num">13 / 13</div>
+</div>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+
+function showSlide(i) {
+  slides.forEach(s => s.classList.remove('active'));
+  slides[i].classList.add('active');
+  document.getElementById('progress').style.width = ((i + 1) / total * 100) + '%';
+  current = i;
+}
+
+function nextSlide() { if (current < total - 1) showSlide(current + 1); }
+function prevSlide() { if (current > 0) showSlide(current - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+});
+
+let touchStartX = 0, touchEndX = 0;
+document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+document.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  if (touchStartX - touchEndX > 60) nextSlide();
+  if (touchEndX - touchStartX > 60) prevSlide();
+});
+</script>
+</body>
+</html>

@@ -44,6 +44,9 @@ async def rate_limit_middleware(request: Request, call_next):
 from app.api.endpoints import router as api_router
 app.include_router(api_router, prefix="/api")
 
+from app.whatsapp.routes import router as whatsapp_router
+app.include_router(whatsapp_router, prefix="/api")
+
 # ─── SEO & Static Pages ───
 
 @app.get("/robots.txt", response_class=PlainTextResponse)
@@ -145,9 +148,22 @@ async def about(request: Request):
     return render("about.html", user=user)
 
 
+@app.get("/whatsapp", response_class=HTMLResponse)
+async def whatsapp_page(request: Request):
+    user = get_user(request)
+    return render("whatsapp.html", active="whatsapp", user=user)
+
+
 @app.get("/pitch", response_class=HTMLResponse)
 async def pitch():
     path = os.path.join(os.path.dirname(__file__), "templates", "pitch.html")
+    with open(path, "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read())
+
+
+@app.get("/pitch/ar", response_class=HTMLResponse)
+async def pitch_ar():
+    path = os.path.join(os.path.dirname(__file__), "templates", "pitch_ar.html")
     with open(path, "r", encoding="utf-8") as f:
         return HTMLResponse(f.read())
 

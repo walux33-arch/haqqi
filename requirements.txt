@@ -11,3 +11,4 @@ sentence-transformers>=2.2.2
 numpy>=1.26.3
 PyMuPDF>=1.23.7
 openpyxl>=3.1.0
+twilio>=9.0.0

@@ -70,16 +70,17 @@ def generate_pdf(contract_type: str, data: dict) -> bytes:
     doc = fitz.open()
     page = doc.new_page(width=595, height=842)  # A4
 
-    # Fonts
     font_path = "C:\\Windows\\Fonts\\arial.ttf"
-    title_font = fitz.Font(fontfile=font_path) if os.path.exists(font_path) else None
+    fontfile = font_path if os.path.exists(font_path) else None
 
     y = 50
     def write(text, size=12, bold=False, color=(0, 0, 0)):
         nonlocal y
         p = fitz.Point(50, y)
-        font = title_font
-        page.insert_text(p, text, fontname="helv" if not font else "helv", fontsize=size, color=color)
+        kwargs = dict(point=p, text=text, fontsize=size, color=color)
+        if fontfile:
+            kwargs["fontfile"] = fontfile
+        page.insert_text(**kwargs)
         y += size * 1.8
 
     # Title
