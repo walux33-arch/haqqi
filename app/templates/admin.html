@@ -37,23 +37,92 @@
     </div>
   </div>
 
-  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-      <h2 class="font-bold text-gray-700">القوانين المرفوعة</h2>
+    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm mb-6">
+      <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+        <h2 class="font-bold text-gray-700">القوانين المرفوعة</h2>
+      </div>
+      <div class="divide-y divide-gray-100">
+        <template x-for="(law, key) in stats.laws" :key="key">
+          <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+            <span class="text-sm font-medium text-gray-700" x-text="law.name"></span>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-500" x-text="(law.articles || 0) + ' مادة'"></span>
+              <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">مفعل</span>
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
-    <div class="divide-y divide-gray-100">
-      <template x-for="(law, key) in stats.laws" :key="key">
-        <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
-          <span class="text-sm font-medium text-gray-700" x-text="law.name"></span>
-          <div class="flex items-center gap-3">
-            <span class="text-sm text-gray-500" x-text="(law.articles || 0) + ' مادة'"></span>
-            <span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">مفعل</span>
+
+    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm mb-6" x-show="stats.gov">
+      <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+        <h2 class="font-bold text-gray-700">
+          <span>المعطيات المفتوحة للحكومة</span>
+          <span class="text-xs text-gray-400 font-normal mr-2">data.gov.ma</span>
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+          <div class="bg-blue-50 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-blue-700" x-text="stats.gov.summary.total_datasets">0</div>
+            <div class="text-xs text-blue-600 mt-1">مجموعة بيانات</div>
+          </div>
+          <div class="bg-green-50 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-green-700" x-text="stats.gov.summary.years_range">-</div>
+            <div class="text-xs text-green-600 mt-1">سنوات التغطية</div>
+          </div>
+          <div class="bg-purple-50 rounded-xl p-4 text-center">
+            <div class="text-2xl font-extrabold text-purple-700" x-text="stats.gov.summary.categories_count">0</div>
+            <div class="text-xs text-purple-600 mt-1">تصنيف</div>
           </div>
         </div>
-      </template>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-bold text-gray-600 mb-3">حسب السنة</h3>
+          <div class="flex flex-wrap gap-2">
+            <template x-for="(count, year) in stats.gov.by_year" :key="year">
+              <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full">
+                <span x-text="year"></span>
+                <span class="text-gray-400">·</span>
+                <span class="font-medium" x-text="count"></span>
+              </span>
+            </template>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-sm font-bold text-gray-600 mb-3">حسب التصنيف</h3>
+          <div class="flex flex-wrap gap-2">
+            <template x-for="(count, cat) in stats.gov.by_category" :key="cat">
+              <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs px-3 py-1.5 rounded-full">
+                <span x-text="cat"></span>
+                <span class="text-emerald-400">·</span>
+                <span class="font-medium" x-text="count"></span>
+              </span>
+            </template>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-bold text-gray-600 mb-3">آخر المجموعات</h3>
+          <div class="space-y-2">
+            <template x-for="ds in stats.gov.recent_datasets.slice(0, 10)" :key="ds.id">
+              <a :href="ds.url" target="_blank" rel="noopener"
+                 class="block p-3 rounded-xl border border-gray-100 hover:border-green-200 hover:bg-green-50/30 transition-all text-sm">
+                <div class="font-medium text-gray-800" x-text="ds.title_ar"></div>
+                <div class="text-xs text-gray-400 mt-1" x-text="ds.year ? 'سنة ' + ds.year : ''"></div>
+                <div class="flex flex-wrap gap-1 mt-2">
+                  <template x-for="cat in ds.categories" :key="cat">
+                    <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded" x-text="cat"></span>
+                  </template>
+                </div>
+              </a>
+            </template>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 <script>
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/static/service-worker.js'); }
 function adminApp() {

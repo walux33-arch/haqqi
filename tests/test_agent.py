@@ -47,3 +47,6 @@ def test_admin_stats():
     stats = agent.admin_stats()
     assert "total_articles" in stats
     assert "laws" in stats
+    assert "gov" in stats
+    assert stats["gov"]["summary"]["total_datasets"] >= 0
+    assert stats["gov"]["summary"]["categories_count"] >= 0

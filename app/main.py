@@ -37,7 +37,7 @@ def _check_rate_limit(request: Request):
 # ─── Rate Limit Middleware ───
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
-    if request.url.path.startswith("/api/"):
+    if request.url.path.startswith("/api/") and request.url.path != "/api/health":
         _check_rate_limit(request)
     return await call_next(request)
 
@@ -143,6 +143,13 @@ async def disclaimer(request: Request):
 async def about(request: Request):
     user = get_user(request)
     return render("about.html", user=user)
+
+
+@app.get("/pitch", response_class=HTMLResponse)
+async def pitch():
+    path = os.path.join(os.path.dirname(__file__), "templates", "pitch.html")
+    with open(path, "r", encoding="utf-8") as f:
+        return HTMLResponse(f.read())
 
 
 # ─── Auth Routes ───

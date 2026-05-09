@@ -72,3 +72,11 @@ def test_auth_page():
 def test_admin_page_redirect():
     r = client.get("/admin", follow_redirects=False)
     assert r.status_code in (302, 303, 307)
+
+
+def test_pitch_deck():
+    r = client.get("/pitch")
+    assert r.status_code == 200
+    assert "Pitch Deck" in r.text
+    assert "3,777" in r.text
+    assert "Investment" in r.text

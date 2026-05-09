@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي (Haqqi) — Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #f5f5f5; overflow: hidden; height: 100vh; }
+.slide-ar { font-family: 'Tajawal', 'Inter', sans-serif; }
+.slide { display: none; width: 100vw; height: 100vh; padding: 60px 80px; position: relative; overflow-y: auto; }
+.slide.active { display: flex; flex-direction: column; justify-content: center; }
+.slide-num { position: absolute; bottom: 24px; right: 40px; font-size: 12px; color: #666; letter-spacing: 2px; }
+.nav-arrows { position: fixed; bottom: 24px; left: 40px; display: flex; gap: 12px; z-index: 100; }
+.nav-arrows button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: #aaa; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 16px; transition: all .2s; }
+.nav-arrows button:hover { background: rgba(34,197,94,0.2); border-color: #22c55e; color: #22c55e; }
+.progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #22c55e, #16a34a); transition: width .4s ease; z-index: 100; }
+.gradient-text { background: linear-gradient(135deg, #22c55e, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; }
+.stat-card { text-align: center; padding: 20px; }
+.stat-card .num { font-size: 36px; font-weight: 800; }
+.stat-card .label { font-size: 13px; color: #888; margin-top: 4px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; }
+h1 { font-size: 56px; font-weight: 900; line-height: 1.1; }
+h2 { font-size: 40px; font-weight: 800; margin-bottom: 16px; }
+h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.subtitle { font-size: 18px; color: #999; line-height: 1.6; }
+.tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: rgba(34,197,94,0.15); color: #4ade80; margin-bottom: 12px; }
+.feature-item { display: flex; align-items: start; gap: 12px; padding: 12px 0; }
+.feature-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+td, th { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
+th { color: #888; font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.timeline-item { display: flex; gap: 16px; margin-bottom: 20px; }
+.timeline-dot { width: 12px; height: 12px; border-radius: 50%; background: #22c55e; margin-top: 6px; flex-shrink: 0; }
+.timeline-line { width: 2px; background: rgba(255,255,255,0.08); flex-shrink: 0; }
+.accent-green { color: #22c55e; }
+.accent-gold { color: #fbbf24; }
+.bg-accent { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.15); }
+@media (max-width: 768px) { .slide { padding: 30px 24px; } h1 { font-size: 32px; } h2 { font-size: 26px; } .grid-3, .grid-4 { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; gap: 16px; } }
+</style>
+</head>
+<body>
+<div class="progress" id="progress" style="width: 10%"></div>
+
+<div class="nav-arrows">
+  <button onclick="prevSlide()">&#8592;</button>
+  <button onclick="nextSlide()">&#8594;</button>
+</div>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide active" data-index="0">
+  <div style="max-width: 800px">
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:32px">
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;font-family:Tajawal">ح</div>
+      <div>
+        <div style="font-size:14px;color:#888;letter-spacing:3px;text-transform:uppercase">Pitch Deck · 2026</div>
+      </div>
+    </div>
+    <h1>Your AI Moroccan<br><span class="gradient-text">Legal Assistant</span></h1>
+    <p class="subtitle" style="margin-top:20px;font-size:20px">Democratizing legal knowledge for 37 million Moroccans —<br>answering in Darija, powered by official law texts &amp; AI.</p>
+    <div style="margin-top:40px;display:flex;gap:16px;flex-wrap:wrap">
+      <span class="tag">&#9654; حقي</span>
+      <span class="tag" style="background:rgba(255,255,255,0.06);color:#aaa">RAG + LLM</span>
+      <span class="tag" style="background:rgba(255,255,255,0.06);color:#aaa">3,777 Articles</span>
+      <span class="tag" style="background:rgba(255,255,255,0.06);color:#aaa">Demo Ready</span>
+    </div>
+  </div>
+  <div class="slide-num">01 / 13</div>
+</div>
+
+<!-- SLIDE 2: PROBLEM -->
+<div class="slide" data-index="1">
+  <div style="max-width: 900px">
+    <span class="tag">The Problem</span>
+    <h2>Legal knowledge is locked<br>behind a language barrier</h2>
+    <div class="grid-2" style="margin-top:32px">
+      <div class="card">
+        <div style="font-size:40px;margin-bottom:12px">&#x1F4DC;</div>
+        <h3>Inaccessible Language</h3>
+        <p class="subtitle" style="font-size:14px">Moroccan laws are written in Fusha Arabic and French. Only 20% of Moroccans understand these — the remaining 80% speak Darija exclusively.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:40px;margin-bottom:12px">&#x1F4B0;</div>
+        <h3>Costly Consultations</h3>
+        <p class="subtitle" style="font-size:14px">A single lawyer consultation costs 500–2,000 MAD. For 60% of Moroccans living on less than 5,000 MAD/month, this is prohibitive.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:40px;margin-bottom:12px">&#x1F50D;</div>
+        <h3>No Trusted Digital Alternative</h3>
+        <p class="subtitle" style="font-size:14px">Existing legal websites are in French/Arabic, outdated, or run by unqualified sources. There's no AI platform rooted in Morocco's official legal corpus.</p>
+      </div>
+      <div class="card">
+        <div style="font-size:40px;margin-bottom:12px">&#x26A0;&#xFE0F;</div>
+        <h3>Misinformation Risk</h3>
+        <p class="subtitle" style="font-size:14px">Moroccans turn to social media (Facebook groups, WhatsApp) for legal advice — often receiving incorrect or dangerous information.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">02 / 13</div>
+</div>
+
+<!-- SLIDE 3: SOLUTION -->
+<div class="slide" data-index="2">
+  <div style="max-width: 900px">
+    <span class="tag">The Solution</span>
+    <h2>حقي — Legal AI in Moroccan Darija</h2>
+    <p class="subtitle" style="margin-bottom:32px">An AI platform that answers legal questions in Darija, backed by Morocco's official law codes and court decisions.</p>
+    <div class="grid-3">
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F4AC;</div>
+        <h3 style="font-size:16px">Chat in Darija</h3>
+        <p class="subtitle" style="font-size:13px">Ask any legal question in Moroccan Arabic. Get answers with article citations, instantly.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F4C4;</div>
+        <h3 style="font-size:16px">Contract Generator</h3>
+        <p class="subtitle" style="font-size:13px">Generate rent, employment, and partnership contracts in Arabic. PDF download, ready to use.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F3ED;</div>
+        <h3 style="font-size:16px">Incorporation Wizard</h3>
+        <p class="subtitle" style="font-size:13px">Step-by-step guide to register SARL, SA, SNC, or SUARL in Morocco with cost estimates.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x2696;&#xFE0F;</div>
+        <h3 style="font-size:16px">Court Decisions</h3>
+        <p class="subtitle" style="font-size:13px">Browse 30+ Cour de Cassation decisions with search &amp; filter by chamber, year, and keyword.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F4CA;</div>
+        <h3 style="font-size:16px">Admin Dashboard</h3>
+        <p class="subtitle" style="font-size:13px">Live stats on 3,777 articles + 83 open government justice datasets integrated in real-time.</p>
+      </div>
+      <div class="card bg-accent">
+        <div style="font-size:32px;margin-bottom:8px">&#x1F30D;</div>
+        <h3 style="font-size:16px">PWA + SEO</h3>
+        <p class="subtitle" style="font-size:13px">Progressive Web App with offline support, Arabic UI, favicon, Open Graph, robots.txt &amp; sitemap.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">03 / 13</div>
+</div>
+
+<!-- SLIDE 4: MARKET -->
+<div class="slide" data-index="3">
+  <div style="max-width: 900px">
+    <span class="tag">Market Opportunity</span>
+    <h2>Massive underserved market<br>across Morocco &amp; MENA</h2>
+    <div class="grid-3" style="margin-top:32px">
+      <div class="card stat-card">
+        <div class="num gradient-text">37M</div>
+        <div class="label">Moroccans needing legal info</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">12M</div>
+        <div class="label">Active internet users</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">$2.8B</div>
+        <div class="label">MENA legal services market</div>
+      </div>
+    </div>
+    <div style="margin-top:24px">
+      <div class="card" style="background:rgba(251,191,36,0.06);border-color:rgba(251,191,36,0.15)">
+        <p style="font-size:14px;color:#d4d4d4;line-height:1.6">
+          <strong class="accent-gold">Key Insight:</strong> Morocco has one of the highest WhatsApp penetration rates globally (93%). 78% of Moroccans search for legal information online before consulting a lawyer. <strong>Zero AI-powered legal platforms exist in Darija today.</strong>
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card" style="padding:16px">
+        <div style="font-size:12px;color:#888">Target Users</div>
+        <ul style="margin-top:8px;font-size:13px;color:#bbb;list-style:none;padding:0">
+          <li style="padding:4px 0">&#x2022; Middle-class Moroccans (20M)</li>
+          <li style="padding:4px 0">&#x2022; Moroccan diaspora (5M)</li>
+          <li style="padding:4px 0">&#x2022; Small business owners (2M)</li>
+          <li style="padding:4px 0">&#x2022; Law students &amp; paralegals</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px">
+        <div style="font-size:12px;color:#888">Expansion</div>
+        <ul style="margin-top:8px;font-size:13px;color:#bbb;list-style:none;padding:0">
+          <li style="padding:4px 0">&#x2022; Algeria, Tunisia (similar Darija)</li>
+          <li style="padding:4px 0">&#x2022; Egypt, Levant (localized versions)</li>
+          <li style="padding:4px 0">&#x2022; French-speaking Africa</li>
+          <li style="padding:4px 0">&#x2022; API licensing for enterprises</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">04 / 13</div>
+</div>
+
+<!-- SLIDE 5: TECHNOLOGY -->
+<div class="slide" data-index="4">
+  <div style="max-width: 900px">
+    <span class="tag">Technology</span>
+    <h2>RAG pipeline with 3-tier<br>fallback architecture</h2>
+    <div style="margin-top:24px;display:flex;gap:12px;flex-direction:column">
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">User Question</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#22c55e 100%,transparent 100%)"></div>
+        <span style="font-size:11px;color:#22c55e">~0.3s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">ChromaDB (primary)</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#22c55e 100%,transparent 100%)"></div>
+        <span style="font-size:11px;color:#22c55e">~0.5s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">Supabase (fallback)</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#fbbf24 80%,transparent 80%)"></div>
+        <span style="font-size:11px;color:#fbbf24">~1.2s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">JSON Search (2nd fallback)</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#f97316 60%,transparent 60%)"></div>
+        <span style="font-size:11px;color:#f97316">~0.1s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">Groq Llama 3.3 70B</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#22c55e 100%,transparent 100%)"></div>
+        <span style="font-size:11px;color:#22c55e">~1.5s</span>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr 60px;gap:12px;align-items:center">
+        <span style="font-size:13px;color:#888">First token response</span>
+        <div style="height:6px;border-radius:3px;background:linear-gradient(90deg,#22c55e 100%,transparent 100%)"></div>
+        <span style="font-size:11px;color:#22c55e">~4.6s</span>
+      </div>
+    </div>
+    <div class="grid-4" style="margin-top:24px">
+      <div class="card" style="padding:12px;text-align:center">
+        <div style="font-size:12px;color:#888">Stack</div>
+        <div style="font-size:13px;font-weight:600;margin-top:4px">Python + FastAPI</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center">
+        <div style="font-size:12px;color:#888">Vector DB</div>
+        <div style="font-size:13px;font-weight:600;margin-top:4px">ChromaDB + Supabase</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center">
+        <div style="font-size:12px;color:#888">LLM</div>
+        <div style="font-size:13px;font-weight:600;margin-top:4px">Groq · Llama 3.3 70B</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center">
+        <div style="font-size:12px;color:#888">Embeddings</div>
+        <div style="font-size:13px;font-weight:600;margin-top:4px">all-MiniLM-L6-v2</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">05 / 13</div>
+</div>
+
+<!-- SLIDE 6: DATA -->
+<div class="slide" data-index="5">
+  <div style="max-width: 900px">
+    <span class="tag">Legal Data Corpus</span>
+    <h2>3,777 articles across<br>5 Moroccan law codes</h2>
+    <div class="grid-3" style="margin-top:32px">
+      <div class="card stat-card">
+        <div class="num gradient-text">3,777</div>
+        <div class="label">Total legal articles</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">5</div>
+        <div class="label">Law codes indexed</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">83</div>
+        <div class="label">Government datasets</div>
+      </div>
+    </div>
+    <table style="margin-top:20px">
+      <tr><th>Law Code</th><th>Articles</th><th>Status</th></tr>
+      <tr><td>ظهيرة الالتزامات والعقود (DOC)</td><td>1,274</td><td style="color:#22c55e">&#10003; Indexed</td></tr>
+      <tr><td>القانون التجاري (Commercial)</td><td>809</td><td style="color:#22c55e">&#10003; Indexed</td></tr>
+      <tr><td>القانون الجنائي (Penal)</td><td>705</td><td style="color:#22c55e">&#10003; Indexed</td></tr>
+      <tr><td>مدونة الشغل (Labour)</td><td>589</td><td style="color:#22c55e">&#10003; Indexed</td></tr>
+      <tr><td>مدونة الأسرة (Family)</td><td>400</td><td style="color:#22c55e">&#10003; Indexed</td></tr>
+    </table>
+    <p style="font-size:13px;color:#888;margin-top:12px">&#43; 30 Cour de Cassation decisions &#183; 4 business entity types &#183; 3 contract templates &#183; 83 justice datasets from data.gov.ma</p>
+  </div>
+  <div class="slide-num">06 / 13</div>
+</div>
+
+<!-- SLIDE 7: TRACTION -->
+<div class="slide" data-index="6">
+  <div style="max-width: 900px">
+    <span class="tag">Traction &amp; Milestones</span>
+    <h2>Built in weeks,<br>ready for production</h2>
+    <div class="grid-4" style="margin-top:32px">
+      <div class="card stat-card">
+        <div class="num gradient-text">15</div>
+        <div class="label">Tests passing</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">57</div>
+        <div class="label">Source files</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">18k</div>
+        <div class="label">Lines of code</div>
+      </div>
+      <div class="card stat-card">
+        <div class="num gradient-text">3</div>
+        <div class="label">Contract templates</div>
+      </div>
+    </div>
+    <div style="margin-top:24px">
+      <div class="card" style="padding:20px">
+        <h3 style="font-size:15px;margin-bottom:12px">Key Milestones</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">Week 1</span>
+            <span style="font-size:13px;color:#d4d4d4">RAG pipeline with ChromaDB + Supabase + JSON fallback</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">Week 2</span>
+            <span style="font-size:13px;color:#d4d4d4">FastAPI backend + Jinja2 templates + Tailwind CSS UI</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">Week 3</span>
+            <span style="font-size:13px;color:#d4d4d4">Streaming responses + demo mode + answer caching (~4.6s)</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">Week 4</span>
+            <span style="font-size:13px;color:#d4d4d4">Contract PDF gen + incorporation + court decisions browser</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="font-size:11px;color:#888;width:80px;flex-shrink:0">Week 5</span>
+            <span style="font-size:13px;color:#d4d4d4">Auth, admin dashboard, SEO, PWA, data.gov.ma integration</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">07 / 13</div>
+</div>
+
+<!-- SLIDE 8: BUSINESS MODEL -->
+<div class="slide" data-index="7">
+  <div style="max-width: 900px">
+    <span class="tag">Business Model</span>
+    <h2>Multi-tier revenue<br>with freemium core</h2>
+    <div class="grid-3" style="margin-top:32px">
+      <div class="card" style="border-color:rgba(34,197,94,0.3)">
+        <div style="font-size:14px;font-weight:600;color:#22c55e">Free Tier</div>
+        <div style="font-size:28px;font-weight:800;margin:8px 0">$0</div>
+        <ul style="font-size:13px;color:#bbb;list-style:none;padding:0;line-height:1.8">
+          <li>&#10003; 10 chat queries/day</li>
+          <li>&#10003; Court decisions browser</li>
+          <li>&#10003; Incorporation guide</li>
+          <li>&#10005; Contract generation</li>
+          <li>&#10005; Priority support</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(34,197,94,0.5)">
+        <div style="font-size:14px;font-weight:600;color:#22c55e">Pro Tier</div>
+        <div style="font-size:28px;font-weight:800;margin:8px 0">$9<small style="font-size:14px;color:#888">/mo</small></div>
+        <ul style="font-size:13px;color:#bbb;list-style:none;padding:0;line-height:1.8">
+          <li>&#10003; Unlimited chat queries</li>
+          <li>&#10003; Contract generation (PDF)</li>
+          <li>&#10003; Priority context (more articles)</li>
+          <li>&#10003; Chat history &amp; export</li>
+          <li>&#10005; WhatsApp bot</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.04)">
+        <div style="font-size:14px;font-weight:600;color:#fbbf24">Enterprise</div>
+        <div style="font-size:28px;font-weight:800;margin:8px 0">$499<small style="font-size:14px;color:#888">/mo</small></div>
+        <ul style="font-size:13px;color:#bbb;list-style:none;padding:0;line-height:1.8">
+          <li>&#10003; API access (white-label)</li>
+          <li>&#10003; WhatsApp bot integration</li>
+          <li>&#10003; Custom law corpus upload</li>
+          <li>&#10003; SLA guarantee</li>
+          <li>&#10003; Dedicated support</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:20px;text-align:center">
+      <p style="font-size:13px;color:#888">Projected MRR at 1,000 Pro users + 10 Enterprise clients: <strong style="color:#22c55e">$13,990/mo</strong></p>
+    </div>
+  </div>
+  <div class="slide-num">08 / 13</div>
+</div>
+
+<!-- SLIDE 9: COMPETITION -->
+<div class="slide" data-index="8">
+  <div style="max-width: 900px">
+    <span class="tag">Competitive Landscape</span>
+    <h2>No direct competitor in<br>the Darija AI legal space</h2>
+    <table style="margin-top:32px">
+      <tr><th>Competitor</th><th>Type</th><th>Darija</th><th>AI</th><th>Free</th><th>RAG</th></tr>
+      <tr>
+        <td style="font-weight:600">حقي (Haqqi)</td>
+        <td>AI Legal Assistant</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#22c55e">&#10003;</td>
+      </tr>
+      <tr style="color:#666">
+        <td>Avocats.ma</td>
+        <td>Lawyer Directory</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#ef4444">&#10005;</td>
+      </tr>
+      <tr style="color:#666">
+        <td>Juripredis</td>
+        <td>Legal Database</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+      </tr>
+      <tr style="color:#666">
+        <td>ChatGPT / Gemini</td>
+        <td>General AI</td>
+        <td style="color:#fbbf24">Partial</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#22c55e">&#10003;</td>
+        <td style="color:#ef4444">&#10005;</td>
+      </tr>
+      <tr style="color:#666">
+        <td>Wathaeq.ma</td>
+        <td>Document Service</td>
+        <td style="color:#fbbf24">Partial</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+        <td style="color:#ef4444">&#10005;</td>
+      </tr>
+    </table>
+    <div class="card" style="margin-top:20px;background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15);padding:16px">
+      <p style="font-size:13px;color:#d4d4d4;line-height:1.6"><strong class="accent-green">Our Moat:</strong> (1) Darija-first AI — no competitor answers in Moroccan Arabic, (2) RAG on official Moroccan law texts — not general web knowledge, (3) Zero-budget built — capital efficient from day one, (4) Government data integration — real-time connection to data.gov.ma.</p>
+    </div>
+  </div>
+  <div class="slide-num">09 / 13</div>
+</div>
+
+<!-- SLIDE 10: DEMO -->
+<div class="slide" data-index="9">
+  <div style="max-width: 900px;text-align:center">
+    <span class="tag">Live Demo</span>
+    <h2>See it in action</h2>
+    <p class="subtitle" style="margin-bottom:24px">Open the app and ask a question in Moroccan Darija. No API keys needed — the demo mode gives you a live experience immediately.</p>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+      <a href="/" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border-radius:12px;font-weight:600;font-size:16px;transition:transform .2s">&#9654; Launch App</a>
+      <a href="/" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:rgba(255,255,255,0.08);color:#d4d4d4;border-radius:12px;font-weight:500;font-size:16px;border:1px solid rgba(255,255,255,0.12);transition:transform .2s">&#x1F465; Try Demo Mode</a>
+    </div>
+    <div style="margin-top:40px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 20px;text-align:center">
+        <div style="font-size:13px;color:#888">"شنو هو الطلاق فالمغرب؟"</div>
+        <div style="font-size:11px;color:#22c55e;margin-top:4px">&#10003; Instant Darija answer</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 20px;text-align:center">
+        <div style="font-size:13px;color:#888">"كيفاش نأسس شركة؟"</div>
+        <div style="font-size:11px;color:#22c55e;margin-top:4px">&#10003; Incorporation wizard</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 20px;text-align:center">
+        <div style="font-size:13px;color:#888">"عقد كراء"</div>
+        <div style="font-size:11px;color:#22c55e;margin-top:4px">&#10003; PDF contract</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">10 / 13</div>
+</div>
+
+<!-- SLIDE 11: ROADMAP -->
+<div class="slide" data-index="10">
+  <div style="max-width: 900px">
+    <span class="tag">Roadmap</span>
+    <h2>What's next for حقي</h2>
+    <div style="margin-top:24px;display:flex;flex-direction:column;gap:0">
+      <div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="timeline-dot"></div>
+          <div class="timeline-line" style="height:40px"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#22c55e;font-weight:600">Q1 2026</div>
+          <div style="font-size:14px;color:#d4d4d4">MVP launch &#183; 5 law codes &#183; Chat + Contracts + Incorporation &#183; Public demo</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="timeline-dot" style="background:#fbbf24"></div>
+          <div class="timeline-line" style="height:40px;background:rgba(255,255,255,0.08)"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#fbbf24;font-weight:600">Q2 2026</div>
+          <div style="font-size:14px;color:#d4d4d4">WhatsApp bot &#183; Payment integration &#183; Traffic &amp; customs law &#183; Investor fundraise</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="timeline-dot" style="background:#fbbf24"></div>
+          <div class="timeline-line" style="height:40px;background:rgba(255,255,255,0.08)"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#fbbf24;font-weight:600">Q3 2026</div>
+          <div style="font-size:14px;color:#d4d4d4">API for enterprises &#183; Mobile app &#183; Algeria/Tunisia expansion &#183; 50k users target</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div class="timeline-dot" style="background:#22c55e"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#22c55e;font-weight:600">Q4 2026</div>
+          <div style="font-size:14px;color:#d4d4d4">Break-even &#183; Legal NLP model fine-tuned on Darija &#183; Series A preparation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">11 / 13</div>
+</div>
+
+<!-- SLIDE 12: TEAM -->
+<div class="slide" data-index="11">
+  <div style="max-width: 900px">
+    <span class="tag">Founder</span>
+    <h2>Built by a solo founder<br>with deep local knowledge</h2>
+    <div style="margin-top:32px;display:flex;gap:32px;align-items:start;flex-wrap:wrap">
+      <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#fff;font-family:Tajawal;flex-shrink:0">W</div>
+      <div style="flex:1;min-width:240px">
+        <h3 style="font-size:24px;margin-bottom:4px">Walid Faouzi</h3>
+        <div style="font-size:14px;color:#888;margin-bottom:16px">Founder &amp; Full-Stack Developer</div>
+        <p style="font-size:14px;color:#bbb;line-height:1.6">Moroccan developer who identified the Darija legal gap firsthand. Built Haqqi from zero to working MVP in 5 weeks — solo across backend (FastAPI), AI/LLM (RAG), frontend (Tailwind), and DevOps (Docker, CI/CD, GitHub).</p>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">Python</span>
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">FastAPI</span>
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">AI/LLM</span>
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">DevOps</span>
+          <span style="font-size:12px;padding:4px 10px;background:rgba(255,255,255,0.06);border-radius:6px;color:#888">Moroccan Legal</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:24px;background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.15);padding:16px">
+      <p style="font-size:13px;color:#d4d4d4;line-height:1.6"><strong class="accent-green">Why me?</strong> I speak Darija natively, have built production AI systems, and understand the Moroccan legal system's pain points firsthand. I can move fast without institutional overhead.</p>
+    </div>
+  </div>
+  <div class="slide-num">12 / 13</div>
+</div>
+
+<!-- SLIDE 13: INVESTMENT ASK -->
+<div class="slide" data-index="12">
+  <div style="max-width: 900px;text-align:center">
+    <span class="tag">Investment Opportunity</span>
+    <h2>Join us in democratizing<br>Moroccan legal access</h2>
+    <div class="grid-3" style="margin-top:32px;text-align:left">
+      <div class="card stat-card" style="text-align:center">
+        <div class="num gradient-text">$50k</div>
+        <div class="label">Seed investment</div>
+      </div>
+      <div class="card stat-card" style="text-align:center">
+        <div class="num gradient-text">12%</div>
+        <div class="label">Equity offered</div>
+      </div>
+      <div class="card stat-card" style="text-align:center">
+        <div class="num gradient-text">18mo</div>
+        <div class="label">Runway</div>
+      </div>
+    </div>
+    <div style="margin-top:24px;text-align:left">
+      <div class="card" style="padding:20px">
+        <h3 style="font-size:15px;margin-bottom:12px">Use of Funds</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-size:13px;color:#bbb">Full-time development</span>
+            <span style="font-size:13px;color:#22c55e">$25k</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-size:13px;color:#bbb">Marketing &amp; acquisition</span>
+            <span style="font-size:13px;color:#22c55e">$12k</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-size:13px;color:#bbb">Legal registration (trademark, copyright)</span>
+            <span style="font-size:13px;color:#22c55e">$3k</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <span style="font-size:13px;color:#bbb">Infrastructure &amp; API costs</span>
+            <span style="font-size:13px;color:#22c55e">$6k</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0">
+            <span style="font-size:13px;color:#bbb">Operations &amp; legal fees</span>
+            <span style="font-size:13px;color:#22c55e">$4k</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <span style="font-size:13px;padding:8px 16px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;color:#4ade80">&#x1F4E7; walid@haqqi.ma</span>
+    </div>
+  </div>
+  <div class="slide-num">13 / 13</div>
+</div>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+
+function showSlide(i) {
+  slides.forEach(s => s.classList.remove('active'));
+  slides[i].classList.add('active');
+  document.getElementById('progress').style.width = ((i + 1) / total * 100) + '%';
+  current = i;
+}
+
+function nextSlide() { if (current < total - 1) showSlide(current + 1); }
+function prevSlide() { if (current > 0) showSlide(current - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+});
+
+// Touch swipe support
+let touchStartX = 0, touchEndX = 0;
+document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+document.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  if (touchStartX - touchEndX > 60) nextSlide();
+  if (touchEndX - touchStartX > 60) prevSlide();
+});
+</script>
+</body>
+</html>

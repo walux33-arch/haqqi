@@ -2,11 +2,13 @@ import os
 import json
 import hashlib
 import time
+import threading
 from functools import lru_cache
 import chromadb
 from dotenv import load_dotenv
 from openai import OpenAI
 from supabase import create_client, Client
+from app.data_gov import fetch_gov_stats
 
 load_dotenv()
 
@@ -58,23 +60,40 @@ DEMO_ANSWERS = {
 DEMO_FALLBACK = "مرحبا بك في حقي! أنا مساعدك القانوني المغربي. كنقدر نعاونك فلمواضيع التالية:\n• الزواج والطلاق (مدونة الأسرة)\n• العقود والالتزامات\n• القانون التجاري وتأسيس الشركات\n• القانون الجنائي\n• قانون الشغل\n\nعفوا، هادي نسخة تجريبية. باش تحصل على جواب كامل، خاصك تحط GROQ_API_KEY فـ .env"
 
 
+_embedding_model = None
+_embedding_loading = False
+
+def _load_embedding_model():
+    global _embedding_model, _embedding_loading
+    if _embedding_model is not None:
+        return _embedding_model
+    if _embedding_loading:
+        return None
+    _embedding_loading = True
+    try:
+        from sentence_transformers import SentenceTransformer
+        _embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+    except Exception:
+        pass
+    return _embedding_model
+
+# Start loading in background so first query isn't blocked
+import threading
+threading.Thread(target=_load_embedding_model, daemon=True).start()
+
+
 class LegalAgent:
     def __init__(self):
-        self.embedding_model = None
         self._collection = None
 
     @property
     def is_demo(self):
         return groq_client is None or GROQ_API_KEY is None or GROQ_API_KEY == "your_groq_api_key_here"
 
-    def _get_embedding_model(self):
-        if self.embedding_model is None:
-            from sentence_transformers import SentenceTransformer
-            self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-        return self.embedding_model
-
     def _generate_embedding(self, text: str):
-        model = self._get_embedding_model()
+        model = _load_embedding_model()
+        if model is None:
+            return None
         return model.encode(text).tolist()
 
     def _get_collection(self):
@@ -172,36 +191,53 @@ class LegalAgent:
         # 3. JSON keyword fallback
         return self._search_json_files(question)
 
-    def _search_json_files(self, question: str):
-        results = []
+    _laws_cache = None
+
+    def _load_all_laws(self):
+        if LegalAgent._laws_cache is not None:
+            return LegalAgent._laws_cache
+        articles = []
         laws_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "laws")
         if not os.path.isdir(laws_dir):
-            return results
+            return articles
         for fname in os.listdir(laws_dir):
             if not fname.endswith(".json"):
                 continue
+            law_key = fname.replace(".json", "")
             fpath = os.path.join(laws_dir, fname)
             try:
                 with open(fpath, "r", encoding="utf-8") as f:
                     data = json.load(f)
+                for article in data.get("articles", []):
+                    content = article.get("content", "")
+                    if content:
+                        articles.append({
+                            "law": law_key,
+                            "article": article.get("number", ""),
+                            "content": content,
+                        })
             except (json.JSONDecodeError, FileNotFoundError):
                 continue
-            law_key = fname.replace(".json", "")
-            for article in data.get("articles", []):
-                content = article.get("content", "")
-                if not content:
-                    continue
-                q_words = set(question.lower().split())
-                c_words = set(content.lower().split())
-                overlap = len(q_words & c_words)
-                if overlap > 0:
-                    results.append({
-                        "law": law_key,
-                        "article": article.get("number", ""),
-                        "chapter": "",
-                        "content": content,
-                        "score": overlap / max(len(q_words), 1),
-                    })
+        LegalAgent._laws_cache = articles
+        return articles
+
+    def _search_json_files(self, question: str):
+        all_articles = self._load_all_laws()
+        q_words = set(question.lower().split())
+        if not q_words:
+            return []
+        results = []
+        for a in all_articles:
+            c_words = set(a["content"].lower().split())
+            overlap = len(q_words & c_words)
+            if overlap > 0:
+                results.append({
+                    "law": a["law"],
+                    "article": a["article"],
+                    "chapter": "",
+                    "content": a["content"],
+                    "score": overlap / max(len(q_words), 1),
+                })
         results.sort(key=lambda x: x["score"], reverse=True)
         return results[:5]
 
@@ -266,13 +302,33 @@ class LegalAgent:
 
     def admin_stats(self):
         stats = {"total_articles": 0, "laws": {}}
+        for law_key, law_name in LAW_NAMES.items():
+            stats["laws"][law_key] = {"name": law_name, "articles": 0}
         try:
             collection = chroma_client.get_collection("moroccan_laws")
             stats["total_articles"] = collection.count()
         except Exception:
-            stats["total_articles"] = 0
-        for law_key, law_name in LAW_NAMES.items():
-            stats["laws"][law_key] = {"name": law_name, "articles": 0}
+            pass
+        laws_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "laws")
+        if os.path.isdir(laws_dir):
+            total = 0
+            for fname in os.listdir(laws_dir):
+                if not fname.endswith(".json"):
+                    continue
+                law_key = fname.replace(".json", "")
+                fpath = os.path.join(laws_dir, fname)
+                try:
+                    with open(fpath, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    count = len(data.get("articles", []))
+                    if law_key in stats["laws"]:
+                        stats["laws"][law_key]["articles"] = count
+                    total += count
+                except (json.JSONDecodeError, FileNotFoundError):
+                    pass
+            if stats["total_articles"] == 0:
+                stats["total_articles"] = total
+        stats["gov"] = fetch_gov_stats()
         return stats
 
 
