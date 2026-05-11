@@ -63,109 +63,95 @@ def _extract_year(name: str, metadata_created: str) -> int | None:
     return None
 
 
-def fetch_gov_stats(force_refresh: bool = False) -> dict:
+def _refresh_cache():
+    """Refresh CKAN data in a background thread (updates file cache + memory cache)."""
     global _gov_cache, _gov_cache_time
     now = time.time()
-    if not force_refresh and _gov_cache is not None and (now - _gov_cache_time) < CACHE_TTL:
-        return _gov_cache
-
-    # Try file cache first
-    if not force_refresh and os.path.isfile(CACHE_PATH):
-        try:
-            with open(CACHE_PATH, "r", encoding="utf-8") as f:
-                cached = json.load(f)
-            if (now - cached.get("_cached_at", 0)) < CACHE_TTL:
-                _gov_cache = cached
-                _gov_cache_time = cached.get("_cached_at", 0)
-                return cached
-        except (json.JSONDecodeError, FileNotFoundError):
-            pass
-
     result = {
         "_cached_at": now,
         "justice_group": {"total_datasets": 0, "title_ar": "العدل"},
         "by_year": {},
         "by_category": {},
         "recent_datasets": [],
-        "summary": {
-            "total_datasets": 0,
-            "years_range": "",
-            "categories_count": 0,
-        }
+        "summary": {"total_datasets": 0, "years_range": "", "categories_count": 0},
     }
-
-    # Fetch justice group
     group = _fetch_ckan("group_show", {"id": "justice"})
     if group:
         result["justice_group"]["total_datasets"] = group.get("package_count", 0)
-
-    # Fetch datasets
     all_results = []
-    for page in range(5):
-        data = _fetch_ckan("package_search", {
-            "q": "justice",
-            "rows": 84,
-            "start": page * 84,
-        })
+    for page in range(3):
+        data = _fetch_ckan("package_search", {"q": "justice", "rows": 84, "start": page * 84})
         if not data or not data.get("results"):
             break
         all_results.extend(data["results"])
-
     seen = set()
     for ds in all_results:
         ds_id = ds.get("id", "")
         if ds_id in seen:
             continue
         seen.add(ds_id)
-
         name = ds.get("name", "")
         notes_ar = ds.get("notes_ar", "") or ds.get("notes", "") or ""
         title_ar = ds.get("title_ar", "") or ds.get("title", "") or ""
         year = _extract_year(name, ds.get("metadata_created", ""))
         cats = _categorize_dataset(name, notes_ar)
-
-        # Year
         if year:
-            y_key = str(year)
-            result["by_year"][y_key] = result["by_year"].get(y_key, 0) + 1
-
-        # Category
+            result["by_year"][str(year)] = result["by_year"].get(str(year), 0) + 1
         for c in cats:
             result["by_category"][c] = result["by_category"].get(c, 0) + 1
-
-        # Recent (top 20)
         if len(result["recent_datasets"]) < 20:
             result["recent_datasets"].append({
-                "id": ds_id,
-                "title_ar": title_ar[:80],
-                "notes_ar": notes_ar[:120],
-                "year": year,
-                "categories": cats,
+                "id": ds_id, "title_ar": title_ar[:80], "notes_ar": notes_ar[:120],
+                "year": year, "categories": cats,
                 "url": f"https://data.gov.ma/data/ar/dataset/{ds_id}",
             })
-
     total = result["justice_group"]["total_datasets"] or len(seen)
-    result["summary"] = {
-        "total_datasets": total,
+    result["summary"] = {"total_datasets": total,
         "years_range": f"{min(map(int, result['by_year'].keys()))}-{max(map(int, result['by_year'].keys()))}" if result["by_year"] else "",
         "categories_count": len(result["by_category"]),
     }
-
-    # Cache to file
     try:
         with open(CACHE_PATH, "w", encoding="utf-8") as f:
             json.dump(result, f, ensure_ascii=False, indent=2)
     except OSError:
         pass
-
     _gov_cache = result
     _gov_cache_time = now
-    return result
 
 
-def fetch_and_cache_async():
-    threading.Thread(target=fetch_gov_stats, daemon=True).start()
+def fetch_gov_stats(force_refresh: bool = False) -> dict:
+    global _gov_cache, _gov_cache_time
+    now = time.time()
+
+    # Return stale cache immediately (don't block on slow CKAN)
+    if _gov_cache is not None:
+        if force_refresh or (now - _gov_cache_time) >= CACHE_TTL:
+            threading.Thread(target=_refresh_cache, daemon=True).start()
+        return _gov_cache
+
+    # Try file cache (still fast)
+    if os.path.isfile(CACHE_PATH):
+        try:
+            with open(CACHE_PATH, "r", encoding="utf-8") as f:
+                cached = json.load(f)
+            _gov_cache = cached
+            _gov_cache_time = cached.get("_cached_at", 0)
+            if force_refresh or (now - _gov_cache_time) >= CACHE_TTL:
+                threading.Thread(target=_refresh_cache, daemon=True).start()
+            return cached
+        except (json.JSONDecodeError, FileNotFoundError):
+            pass
+
+    # First ever call: build empty + async refresh
+    _gov_cache = {"_cached_at": now,
+        "justice_group": {"total_datasets": 0, "title_ar": "العدل"},
+        "by_year": {}, "by_category": {}, "recent_datasets": [],
+        "summary": {"total_datasets": 0, "years_range": "", "categories_count": 0},
+    }
+    _gov_cache_time = now
+    threading.Thread(target=_refresh_cache, daemon=True).start()
+    return _gov_cache
 
 
-# Warm cache on import
-fetch_and_cache_async()
+# Warm cache on import (non-blocking)
+fetch_gov_stats()

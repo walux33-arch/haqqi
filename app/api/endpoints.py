@@ -2,7 +2,7 @@ import json, os, re
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
-from app.agent.legal_agent import agent
+from app.agent.legal_agent import agent, groq_client
 from app.contracts.generator import generate_pdf, get_contract_templates
 
 router = APIRouter()
@@ -113,6 +113,96 @@ async def generate_contract(req: ContractRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"خطأ تقني: {str(e)}")
 
+
+class PleadingRequest(BaseModel):
+    type: str  # افتتاحية, دفاع, استئناف, جوابية, عريضة
+    case_subject: str
+    plaintiff: str = ""
+    defendant: str = ""
+    court: str = ""
+    case_number: str = ""
+    facts: str = ""
+    arguments: str = ""
+    context: str = None
+
+PLEADING_TYPES = {
+    "افتتاحية": "مقال افتتاحي للدعوى",
+    "دفاع": "مذكرة دفاع",
+    "استئناف": "مقال استئنافي",
+    "جوابية": "مذكرة جوابية",
+    "عريضة": "عريضة دعوى",
+}
+
+@router.post("/pleadings/generate")
+async def generate_pleading(req: PleadingRequest):
+    if req.type not in PLEADING_TYPES:
+        raise HTTPException(status_code=400, detail="نوع المقال غير معروف")
+    title = PLEADING_TYPES[req.type]
+
+    # Build the prompt for legal drafting
+    system_prompt = """أنت مساعد قانوني مغربي خبير فكتابة المقالات القانونية (العرائض والمذكرات).
+اكتب بصيغة رسمية قانونية محترمة بالفصحى. استعمل المصطلحات القانونية المغربية.
+حدد النصوص القانونية المعتمدة (القانون + المادة).
+اكتب بصيغة: "حيث إن" و "بناء عليه" (المنهجية القانونية المغربية)."""
+
+    agent_prompt = f"""اكتب {title} باللغة العربية الفصحى القانونية.
+
+معلومات القضية:
+- الموضوع: {req.case_subject}
+- المدعي/المطالب: {req.plaintiff or 'غير محدد'}
+- المدعى عليه/المطلوب: {req.defendant or 'غير محدد'}
+- المحكمة: {req.court or 'غير محدد'}
+- رقم الملف: {req.case_number or 'غير محدد'}
+- الوقائع: {req.facts or 'غير محدد'}
+- الوسائل الدفاعية/الأسانيد: {req.arguments or 'غير محدد'}
+
+القوانين المستخرجة من البحث:"""
+
+    # Search for relevant laws
+    legal_context = agent._search_all(req.case_subject)
+    if legal_context:
+        for c in legal_context[:5]:
+            agent_prompt += f"\n- {c.get('law','')} - المادة {c.get('article','')}: {c.get('content','')[:300]}"
+    else:
+        agent_prompt += "\nلم يتم العثور على نصوص محددة. استعمل القواعد القانونية العامة."
+
+    agent_prompt += f"\n\nاكتب {title} كاملا ومنسقا بالمغرب."
+
+    if groq_client:
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": agent_prompt},
+            ],
+            temperature=0.4,
+            max_tokens=2048,
+        )
+        text = response.choices[0].message.content
+    else:
+        text = f"""بسم الله الرحمن الرحيم
+
+{title}
+
+بناء على الفصل ... من الظهير الشريف ... والقانون ... المادة ...
+
+حيث إن وقائع القضية تتمثل في: {req.facts or req.case_subject}
+
+وحيث إن الثابت من أوراق الملف أن ...
+
+وحيث إن الفصل ... من القانون ينص على أن ...
+
+بناء عليه،
+
+يلتمس/يلتمس دفاع {req.plaintiff or 'الطرف'} قبول هذا المقال شكلا وفي الجوهر والحكم بـ ...
+
+وحرر بـ {req.court or 'المحكمة المختصة'} في ..."""
+
+    return {"type": req.type, "title": title, "text": text}
+
+@router.get("/pleadings/types")
+async def pleading_types():
+    return [{"key": k, "label": v} for k, v in PLEADING_TYPES.items()]
 
 @router.get("/health")
 async def health():

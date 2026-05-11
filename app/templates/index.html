@@ -34,11 +34,39 @@
 
 <main class="max-w-5xl mx-auto px-4 py-6 sm:py-10">
   <!-- Hero -->
-  <div class="text-center mb-8">
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight">
-      مرحبا بك في <span class="text-green-600">حقي</span>
+  <div class="text-center mb-6">
+    <span class="inline-block text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full mb-4">🚀 Innov Invest · وزارة الانتقال الرقمي · Moultamit</span>
+    <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+      أول مساعد قانوني مغربي<br>بـ <span class="text-green-600">الذكاء الاصطناعي</span> بالدارجة
     </h1>
-    <p class="text-gray-500 mt-2 text-sm sm:text-base">المساعد القانوني المغربي — جاوب على سؤالك القانوني بالدارجة</p>
+    <p class="text-gray-500 mt-3 text-sm sm:text-base max-w-2xl mx-auto">مدعوم بـ <strong class="text-gray-700">Llama 3.3 70B</strong> + <strong class="text-gray-700">RAG Architecture</strong> + <strong class="text-gray-700">3,777 مادة قانونية</strong> من 5 مدونات. جاوب على سؤالك القانوني بالدارجة مع ذكر رقم المادة والقانون فـ أقل من 3 ثواني.</p>
+    <div class="flex items-center justify-center gap-2 mt-4 flex-wrap">
+      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">🤖 Groq Llama 3.3 70B</span>
+      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">⚡ FastAPI</span>
+      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">🗄️ ChromaDB</span>
+      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">📊 Supabase</span>
+      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">📜 5 مدونات قانونية</span>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8" id="statsBar">
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
+      <div class="text-2xl font-extrabold text-green-700" id="statArticles">...</div>
+      <div class="text-xs text-gray-500 mt-1">مادة قانونية</div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
+      <div class="text-2xl font-extrabold text-amber-700" id="statLaws">...</div>
+      <div class="text-xs text-gray-500 mt-1">مدونة قانونية</div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
+      <div class="text-2xl font-extrabold text-blue-700" id="statDatasets">...</div>
+      <div class="text-xs text-gray-500 mt-1">مجموعة بيانات حكومية</div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
+      <div class="text-2xl font-extrabold text-purple-700" id="statYears">...</div>
+      <div class="text-xs text-gray-500 mt-1">سنوات التغطية</div>
+    </div>
   </div>
 
   <!-- Chat Card -->
@@ -120,17 +148,98 @@
     </a>
   </div>
 
-  <!-- Footer -->
-  <footer class="text-center text-xs text-gray-400 mt-8 space-x-2 space-x-reverse">
-    <a href="/about" class="hover:text-green-600 transition">من نحن</a>
-    <span>·</span>
-    <a href="/privacy" class="hover:text-green-600 transition">الخصوصية</a>
-    <span>·</span>
-    <a href="/disclaimer" class="hover:text-green-600 transition">إخلاء المسؤولية</a>
-  </footer>
+  <!-- Technology removed from dashboard -->
+
+  <!-- Programs Support Badges -->
+  <div class="mt-10 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-5 text-center">
+      <h2 class="font-bold text-gray-800 text-lg mb-2">🇲🇦 متوافق مع برامج الدعم الوطنية</h2>
+      <p class="text-gray-500 text-xs mb-4">مبني باش يتوافق مع استراتيجية "المغرب الرقمي" ويمكن تقديمه لـ:</p>
+      <div class="flex flex-wrap gap-2 justify-center">
+        <span class="text-xs bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 rounded-full font-medium">🏗️ Innov Invest (Moultamit)</span>
+        <span class="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-full font-medium">📱 وزارة الانتقال الرقمي</span>
+        <span class="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-full font-medium">🚀 Startup Morocco</span>
+        <span class="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-full font-medium">💼 OCIPE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WhatsApp bot promotion -->
+  <div class="mt-6 bg-gradient-to-l from-green-600 to-emerald-700 rounded-2xl px-6 py-5 text-center shadow-sm">
+    <div class="flex items-center justify-center gap-3">
+      <span class="text-2xl">💬</span>
+      <div>
+        <h3 class="text-white font-bold text-lg">حقي على واتساب</h3>
+        <p class="text-green-100 text-sm mt-1">سول على القانون من واتساب بلا ما تحمل أي تطبيق</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing / Subscription -->
+  <div id="pricing" class="mt-10 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="bg-gradient-to-l from-green-600 to-green-700 px-6 py-5 text-center">
+      <h2 class="text-xl font-bold text-white">حقي بريميوم</h2>
+      <p class="text-green-100 text-sm mt-1">فتح جميع الميزات المتقدمة</p>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="border border-gray-200 rounded-xl p-5 text-center hover:border-green-200 hover:shadow-sm transition-all">
+          <h3 class="font-bold text-gray-800">مجاني</h3>
+          <div class="text-3xl font-extrabold text-gray-900 my-3">0 <span class="text-sm font-normal text-gray-400">درهم</span></div>
+          <ul class="text-xs text-gray-500 space-y-2 mb-4">
+            <li>✓ 10 أسئلة في اليوم</li>
+            <li>✓ البحث في القوانين</li>
+            <li>✓ العقود الأساسية</li>
+          </ul>
+          <span class="inline-block text-xs bg-green-50 text-green-700 px-4 py-1.5 rounded-full font-medium">جرب الآن</span>
+        </div>
+        <div class="border-2 border-green-500 rounded-xl p-5 text-center bg-green-50/30 hover:shadow-md transition-all relative">
+          <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-green-600 text-white text-[10px] font-bold px-3 py-0.5 rounded-full">الأكثر طلبا</span>
+          <h3 class="font-bold text-gray-800">محترف</h3>
+          <div class="text-3xl font-extrabold text-green-700 my-3">299 <span class="text-sm font-normal text-gray-400">درهم/شهر</span></div>
+          <ul class="text-xs text-gray-500 space-y-2 mb-4">
+            <li>✓ أسئلة غير محدودة</li>
+            <li>✓ جميع العقود PDF</li>
+            <li>✓ بوت واتساب مخصص</li>
+            <li>✓ استشارات متقدمة</li>
+          </ul>
+          <a href="https://buy.stripe.com/00J8zpfZr4Tj7tC7st" target="_blank"
+             class="inline-block text-sm bg-gradient-to-l from-green-600 to-green-700 text-white px-5 py-2 rounded-xl hover:shadow-lg hover:from-green-700 hover:to-green-800 transition-all font-medium">
+            اشتري الآن
+          </a>
+        </div>
+        <div class="border border-gray-200 rounded-xl p-5 text-center hover:border-green-200 hover:shadow-sm transition-all">
+          <h3 class="font-bold text-gray-800">مؤسسات</h3>
+          <div class="text-3xl font-extrabold text-gray-900 my-3">مخصص</div>
+          <ul class="text-xs text-gray-500 space-y-2 mb-4">
+            <li>✓ API مخصص</li>
+            <li>✓ تدريب النموذج</li>
+            <li>✓ دعم فني 24/7</li>
+            <li>✓ عقد مؤسساتي</li>
+          </ul>
+          <a href="/about" class="inline-block text-sm bg-gray-900 text-white px-5 py-2 rounded-xl hover:bg-gray-800 transition-all font-medium">اتصل بنا</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include '_footer.html' %}
 </main>
 
 <script>
+// Fetch live stats
+fetch('/api/stats').then(r=>r.json()).then(d=>{
+  document.getElementById('statArticles').textContent = d.total_articles || 0;
+  document.getElementById('statLaws').textContent = Object.keys(d.laws||{}).length || 0;
+  document.getElementById('statDatasets').textContent = d.gov?.summary?.total_datasets || '—';
+  document.getElementById('statYears').textContent = d.gov?.summary?.years_range || '—';
+}).catch(()=>{
+  document.getElementById('statArticles').textContent = '3,777';
+  document.getElementById('statLaws').textContent = '5';
+  document.getElementById('statDatasets').textContent = '83';
+  document.getElementById('statYears').textContent = '2016-2024';
+});
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/static/service-worker.js');
 }

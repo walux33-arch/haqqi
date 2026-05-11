@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي - السيرة التقنية</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#15803d">
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+{% with active='cv' %}{% include '_navbar.html' %}{% endwith %}
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+    <div class="bg-gradient-to-l from-green-700 to-green-600 px-8 py-10 text-white">
+      <div class="flex items-center gap-6">
+        <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <svg width="36" height="36" viewBox="0 0 100 100"><text x="50" y="62" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">م</text></svg>
+        </div>
+        <div>
+          <h1 class="text-2xl font-extrabold">وليد فوزي</h1>
+          <p class="text-green-100 text-sm mt-0.5">مطور الحلول القانونية الذكية</p>
+          <p class="text-green-100 text-sm mt-1">خبير في الذكاء الاصطناعي التوليدي · RAG · FastAPI · Python</p>
+        </div>
+      </div>
+    </div>
+    <div class="px-8 py-5 flex flex-wrap gap-4 text-sm text-gray-600 border-b border-gray-100">
+      <span class="flex items-center gap-1.5">📧 walux33@gmail.com</span>
+      <span class="flex items-center gap-1.5">📱 +212 639-893325</span>
+      <span class="flex items-center gap-1.5">📍 الدار البيضاء، المغرب</span>
+      <span class="flex items-center gap-1.5">🌐 haqqi.ma</span>
+    </div>
+
+    <!-- Summary -->
+    <div class="px-8 py-6">
+      <p class="text-gray-600 leading-relaxed">
+        مطور متخصص فـ <strong class="text-gray-800">الذكاء الاصطناعي التوليدي وأنظمة RAG</strong>، حاصل على <strong class="text-gray-800">ماستر المجتمع المدني والديمقراطية التشاركية</strong> من كلية العلوم القانونية والسياسية سطات. بنيت المنصة القانونية <strong class="text-gray-800">"حقي"</strong> من الصفر — فيها 3,777 مادة قانونية من 5 مدونات، باش تجاوب على الأسئلة القانونية بالدارجة المغربية. كنستخدم <strong class="text-gray-800">FastAPI + ChromaDB + Groq Llama 3.3 70B + Supabase</strong>. عندي خبرة فـ تصميم الأنظمة المعقدة، معالجة النصوص العربية، وتحويل القوانين الرسمية لـ قاعدة معرفة رقمية.
+      </p>
+    </div>
+  </div>
+
+  <!-- Skills Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- AI & ML -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
+      <h2 class="font-bold text-gray-800 mb-4 flex items-center gap-2">🤖 الذكاء الاصطناعي والـ NLP</h2>
+      <div class="space-y-3">
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>RAG (Retrieval-Augmented Generation)</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-green-600 rounded-full" style="width:95%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Prompt Engineering</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-green-600 rounded-full" style="width:90%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Sentence Transformers / Embeddings</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-green-600 rounded-full" style="width:85%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>LLM APIs (Groq, OpenAI)</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-green-600 rounded-full" style="width:90%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Vector Databases (ChromaDB, pgvector)</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-green-600 rounded-full" style="width:85%"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Backend -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
+      <h2 class="font-bold text-gray-800 mb-4 flex items-center gap-2">⚙️ Backend والنظم</h2>
+      <div class="space-y-3">
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Python / FastAPI</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-blue-600 rounded-full" style="width:95%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>PostgreSQL / Supabase</span><span>متوسط</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-blue-600 rounded-full" style="width:75%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Nginx / Reverse Proxy</span><span>متوسط</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-blue-600 rounded-full" style="width:70%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>REST API Design</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-blue-600 rounded-full" style="width:90%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>PDF Generation (PyMuPDF)</span><span>متوسط</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-blue-600 rounded-full" style="width:80%"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Frontend -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
+      <h2 class="font-bold text-gray-800 mb-4 flex items-center gap-2">🎨 Frontend والواجهات</h2>
+      <div class="space-y-3">
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>HTML5 / CSS3 / Tailwind CSS</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-purple-600 rounded-full" style="width:90%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Alpine.js / JavaScript Vanilla</span><span>متوسط</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-purple-600 rounded-full" style="width:80%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Jinja2 Templating</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-purple-600 rounded-full" style="width:85%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>PWA (Progressive Web App)</span><span>متوسط</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-purple-600 rounded-full" style="width:75%"></div></div></div>
+      </div>
+    </div>
+
+    <!-- DevOps & Tools -->
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
+      <h2 class="font-bold text-gray-800 mb-4 flex items-center gap-2">🛠️ DevOps والأدوات</h2>
+      <div class="space-y-3">
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Git / GitHub</span><span>متقدم</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-amber-600 rounded-full" style="width:85%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Linux / Ubuntu Server</span><span>متوسط</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-amber-600 rounded-full" style="width:75%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>Systemd / Nginx</span><span>متوسط</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-amber-600 rounded-full" style="width:70%"></div></div></div>
+        <div><div class="flex justify-between text-xs text-gray-600 mb-1"><span>API Documentation</span><span>متوسط</span></div><div class="h-2 bg-gray-100 rounded-full"><div class="h-2 bg-amber-600 rounded-full" style="width:80%"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project: Haqqi -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+    <div class="px-8 py-5 border-b border-gray-100 bg-gray-50/50">
+      <h2 class="font-bold text-gray-800 flex items-center gap-2">📋 المشروع الرئيسي — منصة حقي القانونية</h2>
+    </div>
+    <div class="px-8 py-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-green-50 rounded-xl p-4"><span class="text-2xl font-extrabold text-green-700">3,777</span><div class="text-xs text-green-600">مادة قانونية</div></div>
+        <div class="bg-amber-50 rounded-xl p-4"><span class="text-2xl font-extrabold text-amber-700">5</span><div class="text-xs text-amber-600">مدونات قانونية</div></div>
+        <div class="bg-blue-50 rounded-xl p-4"><span class="text-2xl font-extrabold text-blue-700">&lt; 3s</span><div class="text-xs text-blue-600">الرد من السؤال للجواب</div></div>
+        <div class="bg-purple-50 rounded-xl p-4"><span class="text-2xl font-extrabold text-purple-700">3</span><div class="text-xs text-purple-600">قنوات: web + واتساب + PDF</div></div>
+      </div>
+
+      <h3 class="font-bold text-gray-700 mb-3">🏗️ الهندسة التقنية (Architecture)</h3>
+      <div class="bg-gray-50 rounded-xl p-4 text-xs text-gray-600 leading-relaxed font-mono whitespace-pre overflow-x-auto">
+سؤال بالدارجة
+    ↓
+<strong class="text-green-700">JSON Keyword Search</strong> (word overlap) ← 3,777 مادة قانونية
+    ↓ (إذا أقل من 3 نتائج)
+<strong class="text-amber-700">ChromaDB Vector Search</strong> (cosine similarity)
+    ↓ (إذا والو)
+<strong class="text-blue-700">Supabase pgvector</strong> (fallback)
+    ↓
+<strong class="text-green-700">Groq Llama 3.3 70B</strong> (240 tok/s، 0.3 temperature)
+    ↓
+جواب بالدارجة مع رقم المادة والقانون
+      </div>
+
+      <h3 class="font-bold text-gray-700 mb-3 mt-5">📚 القوانين المرفوعة</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <div class="bg-white border border-gray-200 rounded-lg p-3 text-center"><div class="text-lg font-extrabold text-gray-900">400</div><div class="text-[10px] text-gray-500">مدونة الأسرة</div></div>
+        <div class="bg-white border border-gray-200 rounded-lg p-3 text-center"><div class="text-lg font-extrabold text-gray-900">705</div><div class="text-[10px] text-gray-500">القانون الجنائي</div></div>
+        <div class="bg-white border border-gray-200 rounded-lg p-3 text-center"><div class="text-lg font-extrabold text-gray-900">1,274</div><div class="text-[10px] text-gray-500">ظهيرة الالتزامات</div></div>
+        <div class="bg-white border border-gray-200 rounded-lg p-3 text-center"><div class="text-lg font-extrabold text-gray-900">809</div><div class="text-[10px] text-gray-500">القانون التجاري</div></div>
+        <div class="bg-white border border-gray-200 rounded-lg p-3 text-center"><div class="text-lg font-extrabold text-gray-900">589</div><div class="text-[10px] text-gray-500">مدونة الشغل</div></div>
+      </div>
+
+      <h3 class="font-bold text-gray-700 mb-3 mt-5">✨ الميزات التقنية</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="flex items-start gap-3 text-sm text-gray-600"><span class="text-green-600 mt-0.5">✓</span><span>RAG Architecture مع 3 مستويات للبحث (JSON → ChromaDB → Supabase)</span></div>
+        <div class="flex items-start gap-3 text-sm text-gray-600"><span class="text-green-600 mt-0.5">✓</span><span>LLM: Llama 3.3 70B عبر Groq API — أسرع 3 مرات من GPT-4</span></div>
+        <div class="flex items-start gap-3 text-sm text-gray-600"><span class="text-green-600 mt-0.5">✓</span><span>Streaming Response (SSE) — المستخدم كايشوف الجواب حيًا</span></div>
+        <div class="flex items-start gap-3 text-sm text-gray-600"><span class="text-green-600 mt-0.5">✓</span><span>Hybrid Search: Keyword (دقة عالية) + Vector (فهم معنوي)</span></div>
+        <div class="flex items-start gap-3 text-sm text-gray-600"><span class="text-green-600 mt-0.5">✓</span><span>Embeddings بـ all-MiniLM-L6-v2 (384 dimensions)</span></div>
+        <div class="flex items-start gap-3 text-sm text-gray-600"><span class="text-green-600 mt-0.5">✓</span><span>Darija Prompt Engineering (temperature 0.3, max 512 tokens)</span></div>
+        <div class="flex items-start gap-3 text-sm text-gray-600"><span class="text-green-600 mt-0.5">✓</span><span>جمع البيانات من 5 قوانين + 83 مجموعة من data.gov.ma</span></div>
+        <div class="flex items-start gap-3 text-sm text-gray-600"><span class="text-green-600 mt-0.5">✓</span><span>PWA: شغال offline، Service Worker، Manifest، SEO كامل</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Why this project matters -->
+  <div class="bg-gradient-to-l from-green-700 to-green-600 rounded-2xl px-8 py-8 text-white shadow-sm mb-6">
+    <h2 class="text-xl font-bold mb-4">🎯 أثر المشروع على المغرب الرقمي</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+      <div><div class="text-3xl font-extrabold">37M</div><div class="text-green-100 text-xs mt-1">مغربي كيحتاجو معلومات قانونية</div></div>
+      <div><div class="text-3xl font-extrabold">80%</div><div class="text-green-100 text-xs mt-1">كيهضرو الدارجة فقط (ما كاين فـ المحاكم)</div></div>
+      <div><div class="text-3xl font-extrabold">0</div><div class="text-green-100 text-xs mt-1">منافسين فـ المجال (فارغ)</div></div>
+    </div>
+    <p class="text-green-100 text-sm text-center mt-4">"حقي" كايتوافق مع الاستراتيجية الوطنية "المغرب الرقمي" فـ محور: <strong>الخدمات العمومية الرقمية والذكاء الاصطناعي</strong></p>
+  </div>
+
+  <!-- Academic Background -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+    <h2 class="font-bold text-gray-800 mb-4">🎓 التكوين الأكاديمي</h2>
+    <div class="space-y-3">
+      <div class="flex items-start gap-3 p-3 bg-green-50 rounded-xl">
+        <span class="text-green-600">📜</span>
+        <div><p class="text-sm font-bold text-gray-800">ماستر المجتمع المدني والديمقراطية التشاركية</p><p class="text-xs text-gray-500">كلية العلوم القانونية والسياسية — سطات (جامعة الحسن الأول)</p></div>
+      </div>
+      <div class="flex items-start gap-3 p-3 bg-green-50 rounded-xl">
+        <span class="text-green-600">📜</span>
+        <div><p class="text-sm font-bold text-gray-800">الإجازة في العلوم القانونية</p><p class="text-xs text-gray-500">كلية العلوم القانونية والسياسية — سطات (جامعة الحسن الأول)</p></div>
+      </div>
+      <div class="flex items-start gap-3 p-3 bg-green-50 rounded-xl">
+        <span class="text-green-600">🔬</span>
+        <div><p class="text-sm font-bold text-gray-800">باكالوريا علوم تجريبية</p><p class="text-xs text-gray-500"></p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Self-Taught Skills -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+    <h2 class="font-bold text-gray-800 mb-4">⚡ المهارات الذاتية (Self-Taught)</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+      <div class="flex items-center gap-3 text-gray-600 p-3 bg-gray-50 rounded-xl"><span>🧠</span><span>الذكاء الاصطناعي التوليدي (RAG + LLMs)</span></div>
+      <div class="flex items-center gap-3 text-gray-600 p-3 bg-gray-50 rounded-xl"><span>⚙️</span><span>تطوير التطبيقات بـ FastAPI و Python</span></div>
+      <div class="flex items-center gap-3 text-gray-600 p-3 bg-gray-50 rounded-xl"><span>🗄️</span><span>قواعد البيانات المتجهية (ChromaDB, pgvector)</span></div>
+      <div class="flex items-center gap-3 text-gray-600 p-3 bg-gray-50 rounded-xl"><span>🌐</span><span>هندسة النظم الموزعة و DevOps</span></div>
+    </div>
+  </div>
+</div>
+
+{% include '_footer.html' %}
+</body>
+</html>

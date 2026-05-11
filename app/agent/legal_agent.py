@@ -61,23 +61,32 @@ DEMO_FALLBACK = "مرحبا بك في حقي! أنا مساعدك القانون
 
 
 _embedding_model = None
-_embedding_loading = False
+_embedding_lock = threading.Lock()
+_embedding_event = threading.Event()
 
 def _load_embedding_model():
-    global _embedding_model, _embedding_loading
-    if _embedding_model is not None:
-        return _embedding_model
-    if _embedding_loading:
-        return None
-    _embedding_loading = True
+    global _embedding_model
+    with _embedding_lock:
+        if _embedding_model is not None:
+            _embedding_event.set()
+            return _embedding_model
     try:
         from sentence_transformers import SentenceTransformer
-        _embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-    except Exception:
-        pass
+        model = SentenceTransformer("all-MiniLM-L6-v2")
+        with _embedding_lock:
+            _embedding_model = model
+    except Exception as e:
+        print(f"Embedding model load error: {e}")
+    _embedding_event.set()
     return _embedding_model
 
-# Start loading in background so first query isn't blocked
+def _get_embedding_model():
+    if _embedding_model is not None:
+        return _embedding_model
+    _embedding_event.wait(timeout=120)
+    return _embedding_model
+
+# Start loading in background
 import threading
 threading.Thread(target=_load_embedding_model, daemon=True).start()
 
@@ -91,7 +100,7 @@ class LegalAgent:
         return groq_client is None or GROQ_API_KEY is None or GROQ_API_KEY == "your_groq_api_key_here"
 
     def _generate_embedding(self, text: str):
-        model = _load_embedding_model()
+        model = _get_embedding_model()
         if model is None:
             return None
         return model.encode(text).tolist()
@@ -137,31 +146,48 @@ class LegalAgent:
             del _answer_cache[oldest]
 
     def _search_all(self, question: str):
-        # 1. ChromaDB (local, primary)
-        try:
-            collection = self._get_collection()
-            embedding = self._generate_embedding(question)
-            chroma_results = collection.query(
-                query_embeddings=[embedding],
-                n_results=5,
-            )
-            if chroma_results["documents"] and chroma_results["documents"][0]:
-                results = []
-                for i, doc in enumerate(chroma_results["documents"][0]):
-                    meta = chroma_results["metadatas"][0][i] if chroma_results["metadatas"] else {}
-                    results.append({
-                        "law": meta.get("law", "unknown"),
-                        "article": meta.get("article_number", ""),
-                        "chapter": meta.get("chapter", ""),
-                        "content": doc,
-                        "score": chroma_results["distances"][0][i] if chroma_results.get("distances") else 0,
-                    })
-                return results
-        except Exception as e:
-            print(f"ChromaDB search error: {e}")
+        seen = set()
+        combined = []
 
-        # 2. Supabase fallback
-        if supabase:
+        # 1. JSON keyword search first (best for Arabic legal content)
+        try:
+            json_results = self._search_json_files(question)
+            for r in json_results:
+                doc_id = f"{r['law']}_{r['article']}"
+                if doc_id not in seen:
+                    seen.add(doc_id)
+                    combined.append(r)
+        except Exception as e:
+            print(f"JSON search error: {e}")
+
+        # 2. Supplement with close ChromaDB vector matches if needed
+        if len(combined) < 3:
+            try:
+                collection = self._get_collection()
+                embedding = self._generate_embedding(question)
+                chroma_results = collection.query(
+                    query_embeddings=[embedding],
+                    n_results=5,
+                )
+                if chroma_results["documents"] and chroma_results["documents"][0]:
+                    for i, doc in enumerate(chroma_results["documents"][0]):
+                        dist = chroma_results["distances"][0][i] if chroma_results.get("distances") else 1.0
+                        if dist < 1.2:
+                            meta = chroma_results["metadatas"][0][i] if chroma_results["metadatas"] else {}
+                            doc_id = f"{meta.get('law','')}_{meta.get('article_number','')}"
+                            if doc_id not in seen:
+                                seen.add(doc_id)
+                                combined.append({
+                                    "law": meta.get("law", "unknown"),
+                                    "article": meta.get("article_number", ""),
+                                    "chapter": meta.get("chapter", ""),
+                                    "content": doc,
+                                })
+            except Exception as e:
+                print(f"ChromaDB search error: {e}")
+
+        # 3. Supabase as last resort
+        if not combined and supabase:
             try:
                 embedding = self._generate_embedding(question)
                 rpc_result = supabase.rpc(
@@ -169,7 +195,6 @@ class LegalAgent:
                     {"query_embedding": embedding, "match_threshold": 0.3, "match_count": 5}
                 ).execute()
                 if rpc_result.data:
-                    results = []
                     for doc in rpc_result.data:
                         meta = doc.get("metadata", {})
                         if isinstance(meta, str):
@@ -177,19 +202,19 @@ class LegalAgent:
                                 meta = json.loads(meta)
                             except (json.JSONDecodeError, TypeError):
                                 meta = {}
-                        results.append({
-                            "law": meta.get("law", "unknown"),
-                            "article": meta.get("article_number", ""),
-                            "chapter": meta.get("chapter", ""),
-                            "content": doc.get("content", ""),
-                            "score": doc.get("similarity", 0),
-                        })
-                    return results
+                        doc_id = f"{meta.get('law','')}_{meta.get('article_number','')}"
+                        if doc_id not in seen:
+                            seen.add(doc_id)
+                            combined.append({
+                                "law": meta.get("law", "unknown"),
+                                "article": meta.get("article_number", ""),
+                                "chapter": meta.get("chapter", ""),
+                                "content": doc.get("content", ""),
+                            })
             except Exception as e:
                 print(f"Supabase search error: {e}")
 
-        # 3. JSON keyword fallback
-        return self._search_json_files(question)
+        return combined[:5]
 
     _laws_cache = None
 

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي - لوحة القيادة</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+  * { font-family: 'Tajawal', sans-serif; }
+  .chat-scroll::-webkit-scrollbar { width: 6px; }
+  .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+  .chat-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 20px; }
+  .typing-dot { animation: typingBounce 1.4s infinite ease-in-out both; }
+  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes typingBounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .slide-card { transition: all 0.3s ease; }
+  .slide-card:hover { transform: translateY(-2px); }
+  .tab-active { border-bottom: 3px solid #16a34a; color: #16a34a; font-weight: 700; }
+  .pitch-slide { display: none; }
+  .pitch-slide.active { display: flex; }
+</style>
+</head>
+<body class="bg-gray-50" x-data="app()" x-init="init()">
+
+<!-- Top Bar -->
+<div class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center justify-between h-14">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded-xl flex items-center justify-center shadow-sm">
+          <svg width="16" height="16" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+        </div>
+        <span class="text-lg font-bold text-gray-900">حقي</span>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-gray-400">
+        <span x-show="serverStatus === 'checking'" class="text-amber-500">جاري التحقق...</span>
+        <span x-show="serverStatus === 'online'" class="text-green-600">● متصل</span>
+        <span x-show="serverStatus === 'offline'" class="text-red-500">● غير متصل</span>
+        <span class="hidden sm:inline">v1.0</span>
+      </div>
+    </div>
+    <!-- Tabs -->
+    <div class="flex gap-0 -mb-px overflow-x-auto">
+      <template x-for="t in tabs" :key="t.id">
+        <button @click="activeTab=t.id"
+          class="px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-150 border-b-3"
+          :class="activeTab === t.id ? 'tab-active text-green-600' : 'text-gray-500 hover:text-gray-700 border-transparent'"
+          x-text="t.label">
+        </button>
+      </template>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-6xl mx-auto p-4">
+  <!-- ─── TAB: CHAT ─── -->
+  <div x-show="activeTab === 'chat'">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-l from-green-600 to-green-700 px-5 py-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+        </div>
+        <div>
+          <h3 class="text-white font-bold text-sm">محامي حقي</h3>
+          <p class="text-green-100 text-xs">ذكاء اصطناعي قانوني مغربي</p>
+        </div>
+        <span class="mr-auto flex items-center gap-1.5 text-green-100 text-xs">
+          <span class="w-1.5 h-1.5 bg-green-300 rounded-full inline-block"></span>
+          متصل
+        </span>
+      </div>
+      <div class="h-[420px] overflow-y-auto p-5 space-y-4 chat-scroll" id="chat">
+        <div class="flex items-start gap-3 fade-in">
+          <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg width="14" height="14" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+          </div>
+          <div class="bg-gray-50 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] text-sm text-gray-700 leading-relaxed">
+            مرحبا بك في <strong>حقي</strong>! أنا مساعدك القانوني المغربي. كيقدر تسولني على أي حاجة متعلقة بالقانون المغربي بالدارجة.
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              <span class="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100 cursor-pointer hover:bg-green-100 transition" @click="askQuick('شنو هي شروط الزواج فالمغرب؟')">شروط الزواج</span>
+              <span class="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100 cursor-pointer hover:bg-green-100 transition" @click="askQuick('شنو هي حقوق العمال فمدونة الشغل؟')">حقوق العمال</span>
+              <span class="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100 cursor-pointer hover:bg-green-100 transition" @click="askQuick('كيفاش نأسس شركة فالمغرب؟')">تأسيس شركة</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-gray-100 p-4">
+        <form @submit.prevent="sendMessage" class="flex gap-2">
+          <input type="text" x-model="question" class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm placeholder-gray-400 transition-all" placeholder="اكتب سؤالك القانوني هنا..." autocomplete="off">
+          <button type="submit" :disabled="sending"
+            class="px-5 py-3 bg-gradient-to-l from-green-600 to-green-700 text-white rounded-xl hover:shadow-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-medium">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            سول
+          </button>
+        </form>
+        <p class="text-xs text-gray-400 mt-2 text-center">هذه المعلومات للاسترشاد فقط و لا تشكل استشارة قانونية</p>
+      </div>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+      <a href="/judgements" target="_blank" class="bg-white rounded-xl p-4 border border-gray-200 hover:border-green-200 hover:shadow-sm transition-all text-center group">
+        <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-amber-100 transition-colors">
+          <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+        </div>
+        <h4 class="text-xs font-semibold text-gray-700">الأحكام القضائية</h4>
+      </a>
+      <a href="/incorporation" target="_blank" class="bg-white rounded-xl p-4 border border-gray-200 hover:border-green-200 hover:shadow-sm transition-all text-center group">
+        <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-blue-100 transition-colors">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <h4 class="text-xs font-semibold text-gray-700">تأسيس الشركات</h4>
+      </a>
+      <a href="/contracts" target="_blank" class="bg-white rounded-xl p-4 border border-gray-200 hover:border-green-200 hover:shadow-sm transition-all text-center group">
+        <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-purple-100 transition-colors">
+          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <h4 class="text-xs font-semibold text-gray-700">العقود PDF</h4>
+      </a>
+      <a href="/about" target="_blank" class="bg-white rounded-xl p-4 border border-gray-200 hover:border-green-200 hover:shadow-sm transition-all text-center group">
+        <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:bg-green-100 transition-colors">
+          <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h4 class="text-xs font-semibold text-gray-700">عن حقي</h4>
+      </a>
+    </div>
+  </div>
+
+  <!-- ─── TAB: PITCH ENGLISH ─── -->
+  <div x-show="activeTab === 'pitch'">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-l from-blue-600 to-blue-700 px-5 py-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-white font-bold">Investor Pitch Deck</h3>
+          <p class="text-blue-100 text-sm">Haqqi — Moroccan AI Legal Assistant</p>
+        </div>
+        <a href="/pitch" target="_blank"
+          class="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition text-sm font-medium">
+          Open Full Screen
+        </a>
+      </div>
+      <div class="p-6">
+        <div class="relative" x-data="pitchDeck(13)">
+          <!-- Slide counter -->
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-gray-500" x-text="`Slide ${current + 1} of ${total}`"></span>
+            <div class="flex gap-2">
+              <button @click="prev" :disabled="current === 0"
+                class="px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 transition">
+                ← Prev
+              </button>
+              <button @click="next" :disabled="current >= total - 1"
+                class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 transition">
+                Next →
+              </button>
+            </div>
+          </div>
+          <!-- Slides -->
+          <div class="relative min-h-[400px] bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 text-white overflow-hidden">
+            <!-- Slide 1 -->
+            <div class="pitch-slide inset-0 p-8" :class="current === 0 && 'active'" x-show="current === 0" x-transition>
+              <div class="flex flex-col items-center justify-center text-center h-full">
+                <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mb-6">
+                  <span class="text-3xl font-bold text-white">ح</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-3">Haqqi</h1>
+                <p class="text-xl text-gray-300">Your Moroccan AI Legal Assistant</p>
+                <p class="text-gray-500 mt-6 text-sm">Democratizing legal access for 37 million Moroccans</p>
+              </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="pitch-slide inset-0 p-8" :class="current === 1 && 'active'" x-show="current === 1" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">The Problem</h2>
+                <ul class="space-y-4 text-gray-200">
+                  <li class="flex items-start gap-3"><span class="text-red-400 mt-1">✕</span><span><strong>60%</strong> of Moroccans cannot afford a lawyer</span></li>
+                  <li class="flex items-start gap-3"><span class="text-red-400 mt-1">✕</span><span>Legal texts are complex, scattered, and in Classical Arabic/French</span></li>
+                  <li class="flex items-start gap-3"><span class="text-red-400 mt-1">✕</span><span>No centralized platform for laws, judgements, and contracts</span></li>
+                  <li class="flex items-start gap-3"><span class="text-red-400 mt-1">✕</span><span>WhatsApp is the #1 communication tool, yet unused for legal access</span></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="pitch-slide inset-0 p-8" :class="current === 2 && 'active'" x-show="current === 2" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">Our Solution</h2>
+                <ul class="space-y-4 text-gray-200">
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">✓</span><span><strong>AI-powered RAG</strong> — answers legal questions in Moroccan Darija</span></li>
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">✓</span><span><strong>3,777 legal articles</strong> indexed across 5 law codes</span></li>
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">✓</span><span><strong>PDF contract generator</strong> — rent, employment, partnership</span></li>
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">✓</span><span><strong>WhatsApp Bot</strong> — reach users where they already are</span></li>
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">✓</span><span><strong>Incorporation wizard</strong> — SARL, SA, SNC, SAS explained</span></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Slide 4 -->
+            <div class="pitch-slide inset-0 p-8" :class="current === 3 && 'active'" x-show="current === 3" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">Market Opportunity</h2>
+                <div class="grid grid-cols-2 gap-6">
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-green-400">37M</div><div class="text-sm text-gray-300 mt-1">Moroccans needing legal access</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-green-400">60%</div><div class="text-sm text-gray-300 mt-1">Can't afford lawyers</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-green-400">35M</div><div class="text-sm text-gray-300 mt-1">WhatsApp users in Morocco</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-green-400">500+</div><div class="text-sm text-gray-300 mt-1">Daily legal searches (est.)</div></div>
+                </div>
+              </div>
+            </div>
+            <!-- Slides 5-13 summary -->
+            <div class="pitch-slide inset-0 p-8" :class="current === 4 && 'active'" x-show="current === 4" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">Technology</h2>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                  <div class="bg-white/10 rounded-xl p-4"><span class="block font-bold text-green-300">Backend</span>Python FastAPI</div>
+                  <div class="bg-white/10 rounded-xl p-4"><span class="block font-bold text-green-300">AI</span>Groq Llama 3.3 70B</div>
+                  <div class="bg-white/10 rounded-xl p-4"><span class="block font-bold text-green-300">Vector DB</span>ChromaDB + Supabase pgvector</div>
+                  <div class="bg-white/10 rounded-xl p-4"><span class="block font-bold text-green-300">Embeddings</span>sentence-transformers</div>
+                  <div class="bg-white/10 rounded-xl p-4"><span class="block font-bold text-green-300">Frontend</span>Jinja2 + Tailwind CSS</div>
+                  <div class="bg-white/10 rounded-xl p-4"><span class="block font-bold text-green-300">WhatsApp</span>Twilio API</div>
+                </div>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 5 && 'active'" x-show="current === 5" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">Business Model</h2>
+                <ul class="space-y-4 text-gray-200">
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">💰</span><span><strong>Freemium</strong> — Free basic Q&A, Premium for contract PDFs + detailed analysis</span></li>
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">💰</span><span><strong>B2B</strong> — Law firms, paralegals, legal clinics</span></li>
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">💰</span><span><strong>Incorporation fee</strong> — % of company formation process</span></li>
+                  <li class="flex items-start gap-3"><span class="text-green-400 mt-1">💰</span><span><strong>API licensing</strong> — For government and enterprise</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 6 && 'active'" x-show="current === 6" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">Traction</h2>
+                <div class="grid grid-cols-2 gap-6">
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-green-400">3,777</div><div class="text-sm text-gray-300 mt-1">Legal articles indexed</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-green-400">30</div><div class="text-sm text-gray-300 mt-1">Court decisions</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-green-400">83</div><div class="text-sm text-gray-300 mt-1">Gov datasets integrated</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-green-400">3</div><div class="text-sm text-gray-300 mt-1">Contract types (PDF)</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 7 && 'active'" x-show="current === 7" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">Competition</h2>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-sm text-right">
+                    <thead><tr class="text-green-300 border-b border-white/20"><th class="pb-2 px-3"></th><th class="pb-2 px-3">Haqqi</th><th class="pb-2 px-3">Avocato.ma</th><th class="pb-2 px-3">ChatGPT</th></tr></thead>
+                    <tbody class="text-gray-300">
+                      <tr><td class="py-2 px-3 font-medium">Darija support</td><td class="py-2 px-3 text-green-400">✓</td><td class="py-2 px-3 text-red-400">✕</td><td class="py-2 px-3 text-yellow-400">Limited</td></tr>
+                      <tr><td class="py-2 px-3 font-medium">Moroccan law RAG</td><td class="py-2 px-3 text-green-400">✓</td><td class="py-2 px-3 text-yellow-400">Partial</td><td class="py-2 px-3 text-red-400">✕</td></tr>
+                      <tr><td class="py-2 px-3 font-medium">Contract PDF</td><td class="py-2 px-3 text-green-400">✓</td><td class="py-2 px-3 text-red-400">✕</td><td class="py-2 px-3 text-red-400">✕</td></tr>
+                      <tr><td class="py-2 px-3 font-medium">WhatsApp Bot</td><td class="py-2 px-3 text-green-400">✓</td><td class="py-2 px-3 text-red-400">✕</td><td class="py-2 px-3 text-red-400">✕</td></tr>
+                      <tr><td class="py-2 px-3 font-medium">Free tier</td><td class="py-2 px-3 text-green-400">✓</td><td class="py-2 px-3 text-red-400">✕</td><td class="py-2 px-3 text-yellow-400">Limited</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 8 && 'active'" x-show="current === 8" x-transition>
+              <div class="flex flex-col justify-center h-full text-center">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">Ask Us Anything</h2>
+                <p class="text-gray-300 text-lg">Try the chat tab above!</p>
+                <p class="text-gray-500 mt-4">"شنو هي شروط الزواج فالمغرب؟"</p>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 9 && 'active'" x-show="current === 9" x-transition>
+              <div class="flex flex-col justify-center h-full text-center">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">The Ask</h2>
+                <div class="bg-white/10 rounded-xl p-6 max-w-md mx-auto">
+                  <div class="text-4xl font-bold text-green-400 mb-2">$50K</div>
+                  <p class="text-gray-300">Seed funding for:</p>
+                  <ul class="mt-4 text-right text-gray-300 space-y-2">
+                    <li>• Legal content expansion (20K+ articles)</li>
+                    <li>• Mobile app development</li>
+                    <li>• Marketing & user acquisition</li>
+                    <li>• Team hiring (2 engineers, 1 legal expert)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 10 && 'active'" x-show="current === 10" x-transition>
+              <div class="flex flex-col justify-center h-full text-center">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">Roadmap</h2>
+                <div class="space-y-4 text-right max-w-md mx-auto">
+                  <div class="flex items-center gap-4"><span class="w-20 text-xs text-green-400 font-bold">Phase 1</span><span class="text-gray-300">Launch MVP with 5 law codes</span></div>
+                  <div class="flex items-center gap-4"><span class="w-20 text-xs text-green-400 font-bold">Phase 2</span><span class="text-gray-300">Mobile app + 20K articles</span></div>
+                  <div class="flex items-center gap-4"><span class="w-20 text-xs text-green-400 font-bold">Phase 3</span><span class="text-gray-300">Partnership with bar associations</span></div>
+                  <div class="flex items-center gap-4"><span class="w-20 text-xs text-green-400 font-bold">Phase 4</span><span class="text-gray-300">Pan-African expansion</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 11 && 'active'" x-show="current === 11" x-transition>
+              <div class="flex flex-col justify-center h-full text-center">
+                <h2 class="text-2xl font-bold mb-6 text-green-400">The Team</h2>
+                <div class="bg-white/10 rounded-xl p-6 max-w-sm mx-auto">
+                  <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <span class="text-2xl font-bold text-white">و</span>
+                  </div>
+                  <h3 class="text-xl font-bold">Founder</h3>
+                  <p class="text-gray-400 text-sm mt-1">Built the entire MVP solo — full-stack, AI, legal content, deployment</p>
+                  <p class="text-gray-500 text-xs mt-3">Looking for co-founders (legal, business)</p>
+                </div>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 12 && 'active'" x-show="current === 12" x-transition>
+              <div class="flex flex-col items-center justify-center text-center h-full">
+                <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mb-6">
+                  <span class="text-3xl font-bold text-white">ح</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-3">Let's Build</h1>
+                <p class="text-xl text-gray-300">Justice should be accessible to every Moroccan</p>
+                <p class="text-gray-500 mt-6 text-sm">walux33@gmail.com</p>
+                <a href="/pitch" target="_blank" class="mt-6 inline-block px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition text-sm">View Full Deck →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TAB: PITCH ARABIC ─── -->
+  <div x-show="activeTab === 'pitchAr'">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-l from-emerald-600 to-emerald-700 px-5 py-4 flex items-center justify-between">
+        <div>
+          <h3 class="text-white font-bold">عرض تقديمي - حقي</h3>
+          <p class="text-emerald-100 text-sm">المساعد القانوني المغربي بالذكاء الاصطناعي</p>
+        </div>
+        <a href="/pitch/ar" target="_blank"
+          class="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition text-sm font-medium">
+          عرض كامل
+        </a>
+      </div>
+      <div class="p-6">
+        <div class="relative" x-data="pitchDeck(7)">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-gray-500" x-text="`الشفحة ${current + 1} من ${total}`"></span>
+            <div class="flex gap-2">
+              <button @click="prev" :disabled="current === 0"
+                class="px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 transition">
+                ← السابق
+              </button>
+              <button @click="next" :disabled="current >= total - 1"
+                class="px-3 py-1.5 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-40 transition">
+                التالي →
+              </button>
+            </div>
+          </div>
+          <div class="relative min-h-[400px] bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 text-white overflow-hidden">
+            <div class="pitch-slide inset-0 p-8" :class="current === 0 && 'active'" x-show="current === 0" x-transition>
+              <div class="flex flex-col items-center justify-center text-center h-full">
+                <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mb-6">
+                  <span class="text-3xl font-bold text-white">ح</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-3">حقي</h1>
+                <p class="text-xl text-gray-300">المساعد القانوني المغربي</p>
+                <p class="text-gray-500 mt-4 text-sm">بيدك الحق. وهادي هي الطريقة.</p>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 1 && 'active'" x-show="current === 1" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-emerald-400">المشكل</h2>
+                <ul class="space-y-4 text-gray-200 text-lg">
+                  <li class="flex items-start gap-3"><span class="text-red-400 mt-1">✕</span><span>60% ديال المغاربة ما يقدرش يدفع للمحامي</span></li>
+                  <li class="flex items-start gap-3"><span class="text-red-400 mt-1">✕</span><span>القوانين معقدة وبالفرنسية أو العربية الفصحى</span></li>
+                  <li class="flex items-start gap-3"><span class="text-red-400 mt-1">✕</span><span>ما كاينش موقع واحد كيجمع القوانين والأحكام والعقود</span></li>
+                  <li class="flex items-start gap-3"><span class="text-red-400 mt-1">✕</span><span>الواتساب هو الأكثر استخداماً ولكن ما فيهش معلومة قانونية</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 2 && 'active'" x-show="current === 2" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-emerald-400">الحل</h2>
+                <ul class="space-y-4 text-gray-200 text-lg">
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">✓</span><span>ذكاء اصطناعي يجيب على أسئلتك القانونية بالدارجة</span></li>
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">✓</span><span>3,777 مادة قانونية مفهرسة</span></li>
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">✓</span><span>توليد عقود PDF (كراء، شغل، شراكة)</span></li>
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">✓</span><span>بوت واتساب — القانون فجيبك</span></li>
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">✓</span><span>دليل تأسيس الشركات</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 3 && 'active'" x-show="current === 3" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-emerald-400">الأرقام</h2>
+                <div class="grid grid-cols-2 gap-6">
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-emerald-400">37M</div><div class="text-sm text-gray-300 mt-1">مغربي محتاج للمعلومة القانونية</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-emerald-400">35M</div><div class="text-sm text-gray-300 mt-1">مستعمل واتساب فالمغرب</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-emerald-400">3,777</div><div class="text-sm text-gray-300 mt-1">مادة قانونية مفهرسة</div></div>
+                  <div class="bg-white/10 rounded-xl p-5 text-center"><div class="text-3xl font-bold text-emerald-400">83</div><div class="text-sm text-gray-300 mt-1">مورد حكومي</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 4 && 'active'" x-show="current === 4" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-emerald-400">نموذج العمل</h2>
+                <ul class="space-y-4 text-gray-200 text-lg">
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">💰</span><span>مجاني + ممتاز — العقود والتحليل العميق بمقابل</span></li>
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">💰</span><span>B2B — مكاتب المحاماة والمؤسسات القانونية</span></li>
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">💰</span><span>تأسيس الشركات — نسبة من عملية التأسيس</span></li>
+                  <li class="flex items-start gap-3"><span class="text-emerald-400 mt-1">💰</span><span>API — ترخيص للشركات والحكومة</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 5 && 'active'" x-show="current === 5" x-transition>
+              <div class="flex flex-col justify-center h-full">
+                <h2 class="text-2xl font-bold mb-6 text-emerald-400">الطلب</h2>
+                <div class="bg-white/10 rounded-xl p-6 max-w-md mx-auto text-center">
+                  <div class="text-4xl font-bold text-emerald-400 mb-2">$50K</div>
+                  <p class="text-gray-300">تمويل أولي لـ:</p>
+                  <ul class="mt-4 text-gray-300 space-y-2 text-right">
+                    <li>• توسيع المحتوى القانوني (20K+ مادة)</li>
+                    <li>• تطوير تطبيق الموبايل</li>
+                    <li>• التسويق وجلب المستخدمين</li>
+                    <li>• فريق (مهندسين، خبير قانوني)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="pitch-slide inset-0 p-8" :class="current === 6 && 'active'" x-show="current === 6" x-transition>
+              <div class="flex flex-col items-center justify-center text-center h-full">
+                <div class="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center mb-6">
+                  <span class="text-3xl font-bold text-white">ح</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-3">شكراً</h1>
+                <p class="text-xl text-gray-300">الحق معاك. حقي معاك.</p>
+                <p class="text-gray-500 mt-6 text-sm">walux33@gmail.com</p>
+                <a href="/pitch/ar" target="_blank" class="mt-6 inline-block px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition text-sm">العرض الكامل ←</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TAB: WHATSAPP ─── -->
+  <div x-show="activeTab === 'whatsapp'">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div class="bg-gradient-to-l from-green-600 to-emerald-700 px-5 py-4">
+        <h3 class="text-white font-bold text-lg">بوت واتساب حقي</h3>
+        <p class="text-green-100 text-sm">القانون فجيبك — عبر واتساب</p>
+      </div>
+      <div class="p-6 space-y-6">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
+            <h4 class="font-bold text-gray-800 mb-3">كيفاش تستعمل؟</h4>
+            <ol class="space-y-3 text-sm text-gray-600">
+              <li class="flex items-start gap-3"><span class="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">1</span><span>حفظ الرقم <strong class="text-gray-800">+14155238886</strong> فجهاتك</span></li>
+              <li class="flex items-start gap-3"><span class="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">2</span><span>بعث رسالة "حقي" للرقم</span></li>
+              <li class="flex items-start gap-3"><span class="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">3</span><span>كتب سؤالك القانوني بالدارجة</span></li>
+            </ol>
+            <a href="https://wa.me/14155238886?text=حقي" target="_blank"
+              class="mt-4 inline-flex items-center gap-2 px-5 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition text-sm font-medium">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              افتح واتساب
+            </a>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
+            <h4 class="font-bold text-gray-800 mb-3">الأوامر</h4>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between items-center py-2 border-b border-gray-100"><span class="text-gray-600">ترحيب</span><code class="bg-gray-200 px-2 py-0.5 rounded text-xs">حقي</code></div>
+              <div class="flex justify-between items-center py-2 border-b border-gray-100"><span class="text-gray-600">مساعدة</span><code class="bg-gray-200 px-2 py-0.5 rounded text-xs">مساعدة</code></div>
+              <div class="flex justify-between items-center py-2 border-b border-gray-100"><span class="text-gray-600">المواضيع</span><code class="bg-gray-200 px-2 py-0.5 rounded text-xs">المواضيع</code></div>
+              <div class="flex justify-between items-center py-2 border-b border-gray-100"><span class="text-gray-600">العقود</span><code class="bg-gray-200 px-2 py-0.5 rounded text-xs">العقود</code></div>
+              <div class="flex justify-between items-center py-2 border-b border-gray-100"><span class="text-gray-600">عن</span><code class="bg-gray-200 px-2 py-0.5 rounded text-xs">عن</code></div>
+              <div class="flex justify-between items-center"><span class="text-gray-600">أي سؤال قانوني</span><code class="bg-gray-200 px-2 py-0.5 rounded text-xs">شنو هي...؟</code></div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+          <strong>ملاحظة:</strong> هاد البوت كيخدم فـ Sandbox ديال Twilio. باش تستعملو فمحادثة خاصة، لازم يكون الرقم +14155238886 مسجل فجهاتك وتبعث ليه "حقي" كأول رسالة.
+        </div>
+        <a href="/whatsapp" target="_blank"
+          class="inline-flex items-center gap-2 text-sm text-green-600 hover:text-green-700 font-medium">
+          صفحة الواتساب كاملة ←
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── TAB: LINKS ─── -->
+  <div x-show="activeTab === 'links'">
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <a href="/" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-green-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">الرئيسية</h3>
+        </div>
+        <p class="text-xs text-gray-500">الصفحة الرئيسية — الشات القانوني</p>
+      </a>
+      <a href="/judgements" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-amber-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center group-hover:bg-amber-100 transition-colors">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">الأحكام القضائية</h3>
+        </div>
+        <p class="text-xs text-gray-500">30 حكما قضائيا مغربيا</p>
+      </a>
+      <a href="/incorporation" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-blue-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">تأسيس الشركات</h3>
+        </div>
+        <p class="text-xs text-gray-500">SARL, SA, SNC, SAS — الشروط والوثائق</p>
+      </a>
+      <a href="/contracts" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-purple-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">العقود PDF</h3>
+        </div>
+        <p class="text-xs text-gray-500">عقود الكراء، الشغل، الشراكة — تحميل PDF</p>
+      </a>
+      <a href="/whatsapp" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-green-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
+            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">واتساب</h3>
+        </div>
+        <p class="text-xs text-gray-500">بوت حقي على واتساب</p>
+      </a>
+      <a href="/admin" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-red-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center group-hover:bg-red-100 transition-colors">
+            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">الإدارة</h3>
+        </div>
+        <p class="text-xs text-gray-500">لوحة الإدارة — يتطلب تسجيل الدخول</p>
+      </a>
+      <a href="/about" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-green-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">عن حقي</h3>
+        </div>
+        <p class="text-xs text-gray-500">إحصائيات القانون المغربي</p>
+      </a>
+      <a href="/pitch" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-blue-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2M7 4h10M7 4H4a1 1 0 00-1 1v14a2 2 0 002 2h14a2 2 0 002-2V5a1 1 0 00-1-1h-3"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">Pitch Deck (EN)</h3>
+        </div>
+        <p class="text-xs text-gray-500">عرض تقديمي للمستثمرين بالإنجليزية</p>
+      </a>
+      <a href="/pitch/ar" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-emerald-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2M7 4h10M7 4H4a1 1 0 00-1 1v14a2 2 0 002 2h14a2 2 0 002-2V5a1 1 0 00-1-1h-3"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">Pitch Deck (AR)</h3>
+        </div>
+        <p class="text-xs text-gray-500">عرض تقديمي بالدارجة المغربية</p>
+      </a>
+      <a href="/privacy" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-gray-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-gray-100 transition-colors">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">الخصوصية</h3>
+        </div>
+        <p class="text-xs text-gray-500">سياسة الخصوصية</p>
+      </a>
+      <a href="/disclaimer" target="_blank" class="bg-white rounded-xl p-5 border border-gray-200 hover:border-gray-200 hover:shadow-md transition-all group">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-gray-100 transition-colors">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-bold text-gray-800">إخلاء المسؤولية</h3>
+        </div>
+        <p class="text-xs text-gray-500">إخلاء مسؤولية قانونية</p>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+function app() {
+  return {
+    tabs: [
+      { id: 'chat', label: '💬 دردش' },
+      { id: 'pitch', label: '📊 Pitch EN' },
+      { id: 'pitchAr', label: '📊 Pitch عربي' },
+      { id: 'whatsapp', label: '📱 واتساب' },
+      { id: 'links', label: '🔗 روابط' },
+    ],
+    activeTab: 'chat',
+    question: '',
+    sending: false,
+    serverStatus: 'checking',
+
+    init() {
+      this.checkServer();
+    },
+
+    async checkServer() {
+      try {
+        const r = await fetch('/api/health', { method: 'GET', signal: AbortSignal.timeout(3000) });
+        this.serverStatus = r.ok ? 'online' : 'offline';
+      } catch { this.serverStatus = 'offline'; }
+    },
+
+    askQuick(q) {
+      this.question = q;
+      this.sendMessage();
+    },
+
+    async sendMessage() {
+      const q = this.question.trim();
+      if (!q || this.sending) return;
+      this.sending = true;
+
+      const chat = document.getElementById('chat');
+      chat.innerHTML += `<div class="flex items-start gap-3 justify-end fade-in">
+        <div class="bg-green-600 text-white rounded-2xl rounded-bl-sm px-4 py-3 max-w-[80%] text-sm leading-relaxed">${this.esc(q)}</div>
+        <div class="w-8 h-8 bg-gray-200 rounded-xl flex items-center justify-center flex-shrink-0"><span class="text-xs font-bold text-gray-500">أ</span></div>
+      </div>`;
+      this.question = '';
+
+      chat.innerHTML += `<div class="flex items-start gap-3 fade-in" id="typing">
+        <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+          <svg width="14" height="14" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+        </div>
+        <div class="bg-gray-50 rounded-2xl rounded-tr-sm px-5 py-4">
+          <div class="flex gap-1.5">
+            <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full inline-block"></span>
+            <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full inline-block"></span>
+            <span class="typing-dot w-2 h-2 bg-gray-400 rounded-full inline-block"></span>
+          </div>
+        </div>
+      </div>`;
+      chat.scrollTop = chat.scrollHeight;
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({question: q}),
+        });
+        document.getElementById('typing').outerHTML = `<div class="flex items-start gap-3 fade-in">
+          <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg width="14" height="14" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+          </div>
+          <div class="bg-gray-50 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] text-sm text-gray-700 leading-relaxed" id="answer"></div>
+        </div>`;
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        const answerEl = document.getElementById('answer');
+        let text = '';
+        while (true) {
+          const {done, value} = await reader.read();
+          if (done) break;
+          text += decoder.decode(value, {stream: true});
+          answerEl.textContent = text;
+          chat.scrollTop = chat.scrollHeight;
+        }
+      } catch {
+        const typing = document.getElementById('typing');
+        if (typing) {
+          typing.outerHTML = `<div class="flex items-start gap-3 fade-in">
+            <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+              <svg width="14" height="14" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+            </div>
+            <div class="bg-red-50 border border-red-100 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] text-sm text-red-700">عذرا، حدث خطأ تقني. السيرفر ماشغالش. حاول مرة أخرى.</div>
+          </div>`;
+          chat.scrollTop = chat.scrollHeight;
+        }
+      }
+      this.sending = false;
+      setTimeout(() => document.querySelector('#chatForm input')?.focus(), 100);
+      chat.scrollTop = chat.scrollHeight;
+    },
+
+    esc(t) {
+      const d = document.createElement('div');
+      d.textContent = t;
+      return d.innerHTML;
+    }
+  };
+}
+
+function pitchDeck(total) {
+  return {
+    current: 0,
+    total: total,
+    next() { if (this.current < this.total - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; }
+  };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حقي - الملف التعريفي</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#15803d">
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50" x-data="app()">
+{% with active='dossier' %}{% include '_navbar.html' %}{% endwith %}
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+    <div class="bg-gradient-to-l from-green-700 to-green-600 px-8 py-8">
+      <div class="flex items-center gap-5">
+        <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <svg width="36" height="36" viewBox="0 0 100 100"><text x="50" y="62" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">م</text></svg>
+        </div>
+        <div class="text-white">
+          <h1 class="text-2xl font-extrabold">وليد فوزي</h1>
+          <p class="text-green-100 text-sm">Co-Founder & CTO · منصة حقي</p>
+          <p class="text-green-200 text-xs mt-1">مطور الذكاء الاصطناعي التوليدي · RAG · FastAPI · المغرب</p>
+        </div>
+      </div>
+    </div>
+    <div class="px-8 py-4 flex flex-wrap gap-4 text-sm text-gray-500 border-b border-gray-100">
+      <span>📧 walux33@gmail.com</span>
+      <span>📱 +212 639-893325</span>
+      <span>📍 الدار البيضاء، المغرب</span>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+    <h2 class="font-bold text-gray-800 text-lg mb-3">👤 نبذة تعريفية</h2>
+    <p class="text-gray-600 text-sm leading-relaxed">
+      باحث ومطور فـ مجال <strong class="text-gray-800">الذكاء الاصطناعي التوليدي</strong> و <strong class="text-gray-800">هندسة الأنظمة القانونية الذكية</strong>، 
+      حاصل على <strong class="text-gray-800">الإجازة في العلوم القانونية</strong> و <strong class="text-gray-800">ماستر المجتمع المدني والديمقراطية التشاركية</strong> 
+      من كلية العلوم القانونية والسياسية <strong class="text-gray-800">سطات</strong> (جامعة الحسن الأول)، 
+      و<strong class="text-gray-800">باكالوريا علوم تجريبية</strong>.
+      أسست منصة "حقي" بهدف تبسيط الوصول للمعلومات القانونية للمغاربة من خلال الذكاء الاصطناعي واللغة الدارجة. 
+      عندي خبرة فـ <strong class="text-gray-800">RAG Architecture</strong>، <strong class="text-gray-800">Large Language Models</strong>، 
+      <strong class="text-gray-800">قواعد البيانات المتجهية</strong>، و تصميم الـ APIs عالية الأداء بـ FastAPI.
+      كنت مسؤول على الهندسة التقنية كاملة: من جمع ومعالجة 3,777 مادة قانونية، لـ بناء نظام RAG بثلاث مستويات، 
+      لـ نشر الـ API وتصميم الواجهات. هاد المشروع كايتوافق مع الاستراتيجية الوطنية "المغرب الرقمي" 
+      ويمكن تقديمه لبرامج الدعم <strong class="text-gray-800">Innov Invest</strong>، <strong class="text-gray-800">Moultamit</strong> 
+      و <strong class="text-gray-800">وزارة الانتقال الرقمي</strong>.
+    </p>
+  </div>
+
+  <!-- Education -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+    <h2 class="font-bold text-gray-800 text-lg mb-3">🎓 التكوين الأكاديمي</h2>
+    <div class="space-y-3">
+      <div class="flex items-start gap-3">
+        <span class="text-green-600 mt-0.5">📜</span>
+        <div>
+          <p class="text-sm font-bold text-gray-800">ماستر المجتمع المدني والديمقراطية التشاركية</p>
+          <p class="text-xs text-gray-500">كلية العلوم القانونية والسياسية — سطات (جامعة الحسن الأول)</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <span class="text-green-600 mt-0.5">📜</span>
+        <div>
+          <p class="text-sm font-bold text-gray-800">الإجازة في العلوم القانونية</p>
+          <p class="text-xs text-gray-500">كلية العلوم القانونية والسياسية — سطات (جامعة الحسن الأول)</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <span class="text-green-600 mt-0.5">🔬</span>
+        <div>
+          <p class="text-sm font-bold text-gray-800">باكالوريا علوم تجريبية</p>
+          <p class="text-xs text-gray-500">مسلك العلوم التجريبية</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Summary -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+    <h2 class="font-bold text-gray-800 text-lg mb-3">🚀 المشروع: منصة حقي</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+      <div class="bg-green-50 rounded-xl p-3 text-center"><span class="text-xl font-extrabold text-green-700">3,777</span><div class="text-[10px] text-green-600">مادة قانونية</div></div>
+      <div class="bg-amber-50 rounded-xl p-3 text-center"><span class="text-xl font-extrabold text-amber-700">5</span><div class="text-[10px] text-amber-600">مدونات قانونية</div></div>
+      <div class="bg-blue-50 rounded-xl p-3 text-center"><span class="text-xl font-extrabold text-blue-700">83</span><div class="text-[10px] text-blue-600">مجموعة بيانات حكومية</div></div>
+      <div class="bg-purple-50 rounded-xl p-3 text-center"><span class="text-xl font-extrabold text-purple-700">2-4s</span><div class="text-[10px] text-purple-600">متوسط الرد</div></div>
+    </div>
+    <div class="space-y-3 text-sm text-gray-600">
+      <div class="flex items-start gap-2"><span class="text-green-600 mt-0.5">🎯</span><span><strong>المشكلة:</strong> 37 مليون مغربي كيهضرو الدارجة، ولكن القوانين فصحى وفرنسية. 78% كيدورو على معلومات قانونية فـ الإنترنت ولكن ما كاينش حل بالدارجة.</span></div>
+      <div class="flex items-start gap-2"><span class="text-green-600 mt-0.5">💡</span><span><strong>الحل:</strong> أول مساعد قانوني مغربي بالدارجة + ذكاء اصطناعي (Llama 3.3 70B + RAG Architecture). كايجاوب على الأسئلة القانونية مع ذكر رقم المادة والقانون فـ أقل من 4 ثواني.</span></div>
+      <div class="flex items-start gap-2"><span class="text-green-600 mt-0.5">⚙️</span><span><strong>التقنية:</strong> FastAPI Async · ChromaDB Vector Search · Groq Llama 3.3 70B · Supabase · sentence-transformers · PyMuPDF · data.gov.ma API</span></div>
+      <div class="flex items-start gap-2"><span class="text-green-600 mt-0.5">💰</span><span><strong>النموذج التجاري:</strong> Freemium — 10 أسئلة/يوم مجاناً، 299 درهم/شهر Premium (غير محدود + عقود PDF + واتساب)، Enterprise API خاص بالمؤسسات.</span></div>
+    </div>
+  </div>
+
+  <!-- Skills & Expertise -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+    <h2 class="font-bold text-gray-800 text-lg mb-4">🛠️ الخبرات والمهارات التقنية</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div><h3 class="font-bold text-gray-700 text-sm mb-2">🧠 الذكاء الاصطناعي</h3><div class="flex flex-wrap gap-1.5"><span class="text-[11px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full">RAG</span><span class="text-[11px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full">LLM Integration</span><span class="text-[11px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full">Prompt Engineering</span><span class="text-[11px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full">Sentence Transformers</span><span class="text-[11px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full">Embeddings</span></div></div>
+      <div><h3 class="font-bold text-gray-700 text-sm mb-2">⚙️ Backend</h3><div class="flex flex-wrap gap-1.5"><span class="text-[11px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">FastAPI</span><span class="text-[11px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">Python</span><span class="text-[11px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">REST API</span><span class="text-[11px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">PostgreSQL</span><span class="text-[11px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">ChromaDB</span></div></div>
+      <div><h3 class="font-bold text-gray-700 text-sm mb-2">🎨 Frontend</h3><div class="flex flex-wrap gap-1.5"><span class="text-[11px] bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full">Tailwind CSS</span><span class="text-[11px] bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full">Alpine.js</span><span class="text-[11px] bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full">Jinja2</span><span class="text-[11px] bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full">PWA</span></div></div>
+      <div><h3 class="font-bold text-gray-700 text-sm mb-2">🗄️ DevOps + Data</h3><div class="flex flex-wrap gap-1.5"><span class="text-[11px] bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">Git/GitHub</span><span class="text-[11px] bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">Supabase</span><span class="text-[11px] bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">Nginx</span><span class="text-[11px] bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">Linux</span><span class="text-[11px] bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full">API Integration</span></div></div>
+    </div>
+  </div>
+
+  <!-- Impact & Fit -->
+  <div class="bg-gradient-to-l from-green-700 to-green-600 rounded-2xl p-6 text-white shadow-sm mb-6">
+    <h2 class="text-lg font-bold mb-4">🇲🇦 توافق المشروع مع "المغرب الرقمي"</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+      <div class="bg-white/10 rounded-xl p-3"><strong>محور الابتكار:</strong> أول platform قانونية مغربية بالذكاء الاصطناعي والدارجة</div>
+      <div class="bg-white/10 rounded-xl p-3"><strong>محور الشمولية:</strong> القانون فمتناول 80% من المغاربة اللي كيهضرو الدارجة فقط</div>
+      <div class="bg-white/10 rounded-xl p-3"><strong>محور البيانات:</strong> مدمج مع data.gov.ma (83 مجموعة بيانات حكومية)</div>
+    </div>
+  </div>
+
+  <!-- Dossier buttons -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+    <h2 class="font-bold text-gray-800 text-lg mb-3">📥 الملف الكامل للتقديم</h2>
+    <p class="text-xs text-gray-500 mb-4">هاد الصفحة يمكن تحفظها كـ PDF وتقدمها للجنة (Ctrl+P → Save as PDF)</p>
+    <div class="flex flex-wrap gap-2">
+      <a href="/dossier/pdf" class="text-sm bg-green-600 text-white px-5 py-2.5 rounded-xl hover:bg-green-700 transition-all font-medium">📄 تحميل الملف PDF</a>
+      <a href="/pitch" class="text-sm bg-gray-900 text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 transition-all font-medium">📊 Pitch Deck EN</a>
+      <a href="/pitch/ar" class="text-sm bg-gray-900 text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 transition-all font-medium">📊 Pitch Deck AR</a>
+      <a href="/cv" class="text-sm bg-gray-100 text-gray-700 px-5 py-2.5 rounded-xl hover:bg-gray-200 transition-all font-medium">📋 السيرة التقنية</a>
+    </div>
+  </div>
+
+  <!-- Next Steps -->
+  <div class="bg-white rounded-2xl border border-green-200 border-2 p-6 shadow-sm mb-6 bg-green-50/30">
+    <h2 class="font-bold text-gray-800 text-lg mb-3">🎯 الخطوات القادمة بعد الحصول على الدعم</h2>
+    <div class="space-y-3 text-sm text-gray-600">
+      <div class="flex items-start gap-2"><span class="text-green-600 font-bold">1.</span><span><strong>Deploy على VPS (Hetzner €3.79/شهر):</strong> رفع التطبيق ليكون visible للمستخدمين. التكلفة: ~500 درهم/السنة.</span></div>
+      <div class="flex items-start gap-2"><span class="text-green-600 font-bold">2.</span><span><strong>Domain + HTTPS (Cloudflare):</strong> شراء domain (haqqi.ma) وشهادة SSL. التكلفة: ~100 درهم/السنة.</span></div>
+      <div class="flex items-start gap-2"><span class="text-green-600 font-bold">3.</span><span><strong>توسيع قاعدة القوانين:</strong> إضافة قانون المسطرة المدنية والجنائية + الأحكام الحديثة. يقدر يوصل لـ 10,000+ مادة.</span></div>
+      <div class="flex items-start gap-2"><span class="text-green-600 font-bold">4.</span><span><strong>Google Analytics + SEO:</strong> تتبع الزوار وتحسين الظهور فـ البحث.</span></div>
+      <div class="flex items-start gap-2"><span class="text-green-600 font-bold">5.</span><span><strong>Stripe حقيقي + Twilio:</strong> تفعيل الدفع الحقيقي وواتساب البوت بخط تجاري.</span></div>
+      <div class="flex items-start gap-2"><span class="text-green-600 font-bold">6.</span><span><strong>Beta Launch:</strong> إطلاق تجريبي مع 500 مستخدم أولي + حملة تسويق على واتساب وفيسبوك.</span></div>
+    </div>
+  </div>
+
+  <!-- Budget Projection -->
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm mb-6">
+    <h2 class="font-bold text-gray-800 text-lg mb-3">💰 الميزانية المتوقعة (العام الأول)</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="border-b border-gray-100"><th class="text-right py-2 text-gray-500 font-medium">البند</th><th class="text-right py-2 text-gray-500 font-medium">التكلفة</th><th class="text-right py-2 text-gray-500 font-medium">ملاحظات</th></tr></thead>
+        <tbody>
+          <tr class="border-b border-gray-50"><td class="py-2 text-gray-700">البنية التحتية (VPS + API)</td><td class="py-2 text-gray-900 font-medium">~6,000 درهم</td><td class="py-2 text-gray-400 text-xs">Hetzner + Groq API</td></tr>
+          <tr class="border-b border-gray-50"><td class="py-2 text-gray-700">التسويق الرقمي</td><td class="py-2 text-gray-900 font-medium">~15,000 درهم</td><td class="py-2 text-gray-400 text-xs">فيسبوك + واتساب + إعلانات</td></tr>
+          <tr class="border-b border-gray-50"><td class="py-2 text-gray-700">التسجيل القانوني</td><td class="py-2 text-gray-900 font-medium">~5,000 درهم</td><td class="py-2 text-gray-400 text-xs">علامة تجارية + شركة</td></tr>
+          <tr class="border-b border-gray-50"><td class="py-2 text-gray-700">تطوير + تحسينات</td><td class="py-2 text-gray-900 font-medium">~10,000 درهم</td><td class="py-2 text-gray-400 text-xs">قوانين جديدة + API</td></tr>
+          <tr><td class="py-2 text-gray-700 font-bold">المجموع</td><td class="py-2 text-green-700 font-bold">~36,000 درهم</td><td class="py-2 text-gray-400 text-xs">الدعم المطلوب</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% include '_footer.html' %}
+</body>
+</html>
