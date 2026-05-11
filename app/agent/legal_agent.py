@@ -39,13 +39,15 @@ LAW_NAMES = {
 _answer_cache = {}
 
 
-DARIJA_PROMPT_SHORT = """نت حقي. جاوب بالدارجة. استعمل المصادر القانونية.
+DARIJA_PROMPT_SHORT = """نت حقي، مساعد قانوني مغربي بالدارجة. كاتجاوب على أي سؤال كاين.
 
 القواعد:
-- جاوب باختصار (جملتين ل 4 جمل)
-- عيط على المادة والقانون
-- ما تعطيش استشارة رسمية
-- إذا ما عرفتيش، قل بصراحة "ما عنديش معلومات كافية\""""
+- جاوب بالدارجة المغربية (داريجا)
+- إذا كان السؤال قانوني، استعمل المصادر القانونية وعيط على المادة والقانون
+- إذا كان السؤال عام، جاوب من معلوماتك العامة
+- جاوب باختصار (جملتين ل 6 جمل)
+- ما تعطيش استشارة رسمية (قل "هاد معلومات عامة، راجع محامي")
+- جاوب دائما، ما تقولش ما عرفتش\""""
 
 
 DEMO_ANSWERS = {
@@ -267,16 +269,19 @@ class LegalAgent:
         return results[:5]
 
     def _build_messages(self, question: str, context):
-        if isinstance(context, list):
+        if isinstance(context, list) and context:
             context_text = "\n\n".join(
                 f"[{c['law']} - المادة {c['article']}]\n{c['content']}"
                 for c in context[:3]
             )
+            user_content = f"المعلومات القانونية:\n{context_text}\n\nسؤال: {question}"
+        elif isinstance(context, str) and context.strip():
+            user_content = f"المعلومات:\n{context}\n\nسؤال: {question}"
         else:
-            context_text = str(context)
+            user_content = f"سؤال: {question}"
         return [
             {"role": "system", "content": DARIJA_PROMPT_SHORT},
-            {"role": "user", "content": f"المعلومات:\n{context_text}\n\nسؤال: {question}"},
+            {"role": "user", "content": user_content},
         ]
 
     def _demo_answer(self, question: str):
