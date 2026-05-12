@@ -1,54 +1,16 @@
 {
   "sources": [
-    {
-      "id": "penal",
-      "name": "مجموعة القانون الجنائي",
-      "source": "mandili.net/code/1-59-413/",
-      "articles": 705,
-      "type": "law"
-    },
-    {
-      "id": "doc",
-      "name": "قانون الالتزامات والعقود",
-      "source": "mandili.net/code/12-08-1913/",
-      "articles": 1274,
-      "type": "law"
-    },
-    {
-      "id": "commercial",
-      "name": "مدونة التجارة",
-      "source": "mandili.net/code/15-95/",
-      "articles": 809,
-      "type": "law"
-    },
-    {
-      "id": "family",
-      "name": "مدونة الأسرة",
-      "source": "mandili.net/code/03-70/",
-      "articles": 400,
-      "type": "law"
-    },
-    {
-      "id": "labour",
-      "name": "مدونة الشغل",
-      "source": "mandili.net/code/65-99/",
-      "articles": 589,
-      "type": "law"
-    },
-    {
-      "id": "juricaf",
-      "name": "محكمة النقض - اجتهادات",
-      "source": "juricaf.org",
-      "articles": 0,
-      "type": "jurisprudence"
-    },
-    {
-      "id": "data-gov",
-      "name": "البوابة الوطنية للمعطيات المفتوحة",
-      "source": "data.gov.ma",
-      "articles": 0,
-      "type": "open-data"
-    }
+    {"id": "penal", "name": "مجموعة القانون الجنائي", "source": "mandili.net/code/1-59-413/", "articles": 705, "type": "law"},
+    {"id": "doc", "name": "قانون الالتزامات والعقود", "source": "mandili.net/code/12-08-1913/", "articles": 1274, "type": "law"},
+    {"id": "commercial", "name": "مدونة التجارة", "source": "mandili.net/code/15-95/", "articles": 809, "type": "law"},
+    {"id": "family", "name": "مدونة الأسرة", "source": "mandili.net/code/03-70/", "articles": 400, "type": "law"},
+    {"id": "labour", "name": "مدونة الشغل", "source": "mandili.net/code/65-99/", "articles": 589, "type": "law"},
+    {"id": "criminal_procedure", "name": "قانون المسطرة الجنائية", "source": "mandili.net/code/22-01/", "articles": 866, "type": "law"},
+    {"id": "consumer_protection", "name": "قانون حماية المستهلك", "source": "mandili.net/code/31-08/", "articles": 199, "type": "law"},
+    {"id": "real_property", "name": "مدونة الحقوق العينية", "source": "mandili.net/code/39-08/", "articles": 328, "type": "law"},
+    {"id": "insurance_code", "name": "مدونة التأمينات", "source": "mandili.net/code/17-99/", "articles": 407, "type": "law"},
+    {"id": "juricaf", "name": "محكمة النقض - اجتهادات", "source": "juricaf.org", "articles": 0, "type": "jurisprudence"},
+    {"id": "data-gov", "name": "البوابة الوطنية للمعطيات المفتوحة", "source": "data.gov.ma", "articles": 0, "type": "open-data"}
   ],
-  "total_articles": 3777
+  "total_articles": 5577
 }

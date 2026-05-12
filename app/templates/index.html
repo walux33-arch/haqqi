@@ -39,13 +39,13 @@
     <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
       أول مساعد قانوني مغربي<br>بـ <span class="text-green-600">الذكاء الاصطناعي</span> بالدارجة
     </h1>
-    <p class="text-gray-500 mt-3 text-sm sm:text-base max-w-2xl mx-auto">مدعوم بـ <strong class="text-gray-700">Llama 3.3 70B</strong> + <strong class="text-gray-700">RAG Architecture</strong> + <strong class="text-gray-700">3,777 مادة قانونية</strong> من 5 مدونات. جاوب على سؤالك القانوني بالدارجة مع ذكر رقم المادة والقانون فـ أقل من 3 ثواني.</p>
+    <p class="text-gray-500 mt-3 text-sm sm:text-base max-w-2xl mx-auto">مدعوم بـ <strong class="text-gray-700">Llama 3.3 70B</strong> + <strong class="text-gray-700">RAG Architecture</strong> + <strong class="text-gray-700">5,577 مادة قانونية</strong> من 9 مدونات. جاوب على سؤالك القانوني بالدارجة مع ذكر رقم المادة والقانون فـ أقل من 3 ثواني.</p>
     <div class="flex items-center justify-center gap-2 mt-4 flex-wrap">
       <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">🤖 Groq Llama 3.3 70B</span>
       <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">⚡ FastAPI</span>
       <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">🗄️ ChromaDB</span>
       <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">📊 Supabase</span>
-      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">📜 5 مدونات قانونية</span>
+      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">📜 9 مدونات قانونية</span>
     </div>
   </div>
 
@@ -234,7 +234,7 @@ fetch('/api/stats').then(r=>r.json()).then(d=>{
   document.getElementById('statDatasets').textContent = d.gov?.summary?.total_datasets || '—';
   document.getElementById('statYears').textContent = d.gov?.summary?.years_range || '—';
 }).catch(()=>{
-  document.getElementById('statArticles').textContent = '3,777';
+  document.getElementById('statArticles').textContent = '5,577';
   document.getElementById('statLaws').textContent = '5';
   document.getElementById('statDatasets').textContent = '83';
   document.getElementById('statYears').textContent = '2016-2024';

@@ -33,6 +33,10 @@ LAW_NAMES = {
     "commercial": "القانون التجاري",
     "family": "مدونة الأسرة",
     "labour": "مدونة الشغل",
+    "criminal_procedure": "قانون المسطرة الجنائية",
+    "consumer_protection": "قانون حماية المستهلك",
+    "real_property": "مدونة الحقوق العينية",
+    "insurance_code": "مدونة التأمينات",
 }
 
 # Simple answer cache (LRU: 64 entries)
