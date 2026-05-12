@@ -9,8 +9,10 @@
     {"id": "consumer_protection", "name": "قانون حماية المستهلك", "source": "mandili.net/code/31-08/", "articles": 199, "type": "law"},
     {"id": "real_property", "name": "مدونة الحقوق العينية", "source": "mandili.net/code/39-08/", "articles": 328, "type": "law"},
     {"id": "insurance_code", "name": "مدونة التأمينات", "source": "mandili.net/code/17-99/", "articles": 407, "type": "law"},
+    {"id": "constitution", "name": "دستور المملكة المغربية", "source": "official", "articles": 180, "type": "constitution"},
+    {"id": "associations", "name": "قانون الجمعيات", "source": "mandili.net/code/75-00/", "articles": 0, "type": "law"},
     {"id": "juricaf", "name": "محكمة النقض - اجتهادات", "source": "juricaf.org", "articles": 0, "type": "jurisprudence"},
     {"id": "data-gov", "name": "البوابة الوطنية للمعطيات المفتوحة", "source": "data.gov.ma", "articles": 0, "type": "open-data"}
   ],
-  "total_articles": 5577
+  "total_articles": 5757
 }

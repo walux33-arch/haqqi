@@ -1,4 +1,4 @@
-import json, os, re
+import json, os, re, uuid, time
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
@@ -9,20 +9,61 @@ router = APIRouter()
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data")
 
+# ─── Conversation Memory ───
+conversations = {}  # session_id -> list of messages
+MAX_HISTORY = 20    # keep last 20 messages per session
 
 class QueryRequest(BaseModel):
     question: str
     context: str = None
+    session_id: str = None
+    history: list = None  # previous messages [{role, content}]
 
 
 @router.post("/chat")
 async def chat(req: QueryRequest):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="السؤال فاضي")
+
+    # Session management
+    session_id = req.session_id or uuid.uuid4().hex[:12]
+    if session_id not in conversations:
+        conversations[session_id] = []
+
+    # Store user message
+    conversations[session_id].append({"role": "user", "content": req.question})
+
+    # Use client history (has user+assistant) or fall back to server storage
+    history = req.history if req.history else conversations[session_id]
+    if len(history) > MAX_HISTORY:
+        history = history[-MAX_HISTORY:]
+
     return StreamingResponse(
-        agent.query_stream(req.question, req.context),
+        agent.query_stream(req.question, req.context, history),
         media_type="text/plain",
+        headers={"X-Session-Id": session_id},
     )
+
+
+@router.get("/chat/history/{session_id}")
+async def get_history(session_id: str):
+    msgs = conversations.get(session_id, [])
+    return {"session_id": session_id, "messages": msgs, "count": len(msgs)}
+
+
+@router.post("/chat/new")
+async def new_chat():
+    sid = uuid.uuid4().hex[:12]
+    conversations[sid] = []
+    return {"session_id": sid}
+
+
+@router.post("/chat/clear")
+async def clear_session(data: dict):
+    sid = data.get("session_id")
+    if sid and sid in conversations:
+        del conversations[sid]
+    return {"status": "cleared"}
 
 
 @router.get("/stats")

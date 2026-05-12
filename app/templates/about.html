@@ -11,6 +11,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="حقي">
 <style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
 </head>
 <body class="bg-gray-50">
 {% include '_navbar.html' %}
@@ -25,7 +33,7 @@
     </div>
     <div class="text-gray-600 leading-relaxed space-y-4 text-sm">
       <p>"حقي" هو أول منصة مغربية للذكاء القانوني تجاوب بالدارجة. كنديرو الذكاء الاصطناعي باش نعاونو المغاربة يفهمو القانون المغربي بسهولة و بدون تكاليف.</p>
-      <p>كيشمل المنصة 5,577 مادة قانونية من 9 مدونات: القانون الجنائي، ظهيرة الالتزامات والعقود، القانون التجاري، مدونة الأسرة، مدونة الشغل، قانون المسطرة الجنائية، مدونة التأمينات، مدونة الحقوق العينية، وقانون حماية المستهلك.</p>
+      <p>كيشمل المنصة 5,757+ مادة قانونية من 11 مدونة + الدستور المغربي: القانون الجنائي، ظهيرة الالتزامات والعقود، القانون التجاري، مدونة الأسرة، مدونة الشغل، قانون المسطرة الجنائية، مدونة التأمينات، مدونة الحقوق العينية، قانون حماية المستهلك، قانون الجمعيات، ودستور المملكة المغربية.</p>
       <p>مبني على تقنية RAG (Retrieval-Augmented Generation) — كايجيب المعلومات من النصوص القانونية الرسمية ويجاوب بالدارجة مع ذكر رقم المادة والقانون.</p>
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 my-6">
         <div class="bg-green-50 rounded-xl p-3 text-center"><div class="text-2xl font-bold text-green-700">705</div><div class="text-xs text-green-600">جنائي</div></div>

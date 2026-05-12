@@ -67,6 +67,7 @@ async def sitemap():
   <url><loc>https://haqqi.ma/pleadings</loc><priority>0.8</priority></url>
   <url><loc>https://haqqi.ma/dossier</loc><priority>0.9</priority></url>
   <url><loc>https://haqqi.ma/business-plan</loc><priority>0.9</priority></url>
+  <url><loc>https://haqqi.ma/how-it-works</loc><priority>0.8</priority></url>
   <url><loc>https://haqqi.ma/about</loc><priority>0.6</priority></url>
   <url><loc>https://haqqi.ma/privacy</loc><priority>0.5</priority></url>
   <url><loc>https://haqqi.ma/disclaimer</loc><priority>0.5</priority></url>
@@ -176,6 +177,11 @@ async def business_plan(request: Request):
 async def dossier(request: Request):
     user = get_user(request)
     return render("dossier.html", active="dossier", user=user)
+
+@app.get("/how-it-works", response_class=HTMLResponse)
+async def how_it_works(request: Request):
+    user = get_user(request)
+    return render("how_it_works.html", active="howitworks", user=user)
 
 @app.get("/about", response_class=HTMLResponse)
 async def about(request: Request):

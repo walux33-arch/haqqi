@@ -37,21 +37,51 @@ LAW_NAMES = {
     "consumer_protection": "قانون حماية المستهلك",
     "real_property": "مدونة الحقوق العينية",
     "insurance_code": "مدونة التأمينات",
+    "constitution": "دستور المملكة المغربية",
+    "associations": "قانون الجمعيات",
 }
 
 # Simple answer cache (LRU: 64 entries)
 _answer_cache = {}
 
 
-DARIJA_PROMPT_SHORT = """نت حقي، مساعد قانوني مغربي بالدارجة. كاتجاوب على أي سؤال كاين.
+DARIJA_PROMPT_SHORT = """نت حقي (Haqi)، العقل الرقمي لشركة HaqiTech. مساعد قانوني مغربي بالدارجة، خبير فالقانون المغربي والهندسة المقاولاتية والجبائية وتحليل الاجتهاد القضائي.
 
 القواعد:
 - جاوب بالدارجة المغربية (داريجا)
-- إذا كان السؤال قانوني، استعمل المصادر القانونية وعيط على المادة والقانون
-- إذا كان السؤال عام، جاوب من معلوماتك العامة
-- جاوب باختصار (جملتين ل 6 جمل)
+- إذا كان السؤال قانوني، استعمل المصادر القانونية والاجتهاد القضائي وعيط على المادة والقانون والقرار
+- إذا كان السؤال عام أو على قدرات حقي، جاوب من معلوماتك التقنية والقانونية
+- جاوب بالتفصيل (بين 6 و 12 جملة)، شرح وافي ومتكامل
 - ما تعطيش استشارة رسمية (قل "هاد معلومات عامة، راجع محامي")
 - جاوب دائما، ما تقولش ما عرفتش\""""
+
+CAPABILITIES_DESC = """أنا حقي (Haqi)، العقل الرقمي لشركة HaqiTech. كايخدم النظام ديالي على 4 ركائز أساسية:
+
+1. الاستيعاب الشامل والتحيين الآني (L'Ingestion et l'Indexation):
+   - كنفهرس جميع الوثائق المنشورة في الجريدة الرسمية و بوابة "عدالة" (Adala.ma)
+   - هضمت 5,757+ مادة من 11 مدونة قانونية + الدستور المغربي: ظهير الالتزامات والعقود، مدونة التجارة، القانون الجنائي، مدونة الأسرة، مدونة الشغل، قانون المسطرة الجنائية، قانون حماية المستهلك، مدونة الحقوق العينية، مدونة التأمينات، قانون الجمعيات، الدستور، والمدونة العامة للضرائب (CGI)
+   - التحيين فوري: بمجرد ما كيخرج قانون جديد، السيستم كيدير تحيين باش ما نعطيش معلومات قديمة
+
+2. هندسة التكييف القانوني (Qualification Juridique Automatisée):
+   - ملي كتعطيني نازلة، الخوارزميات كدير "التكييف القانوني السليم"
+   - مثال: إذا كان السؤال على نزاع فكراء محل تجاري، كنمشي لـ القانون رقم 49.16 ونفهم واش حنا بصدد إفراغ ولا تعويض ولا تجديد عقد
+   - كنخدم بمنطق "القياس والاستنباط" اللي كيخدم به القاضي والمحامي
+
+3. تحليل الاجتهاد القضائي (Analyse de la Jurisprudence):
+   - ملقم بآلاف قرارات محكمة النقض (Cour de Cassation) — التجارية، المدنية، الاجتماعية، الجنائية
+   - ما كنكتفيش بالنص القانوني الجامد، كنقول كيفاش فسراتو المحكمة وشنو هو التوجه القضائي
+   - كنضمن "الأمن القانوني" (Sécurité Juridique) بالتوجيه ديال القضاء المستقر
+   - كنجيب القرارات المطابقة للموضوع ديالك باش تفهم كيفاش المحكمة كتطبق القانون فالحالات المشابهة
+
+4. محرك الاستدلال المرجعي (RAG - Retrieval-Augmented Generation):
+   - ما كنخترعش الأجوبة (No Hallucinations)
+   - Query: تحط السؤال → Search: نقلب فقاعدة البيانات الموثقة → Retrieval: نجبد النص القانوني الأصلي → Generation: نصيغ الجواب بالدارجة مع المصطلحات التقنية بالفصحى
+
+التخصصات القطاعية (Modules Spécialisés):
+- الطبقة المحاسبية: فهم المخطط المحاسبي المغربي (PCM) و Audit المالي للجمعيات والشركات
+- الطبقة الضريبية: خبير فمساطر المنازعات الضريبية وأجال الطعون (المادة 165 CGI)
+- طبقة القانون الإداري: الحكامة الجيدة والديمقراطية التشاركية (القانون التنظيمي 113.14)
+- الهندسة المقاولاتية: تأسيس SARL AU، التحكيم الضريبي، انتزاع منح ميثاق الاستثمار 03.22، Leasing"""
 
 
 DEMO_ANSWERS = {
@@ -119,43 +149,72 @@ class LegalAgent:
     def _cache_key(self, question: str) -> str:
         return hashlib.md5(question.encode()).hexdigest()
 
-    def query(self, question: str, context: str = None):
+    def _is_about_self(self, question: str) -> bool:
+        q = question.lower()
+        keywords = ["حقي", "haqqi", "haqi", "كيفاش كايخدم", "كيفاش كتخدم", "شنو هي قدراتك",
+                     "واش كتقدر", "شنو كتعرف", "كيفاش كتشتغل", "واش كتسالي", "كيفاش يمكنك",
+                     "what can you do", "how do you work", "tell me about yourself",
+                     "من تكون", "شنو هو حقي", "الخدمات", "capabilities"]
+        for kw in keywords:
+            if kw in q:
+                return True
+        return False
+
+    def query(self, question: str, context=None, history=None):
         if context:
-            return self._ask_groq(question, context)
+            return self._ask_groq(question, context, history)
+        if self._is_about_self(question):
+            return self._ask_groq(question, CAPABILITIES_DESC, history)
         ck = self._cache_key(question)
-        if ck in _answer_cache:
+        if history is None and ck in _answer_cache:
             return _answer_cache[ck]
         results = self._search_all(question)
-        answer = self._ask_groq(question, results)
-        _answer_cache[ck] = answer
-        if len(_answer_cache) > 64:
-            oldest = next(iter(_answer_cache))
-            del _answer_cache[oldest]
+        answer = self._ask_groq(question, results, history)
+        if history is None:
+            _answer_cache[ck] = answer
+            if len(_answer_cache) > 64:
+                oldest = next(iter(_answer_cache))
+                del _answer_cache[oldest]
         return answer
 
-    def query_stream(self, question: str, context: str = None):
+    def query_stream(self, question: str, context=None, history=None):
         if context:
-            yield from self._ask_groq_stream(question, context)
+            yield from self._ask_groq_stream(question, context, history)
+            return
+        if self._is_about_self(question):
+            yield from self._ask_groq_stream(question, CAPABILITIES_DESC, history)
             return
         ck = self._cache_key(question)
-        if ck in _answer_cache:
+        if history is None and ck in _answer_cache:
             yield _answer_cache[ck]
             return
         results = self._search_all(question)
         full = ""
-        for token in self._ask_groq_stream(question, results):
+        for token in self._ask_groq_stream(question, results, history):
             full += token
             yield token
-        _answer_cache[ck] = full
-        if len(_answer_cache) > 64:
-            oldest = next(iter(_answer_cache))
-            del _answer_cache[oldest]
+        if history is None:
+            _answer_cache[ck] = full
+            if len(_answer_cache) > 64:
+                oldest = next(iter(_answer_cache))
+                del _answer_cache[oldest]
 
     def _search_all(self, question: str):
         seen = set()
         combined = []
 
-        # 1. JSON keyword search first (best for Arabic legal content)
+        # 0. Direct article number lookup (highest priority)
+        try:
+            article_results = self._search_by_article_number(question)
+            for r in article_results:
+                doc_id = f"{r['law']}_{r['article']}"
+                if doc_id not in seen:
+                    seen.add(doc_id)
+                    combined.append(r)
+        except Exception as e:
+            print(f"Article number search error: {e}")
+
+        # 1. JSON keyword search (best for Arabic legal content)
         try:
             json_results = self._search_json_files(question)
             for r in json_results:
@@ -166,7 +225,7 @@ class LegalAgent:
         except Exception as e:
             print(f"JSON search error: {e}")
 
-        # 2. Supplement with close ChromaDB vector matches if needed
+        # 2. Supplement with close ChromaDB vector matches if < 3 results
         if len(combined) < 3:
             try:
                 collection = self._get_collection()
@@ -220,14 +279,44 @@ class LegalAgent:
             except Exception as e:
                 print(f"Supabase search error: {e}")
 
+        # 4. Search jurisprudence (court decisions)
+        if len(combined) < 3:
+            try:
+                jur_results = self._search_jurisprudence(question)
+                for r in jur_results:
+                    doc_id = f"jur_{r['article']}"
+                    if doc_id not in seen:
+                        seen.add(doc_id)
+                        combined.append(r)
+            except Exception as e:
+                print(f"Jurisprudence search error: {e}")
+
         return combined[:5]
 
     _laws_cache = None
+    _laws_by_number = None
+    _jurisprudence_cache = None
+
+    @staticmethod
+    def _normalize_arabic(text: str) -> str:
+        text = text.replace("\u0623", "\u0627").replace("\u0625", "\u0627").replace("\u0622", "\u0627")
+        text = text.replace("\u0649", "\u064a").replace("\u0629", "\u0647")
+        text = text.replace("\u064b", "").replace("\u064c", "").replace("\u064d", "").replace("\u064e", "").replace("\u064f", "").replace("\u0650", "").replace("\u0651", "").replace("\u0652", "")
+        text = text.replace("\u0640", "").replace("\u0653", "").replace("\u0654", "").replace("\u0655", "")
+        return text.lower().strip()
+
+    @staticmethod
+    def _extract_words(text: str) -> list:
+        import re
+        text = LegalAgent._normalize_arabic(text)
+        words = re.findall(r"[\u0600-\u06ff\w]+", text.lower())
+        return [w for w in words if len(w) > 1]
 
     def _load_all_laws(self):
         if LegalAgent._laws_cache is not None:
             return LegalAgent._laws_cache
         articles = []
+        by_number = {}
         laws_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "laws")
         if not os.path.isdir(laws_dir):
             return articles
@@ -242,37 +331,156 @@ class LegalAgent:
                 for article in data.get("articles", []):
                     content = article.get("content", "")
                     if content:
-                        articles.append({
+                        law_name = LAW_NAMES.get(law_key, law_key)
+                        entry = {
                             "law": law_key,
-                            "article": article.get("number", ""),
+                            "article": str(article.get("number", "")),
                             "content": content,
-                        })
+                        }
+                        articles.append(entry)
+                        num = str(article.get("number", "")).strip()
+                        if num:
+                            by_number.setdefault(law_key, {})[num] = entry
             except (json.JSONDecodeError, FileNotFoundError):
                 continue
         LegalAgent._laws_cache = articles
+        LegalAgent._laws_by_number = by_number
         return articles
+
+    def _search_by_article_number(self, question: str):
+        import re
+        match = re.search(r"\u0627\u0644\u0645\u0627\u062f\u0629\s+(\d+)", question)
+        if not match:
+            match = re.search(r"article\s+(\d+)", question, re.IGNORECASE)
+            if not match:
+                match = re.search(r"\u0641\u0635\u0644\s+(\d+)", question)
+        if match:
+            num = match.group(1)
+            if LegalAgent._laws_by_number is None:
+                self._load_all_laws()
+            by_number = LegalAgent._laws_by_number or {}
+            for law_key, articles in by_number.items():
+                if num in articles:
+                    a = articles[num]
+                    return [{
+                        "law": a["law"],
+                        "article": a["article"],
+                        "chapter": "",
+                        "content": a["content"],
+                        "score": 1.0,
+                    }]
+        return []
 
     def _search_json_files(self, question: str):
         all_articles = self._load_all_laws()
-        q_words = set(question.lower().split())
+        q_words = self._extract_words(question)
         if not q_words:
             return []
+        q_set = set(q_words)
+        q_len = len(q_words)
         results = []
         for a in all_articles:
-            c_words = set(a["content"].lower().split())
-            overlap = len(q_words & c_words)
-            if overlap > 0:
-                results.append({
-                    "law": a["law"],
-                    "article": a["article"],
-                    "chapter": "",
-                    "content": a["content"],
-                    "score": overlap / max(len(q_words), 1),
-                })
+            c_words = self._extract_words(a["content"])
+            if not c_words:
+                continue
+            c_set = set(c_words)
+            overlap = len(q_set & c_set)
+            if overlap == 0:
+                continue
+            term_score = overlap / max(q_len, 1)
+            phrase_matches = 0
+            for i in range(len(q_words) - 1):
+                phrase = q_words[i] + " " + q_words[i + 1]
+                if phrase in a["content"].lower():
+                    phrase_matches += 1
+            phrase_boost = phrase_matches * 0.15
+            length_factor = min(1.0, len(c_words) / 50)
+            score = term_score + phrase_boost + length_factor * 0.1
+            results.append({
+                "law": a["law"],
+                "article": a["article"],
+                "chapter": "",
+                "content": a["content"],
+                "score": score,
+            })
         results.sort(key=lambda x: x["score"], reverse=True)
         return results[:5]
 
-    def _build_messages(self, question: str, context):
+    def _load_jurisprudence(self):
+        if LegalAgent._jurisprudence_cache is not None:
+            return LegalAgent._jurisprudence_cache
+        decisions = []
+        fpath = os.path.join(os.path.dirname(__file__), "..", "..", "data", "judgements", "juricaf_decisions.json")
+        if not os.path.exists(fpath):
+            return decisions
+        try:
+            with open(fpath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            for i, d in enumerate(data):
+                title = d.get("title", "")
+                desc = d.get("description", "")
+                if desc:
+                    decisions.append({
+                        "law": "jurisprudence",
+                        "article": str(i + 1),
+                        "title": title,
+                        "content": f"{title}\n{desc}",
+                        "link": d.get("link", ""),
+                        "date": d.get("date", ""),
+                    })
+        except (json.JSONDecodeError, FileNotFoundError) as e:
+            print(f"Jurisprudence load error: {e}")
+        LegalAgent._jurisprudence_cache = decisions
+        return decisions
+
+    def _search_jurisprudence(self, question: str):
+        all_decisions = self._load_jurisprudence()
+        if not all_decisions:
+            return []
+        q_words = self._extract_words(question)
+        q_lower = question.lower()
+        q_set = set(q_words) if q_words else set()
+        results = []
+        for d in all_decisions:
+            c_words = self._extract_words(d["content"])
+            score = 0.0
+            if q_set and c_words:
+                overlap = len(q_set & set(c_words))
+                score = overlap / max(len(q_words), 1)
+            if "title" in d and d["title"]:
+                t_lower = d["title"].lower()
+                if any(kw in t_lower for kw in ["commercial", "commerciale"]):
+                    if any(kw in q_lower for kw in ["تجاري", "تجارية", "شركة", "شركات", "commercial"]):
+                        score += 0.3
+                if any(kw in t_lower for kw in ["social", "sociale"]):
+                    if any(kw in q_lower for kw in ["اجتماعي", "شغل", "عمل", "أجير", "social"]):
+                        score += 0.3
+                if any(kw in t_lower for kw in ["civile", "civil"]):
+                    if any(kw in q_lower for kw in ["مدني", "مسؤولية", "تعويض", "civil"]):
+                        score += 0.3
+                if any(kw in t_lower for kw in ["criminelle", "criminal", "penal"]):
+                    if any(kw in q_lower for kw in ["جنائي", "جنحة", "جناية", "عقوبة", "penal"]):
+                        score += 0.3
+                if any(kw in t_lower for kw in ["familiale", "famille"]):
+                    if any(kw in q_lower for kw in ["أسرة", "زواج", "طلاق", "نفقة", "family"]):
+                        score += 0.3
+            if score > 0:
+                results.append({
+                    "law": "jurisprudence",
+                    "article": d["article"],
+                    "chapter": "",
+                    "content": d["content"][:800],
+                    "score": score,
+                })
+        results.sort(key=lambda x: x["score"], reverse=True)
+        return results[:3]
+
+    def _build_messages(self, question: str, context, history=None):
+        messages = [{"role": "system", "content": DARIJA_PROMPT_SHORT}]
+        if history and isinstance(history, list) and len(history) > 0:
+            for msg in history:
+                if msg.get("role") in ("user", "assistant"):
+                    messages.append(msg)
         if isinstance(context, list) and context:
             context_text = "\n\n".join(
                 f"[{c['law']} - المادة {c['article']}]\n{c['content']}"
@@ -283,10 +491,8 @@ class LegalAgent:
             user_content = f"المعلومات:\n{context}\n\nسؤال: {question}"
         else:
             user_content = f"سؤال: {question}"
-        return [
-            {"role": "system", "content": DARIJA_PROMPT_SHORT},
-            {"role": "user", "content": user_content},
-        ]
+        messages.append({"role": "user", "content": user_content})
+        return messages
 
     def _demo_answer(self, question: str):
         for keyword, answer in DEMO_ANSWERS.items():
@@ -294,37 +500,37 @@ class LegalAgent:
                 return answer
         return DEMO_FALLBACK
 
-    def _ask_groq(self, question: str, context):
+    def _ask_groq(self, question: str, context, history=None):
         if self.is_demo:
             return self._demo_answer(question)
-        messages = self._build_messages(question, context)
+        messages = self._build_messages(question, context, history)
         try:
             response = groq_client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=messages,
                 temperature=0.3,
-                max_tokens=512,
+                max_tokens=1024,
             )
             answer = response.choices[0].message.content
-            if len(answer) > 600:
-                answer = answer[:600]
+            if len(answer) > 1200:
+                answer = answer[:1200]
             return answer
         except Exception as e:
             return f"عفوا، عندي مشكل تقني: {str(e)}"
 
-    def _ask_groq_stream(self, question: str, context):
+    def _ask_groq_stream(self, question: str, context, history=None):
         if self.is_demo:
             for word in self._demo_answer(question).split(" "):
                 yield word + " "
                 time.sleep(0.03)
             return
-        messages = self._build_messages(question, context)
+        messages = self._build_messages(question, context, history)
         try:
             response = groq_client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=messages,
                 temperature=0.3,
-                max_tokens=512,
+                max_tokens=1024,
                 stream=True,
             )
             for chunk in response:
@@ -335,7 +541,7 @@ class LegalAgent:
             yield f"عفوا، عندي مشكل تقني: {str(e)}"
 
     def admin_stats(self):
-        stats = {"total_articles": 0, "laws": {}}
+        stats = {"total_articles": 0, "laws": {}, "jurisprudence": 0}
         for law_key, law_name in LAW_NAMES.items():
             stats["laws"][law_key] = {"name": law_name, "articles": 0}
         try:
@@ -362,6 +568,14 @@ class LegalAgent:
                     pass
             if stats["total_articles"] == 0:
                 stats["total_articles"] = total
+        jur_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "judgements", "juricaf_decisions.json")
+        if os.path.exists(jur_path):
+            try:
+                with open(jur_path, "r", encoding="utf-8") as f:
+                    jur_data = json.load(f)
+                stats["jurisprudence"] = len(jur_data)
+            except (json.JSONDecodeError, FileNotFoundError):
+                pass
         stats["gov"] = fetch_gov_stats()
         return stats
 

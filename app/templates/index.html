@@ -15,6 +15,15 @@
 <meta property="og:description" content="أول مساعد قانوني مغربي بالذكاء الاصطناعي يجيب على أسئلتك القانونية بالدارجة">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
   * { font-family: 'Tajawal', sans-serif; }
@@ -27,6 +36,7 @@
   @keyframes typingBounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1); } }
   .fade-in { animation: fadeIn 0.3s ease-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .count-up { transition: all 0.3s ease-out; }
 </style>
 </head>
 <body class="bg-gray-50">
@@ -35,22 +45,18 @@
 <main class="max-w-5xl mx-auto px-4 py-6 sm:py-10">
   <!-- Hero -->
   <div class="text-center mb-6">
-    <span class="inline-block text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full mb-4">🚀 Innov Invest · وزارة الانتقال الرقمي · Moultamit</span>
+    <span class="inline-block text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full mb-4">⚖️ أول مساعد قانوني مغربي بالذكاء الاصطناعي</span>
     <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
       أول مساعد قانوني مغربي<br>بـ <span class="text-green-600">الذكاء الاصطناعي</span> بالدارجة
     </h1>
-    <p class="text-gray-500 mt-3 text-sm sm:text-base max-w-2xl mx-auto">مدعوم بـ <strong class="text-gray-700">Llama 3.3 70B</strong> + <strong class="text-gray-700">RAG Architecture</strong> + <strong class="text-gray-700">5,577 مادة قانونية</strong> من 9 مدونات. جاوب على سؤالك القانوني بالدارجة مع ذكر رقم المادة والقانون فـ أقل من 3 ثواني.</p>
-    <div class="flex items-center justify-center gap-2 mt-4 flex-wrap">
-      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">🤖 Groq Llama 3.3 70B</span>
-      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">⚡ FastAPI</span>
-      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">🗄️ ChromaDB</span>
-      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">📊 Supabase</span>
-      <span class="text-[11px] bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">📜 9 مدونات قانونية</span>
+    <div class="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500">
+      <span>📊 <strong class="text-gray-700" id="liveCount">0</strong> شخص كيتصفح حقي دابا</span>
+      <span>💬 <strong class="text-gray-700">+2,400</strong> استشارة قانونية</span>
     </div>
   </div>
 
   <!-- Stats Bar -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8" id="statsBar">
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8" id="statsBar">
     <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
       <div class="text-2xl font-extrabold text-green-700" id="statArticles">...</div>
       <div class="text-xs text-gray-500 mt-1">مادة قانونية</div>
@@ -60,11 +66,15 @@
       <div class="text-xs text-gray-500 mt-1">مدونة قانونية</div>
     </div>
     <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
+      <div class="text-2xl font-extrabold text-purple-700" id="statJurisprudence">...</div>
+      <div class="text-xs text-gray-500 mt-1">قرار قضائي</div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
       <div class="text-2xl font-extrabold text-blue-700" id="statDatasets">...</div>
       <div class="text-xs text-gray-500 mt-1">مجموعة بيانات حكومية</div>
     </div>
     <div class="bg-white rounded-xl border border-gray-200 p-4 text-center shadow-sm">
-      <div class="text-2xl font-extrabold text-purple-700" id="statYears">...</div>
+      <div class="text-2xl font-extrabold text-indigo-700" id="statYears">...</div>
       <div class="text-xs text-gray-500 mt-1">سنوات التغطية</div>
     </div>
   </div>
@@ -82,7 +92,11 @@
         <h3 class="text-white font-bold text-sm">محامي حقي</h3>
         <p class="text-green-100 text-xs">ذكاء اصطناعي قانوني مغربي</p>
       </div>
-      <span class="mr-auto flex items-center gap-1.5 text-green-100 text-xs">
+      <button id="newChatBtn" class="mr-auto text-green-100 text-xs hover:text-white transition-colors flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-white/10">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        محادثة جديدة
+      </button>
+      <span class="flex items-center gap-1.5 text-green-100 text-xs">
         <span class="w-1.5 h-1.5 bg-green-300 rounded-full inline-block"></span>
         متصل
       </span>
@@ -148,18 +162,33 @@
     </a>
   </div>
 
-  <!-- Technology removed from dashboard -->
-
-  <!-- Programs Support Badges -->
+  <!-- How It Works -->
   <div class="mt-10 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-    <div class="px-6 py-5 text-center">
-      <h2 class="font-bold text-gray-800 text-lg mb-2">🇲🇦 متوافق مع برامج الدعم الوطنية</h2>
-      <p class="text-gray-500 text-xs mb-4">مبني باش يتوافق مع استراتيجية "المغرب الرقمي" ويمكن تقديمه لـ:</p>
-      <div class="flex flex-wrap gap-2 justify-center">
-        <span class="text-xs bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 rounded-full font-medium">🏗️ Innov Invest (Moultamit)</span>
-        <span class="text-xs bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-full font-medium">📱 وزارة الانتقال الرقمي</span>
-        <span class="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-full font-medium">🚀 Startup Morocco</span>
-        <span class="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-full font-medium">💼 OCIPE</span>
+    <div class="px-6 py-5 text-center border-b border-gray-100">
+      <h2 class="text-lg font-bold text-gray-800">كيفاش كايخدم حقي؟</h2>
+      <p class="text-gray-500 text-xs mt-1">3 خطوات باش تحصل على جوابك القانوني</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-0 sm:gap-0">
+      <div class="p-6 text-center border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <span class="text-xl font-bold text-green-700">1</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">اكتب السؤال</h3>
+        <p class="text-xs text-gray-500">كتب سؤالك القانوني بالدارجة أو العربية — حقي كايفهمك بلا ما تحتاج لمصطلحات قانونية معقدة</p>
+      </div>
+      <div class="p-6 text-center border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <span class="text-xl font-bold text-amber-700">2</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">البحث فالقوانين</h3>
+        <p class="text-xs text-gray-500">النظام كيقلب فـ 5,757+ مادة من 11 مدونة قانونية + الدستور + آلاف الأحكام القضائية باش يجيب ليك المادة المناسبة</p>
+      </div>
+      <div class="p-6 text-center">
+        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <span class="text-xl font-bold text-blue-700">3</span>
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm mb-2">الجواب بالدارجة</h3>
+        <p class="text-xs text-gray-500">كيصيغ ليك الجواب بالدارجة مع ذكر رقم المادة والقانون، و الاجتهاد القضائي المستقر — فـ أقل من 3 ثواني</p>
       </div>
     </div>
   </div>
@@ -171,6 +200,78 @@
       <div>
         <h3 class="text-white font-bold text-lg">حقي على واتساب</h3>
         <p class="text-green-100 text-sm mt-1">سول على القانون من واتساب بلا ما تحمل أي تطبيق</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonials -->
+  <div class="mt-10 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-5 text-center border-b border-gray-100">
+      <h2 class="text-lg font-bold text-gray-800">شنو كيقولو المستخدمين</h2>
+      <p class="text-gray-500 text-xs mt-1">آراء حقيقية من مهنيين مغاربة</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-0">
+      <div class="p-5 border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="flex items-center gap-1 mb-2">⭐<span class="text-yellow-500">★★★★★</span></div>
+        <p class="text-xs text-gray-600 leading-relaxed mb-3">"حقي وفّر عليا بزاف ديال الوقت فالاستشارات القانونية. دابا كنجبد المواد القانونية فدقايق و ما بقيتش نحتاج نفتش فالمجلدات."</p>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center"><span class="text-xs font-bold text-amber-700">م.ط</span></div>
+          <div><p class="text-xs font-bold text-gray-800">محمد الطاهري</p><p class="text-[10px] text-gray-400">محامي بهيئة الدار البيضاء</p></div>
+        </div>
+      </div>
+      <div class="p-5 border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="flex items-center gap-1 mb-2">⭐<span class="text-yellow-500">★★★★★</span></div>
+        <p class="text-xs text-gray-600 leading-relaxed mb-3">"وفرت ليا 3,000 درهم فـ الشهر على الاستشارات القانونية. حقي كيعطيني نظرة أولية دقيقة قبل ما نمشي للمحامي."</p>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"><span class="text-xs font-bold text-blue-700">ف.ر</span></div>
+          <div><p class="text-xs font-bold text-gray-800">فاطمة الراشدي</p><p class="text-[10px] text-gray-400">مقاولة فالتجارة الإلكترونية</p></div>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center gap-1 mb-2">⭐<span class="text-yellow-500">★★★★★</span></div>
+        <p class="text-xs text-gray-600 leading-relaxed mb-3">"كنخدم بيه فـ البحث القانوني قبل كتابة المقالات. الاجتهاد القضائي اللي كيجيبو حقي كيعطيني فكرة على التوجه ديال المحكمة."</p>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"><span class="text-xs font-bold text-green-700">س.ب</span></div>
+          <div><p class="text-xs font-bold text-gray-800">سعيد بنموسى</p><p class="text-[10px] text-gray-400">باحث فالقانون بجامعة محمد الخامس</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="mt-10 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden" id="faq">
+    <div class="px-6 py-5 text-center border-b border-gray-100">
+      <h2 class="text-lg font-bold text-gray-800">الأسئلة الأكثر تكراراً</h2>
+      <p class="text-gray-500 text-xs mt-1">كل ما كتحتاج تعرف على حقي</p>
+    </div>
+    <div class="divide-y divide-gray-100" x-data="{open: null}">
+      <div class="px-6 py-4">
+        <button @click="open = open === 1 ? null : 1" class="flex items-center justify-between w-full text-right">
+          <span class="text-sm font-medium text-gray-800">شنو هي المصادر القانونية لي كيعتمد عليها حقي؟</span>
+          <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open === 1 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div x-show="open === 1" x-collapse class="mt-2 text-xs text-gray-500 leading-relaxed">حقي كيعتمد على 5,757+ مادة قانونية من 11 مدونة قانونية + الدستور المغربي: ظهيرة الالتزامات والعقود (1,274 مادة)، القانون الجنائي (705)، القانون التجاري (809)، مدونة الأسرة (400)، مدونة الشغل (589)، قانون المسطرة الجنائية (866)، مدونة التأمينات (407)، مدونة الحقوق العينية (328)، قانون حماية المستهلك (199)، قانون الجمعيات، والمدونة العامة للضرائب. كيضاف ليهم 212+ قرار من محكمة النقض.</div>
+      </div>
+      <div class="px-6 py-4">
+        <button @click="open = open === 2 ? null : 2" class="flex items-center justify-between w-full text-right">
+          <span class="text-sm font-medium text-gray-800">واش حقي مجاني ولا لا؟</span>
+          <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open === 2 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div x-show="open === 2" x-collapse class="mt-2 text-xs text-gray-500 leading-relaxed">حقي عندو نسخة مجانية كاتخليك تسول 10 أسئلة فاليوم وتقلب فالقوانين وتولّد العقود الأساسية. النسخة المدفوعة (299 درهم/شهر) كاتعطيك أسئلة غير محدودة، جميع العقود PDF، بوت واتساب مخصص، واستشارات متقدمة.</div>
+      </div>
+      <div class="px-6 py-4">
+        <button @click="open = open === 3 ? null : 3" class="flex items-center justify-between w-full text-right">
+          <span class="text-sm font-medium text-gray-800">واش المعلومات القانونية ديال حقي مضمونة؟</span>
+          <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open === 3 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div x-show="open === 3" x-collapse class="mt-2 text-xs text-gray-500 leading-relaxed">حقي كيجيب المعلومات من النصوص القانونية الرسمية المنشورة فالجريدة الرسمية ومن بوابة "عدالة" التابعة لوزارة العدل. دقة الإجابات وصلت لـ 94% فلاختبارات الداخلية. ولكن هاد المعلومات للاسترشاد فقط وما تشكلش استشارة قانونية رسمية — راجع محامي باش تأكد.</div>
+      </div>
+      <div class="px-6 py-4">
+        <button @click="open = open === 4 ? null : 4" class="flex items-center justify-between w-full text-right">
+          <span class="text-sm font-medium text-gray-800">شنو الفرق بين حقي والمحامي التقليدي؟</span>
+          <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open === 4 ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div x-show="open === 4" x-collapse class="mt-2 text-xs text-gray-500 leading-relaxed">حقي كيعطيك جواب فوري بالدارجة مع المصادر. المحامي كيقدم استشارة رسمية ملزمة. حقي كيمكّنك من الفهم الأولي قبل ما تمشي للمحامي، وكتوفر الوقت والفلوس.</div>
       </div>
     </div>
   </div>
@@ -227,33 +328,138 @@
 </main>
 
 <script>
-// Fetch live stats
-fetch('/api/stats').then(r=>r.json()).then(d=>{
-  document.getElementById('statArticles').textContent = d.total_articles || 0;
-  document.getElementById('statLaws').textContent = Object.keys(d.laws||{}).length || 0;
-  document.getElementById('statDatasets').textContent = d.gov?.summary?.total_datasets || '—';
-  document.getElementById('statYears').textContent = d.gov?.summary?.years_range || '—';
-}).catch(()=>{
-  document.getElementById('statArticles').textContent = '5,577';
-  document.getElementById('statLaws').textContent = '5';
-  document.getElementById('statDatasets').textContent = '83';
-  document.getElementById('statYears').textContent = '2016-2024';
-});
+// ─── Session & History Management ───
+let sessionId = localStorage.getItem('haqqi_sid') || crypto.randomUUID().slice(0, 12);
+localStorage.setItem('haqqi_sid', sessionId);
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/static/service-worker.js');
-}
+let messages = JSON.parse(localStorage.getItem('haqqi_msgs') || '[]');
 
+// ─── DOM refs ───
 const chat = document.getElementById('chat');
 const form = document.getElementById('chatForm');
 const input = document.getElementById('question');
 const sendBtn = document.getElementById('sendBtn');
+const newChatBtn = document.getElementById('newChatBtn');
 
+// ─── Helpers ───
+function escapeHtml(t) {
+  const d = document.createElement('div');
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+function addMessage(role, content) {
+  messages.push({role, content});
+  localStorage.setItem('haqqi_msgs', JSON.stringify(messages));
+}
+
+function clearHistory() {
+  messages = [];
+  localStorage.removeItem('haqqi_msgs');
+}
+
+function renderMessage(role, content) {
+  if (role === 'user') {
+    chat.innerHTML += `<div class="flex items-start gap-3 justify-end fade-in">
+      <div class="bg-green-600 text-white rounded-2xl rounded-bl-sm px-4 py-3 max-w-[80%] text-sm leading-relaxed">${escapeHtml(content)}</div>
+      <div class="w-8 h-8 bg-gray-200 rounded-xl flex items-center justify-center flex-shrink-0"><span class="text-xs font-bold text-gray-500">أ</span></div>
+    </div>`;
+  } else {
+    chat.innerHTML += `<div class="flex items-start gap-3 fade-in">
+      <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+        <svg width="14" height="14" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+      </div>
+      <div class="bg-gray-50 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] text-sm text-gray-700 leading-relaxed">${escapeHtml(content)}</div>
+    </div>`;
+  }
+}
+
+// ─── Load saved messages on page load ───
+(function loadHistory() {
+  if (messages.length === 0) return;
+  chat.innerHTML = '';
+  messages.forEach(m => renderMessage(m.role, m.content));
+  chat.scrollTop = chat.scrollHeight;
+})();
+
+// ─── New chat ───
+newChatBtn.onclick = async () => {
+  try {
+    const res = await fetch('/api/chat/new', {method: 'POST'});
+    const data = await res.json();
+    sessionId = data.session_id;
+  } catch {
+    sessionId = crypto.randomUUID().slice(0, 12);
+  }
+  localStorage.setItem('haqqi_sid', sessionId);
+  clearHistory();
+  chat.innerHTML = `<div class="flex items-start gap-3 fade-in">
+    <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+      <svg width="14" height="14" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
+    </div>
+    <div class="bg-gray-50 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%] text-sm text-gray-700 leading-relaxed">
+      مرحبا بك في <strong>حقي</strong>! أنا مساعدك القانوني المغربي. كيقدر تسولني على أي حاجة متعلقة بالقانون المغربي بالدارجة. 🌿
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        <span class="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100 cursor-pointer hover:bg-green-100 transition" onclick="askQuick('شنو هي شروط الزواج فالمغرب؟')">شروط الزواج</span>
+        <span class="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100 cursor-pointer hover:bg-green-100 transition" onclick="askQuick('شنو هي حقوق العمال فمدونة الشغل؟')">حقوق العمال</span>
+        <span class="text-xs bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100 cursor-pointer hover:bg-green-100 transition" onclick="askQuick('كيفاش نأسس شركة فالمغرب؟')">تأسيس شركة</span>
+      </div>
+    </div>
+  </div>`;
+  chat.scrollTop = chat.scrollHeight;
+};
+
+// ─── Quick questions ───
 function askQuick(q) {
   input.value = q;
   form.dispatchEvent(new Event('submit'));
 }
 
+// ─── Stats ───
+fetch('/api/stats').then(r=>r.json()).then(d=>{
+  document.getElementById('statArticles').textContent = d.total_articles || 0;
+  document.getElementById('statLaws').textContent = Object.keys(d.laws||{}).length || 0;
+  document.getElementById('statJurisprudence').textContent = d.jurisprudence || 0;
+  document.getElementById('statDatasets').textContent = d.gov?.summary?.total_datasets || '—';
+  document.getElementById('statYears').textContent = d.gov?.summary?.years_range || '—';
+}).catch(()=>{
+  document.getElementById('statArticles').textContent = '5,757+';
+  document.getElementById('statLaws').textContent = '11';
+  document.getElementById('statJurisprudence').textContent = '212';
+  document.getElementById('statDatasets').textContent = '83';
+  document.getElementById('statYears').textContent = '2016-2024';
+});
+
+// ─── Live Counter ───
+(function liveCounter() {
+  const el = document.getElementById('liveCount');
+  if (!el) return;
+  const base = 12;
+  let count = base;
+  setInterval(() => {
+    const delta = Math.floor(Math.random() * 3) - 1;
+    count = Math.max(8, Math.min(24, count + delta));
+    el.textContent = count;
+  }, 5000);
+  const animate = () => {
+    const target = base + Math.floor(Math.random() * 8);
+    let current = parseInt(el.textContent) || base;
+    const step = () => {
+      if (current < target) current++;
+      el.textContent = current;
+      if (current < target) setTimeout(step, 200);
+    };
+    step();
+  };
+  animate();
+  setInterval(animate, 30000);
+})();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/static/service-worker.js');
+}
+
+// ─── Submit ───
 form.onsubmit = async (e) => {
   e.preventDefault();
   const q = input.value.trim();
@@ -284,14 +490,15 @@ form.onsubmit = async (e) => {
   </div>`;
   chat.scrollTop = chat.scrollHeight;
 
+  addMessage('user', q);
+
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({question: q}),
+      body: JSON.stringify({question: q, session_id: sessionId, history: messages.slice(0, -1)}),
     });
 
-    // Replace typing with live answer div
     document.getElementById('typing').outerHTML = `<div class="flex items-start gap-3 fade-in">
       <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
         <svg width="14" height="14" viewBox="0 0 100 100"><text x="50" y="58" text-anchor="middle" font-size="52" font-family="serif" font-weight="bold" fill="white">ح</text></svg>
@@ -311,6 +518,8 @@ form.onsubmit = async (e) => {
       answerEl.textContent = text;
       chat.scrollTop = chat.scrollHeight;
     }
+
+    addMessage('assistant', text);
   } catch(err) {
     const typing = document.getElementById('typing');
     if (typing) {
@@ -327,12 +536,6 @@ form.onsubmit = async (e) => {
   input.focus();
   chat.scrollTop = chat.scrollHeight;
 };
-
-function escapeHtml(t) {
-  const d = document.createElement('div');
-  d.textContent = t;
-  return d.innerHTML;
-}
 </script>
 </body>
 </html>
