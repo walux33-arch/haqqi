@@ -47,13 +47,13 @@ _answer_cache = {}
 
 DARIJA_PROMPT_SHORT = """نت حقي (Haqi)، العقل الرقمي لشركة HaqiTech. مساعد قانوني مغربي بالدارجة، خبير فالقانون المغربي والهندسة المقاولاتية والجبائية وتحليل الاجتهاد القضائي.
 
-القواعد:
-- جاوب بالدارجة المغربية (داريجا)
-- إذا كان السؤال قانوني، استعمل المصادر القانونية والاجتهاد القضائي وعيط على المادة والقانون والقرار
-- إذا كان السؤال عام أو على قدرات حقي، جاوب من معلوماتك التقنية والقانونية
-- جاوب بالتفصيل (بين 6 و 12 جملة)، شرح وافي ومتكامل
-- ما تعطيش استشارة رسمية (قل "هاد معلومات عامة، راجع محامي")
-- جاوب دائما، ما تقولش ما عرفتش\""""
+القواعد الأساسية (ممنوع المخالفة):
+1. إذا كان السؤال قانوني: استعمل ONLY المعلومات القانونية لي كيجيوك فـ "المعلومات القانونية" تحت. ذكر دائما رقم المادة واسم القانون. ما تعطيش جواب عام بلا مصادر.
+2. ما تحاولش تجاوب من عندك — المعلومات القانونية المقدمة ليك هي مصدرك الوحيد. إذا ما كانتش كافية، قل "هاد المعلومات ناقصة، راجع محامي مختص".
+3. جاوب بالتفصيل (بين 6 و 12 جملة)، شرح وافي ومتكامل
+4. جاوب بالدارجة المغربية
+5. فالنهاية، قل "هاد معلومات عامة للاسترشاد، راجع محامي باش تأكد"
+6. تنوع فالأجوبة — ما تعاودش نفس الصياغة فكل مرة""""
 
 CAPABILITIES_DESC = """أنا حقي (Haqi)، العقل الرقمي لشركة HaqiTech. كايخدم النظام ديالي على 4 ركائز أساسية:
 
@@ -484,9 +484,13 @@ class LegalAgent:
         if isinstance(context, list) and context:
             context_text = "\n\n".join(
                 f"[{c['law']} - المادة {c['article']}]\n{c['content']}"
-                for c in context[:3]
+                for c in context[:5]
             )
-            user_content = f"المعلومات القانونية:\n{context_text}\n\nسؤال: {question}"
+            user_content = f"""هاذي هي المعلومات القانونية لي خاصك تعتمد عليها فالجواب ديالك. استشهد بيهم بشكل دقيق وذكر رقم المادة والقانون فكل مرة:
+
+{context_text}
+
+سؤال: {question}"""
         elif isinstance(context, str) and context.strip():
             user_content = f"المعلومات:\n{context}\n\nسؤال: {question}"
         else:
@@ -508,12 +512,12 @@ class LegalAgent:
             response = groq_client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=messages,
-                temperature=0.3,
-                max_tokens=1024,
+                temperature=0.5,
+                max_tokens=1536,
             )
             answer = response.choices[0].message.content
-            if len(answer) > 1200:
-                answer = answer[:1200]
+            if len(answer) > 2000:
+                answer = answer[:2000]
             return answer
         except Exception as e:
             return f"عفوا، عندي مشكل تقني: {str(e)}"
@@ -529,8 +533,8 @@ class LegalAgent:
             response = groq_client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=messages,
-                temperature=0.3,
-                max_tokens=1024,
+                temperature=0.5,
+                max_tokens=1536,
                 stream=True,
             )
             for chunk in response:
