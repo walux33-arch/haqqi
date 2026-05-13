@@ -66,6 +66,58 @@
     </div>
   </div>
 
+  <!-- Scraper Control Panel -->
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-6">
+    <div class="px-6 py-4 border-b border-gray-100">
+      <h2 class="font-bold text-gray-800">🤖 السكربيرات التلقائية</h2>
+      <p class="text-xs text-gray-500 mt-1">جلب البيانات من المصادر الرسمية (Adala.ma, SGG.ma) وفهرستها أوتوماتيكياً</p>
+    </div>
+    <div class="p-5">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <template x-for="(s, name) in scrapers" :key="name">
+          <div class="border border-gray-200 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-gray-800" x-text="s.label"></h3>
+              <span class="text-xs text-gray-400" x-text="s.stats?.total_scraped + ' منشور' || '0'"></span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" x-model="scraperKeywords[name]" class="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-lg" placeholder="كلمة مفتاحية">
+              <button @click="runScraper(name)" class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition" x-text="'تشغيل'"></button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Manual URL Import for Adala -->
+      <div class="border-t border-gray-100 pt-4 mt-2">
+        <h3 class="text-sm font-bold text-gray-800 mb-2">🌐 استيراد روابط من Adala.ma يدوياً</h3>
+        <div class="flex gap-2 mb-2">
+          <input type="text" x-model="scraperUrlInput" class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg" placeholder="رابط القرار من adala.justice.gov.ma" @keydown.enter="importScraperUrls">
+          <button @click="importScraperUrls" class="px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition">إضافة</button>
+        </div>
+        <div x-show="scraperUrls.length > 0" class="space-y-1 mt-2">
+          <template x-for="(u, i) in scraperUrls" :key="i">
+            <div class="flex items-center gap-2 text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-1.5">
+              <span class="flex-1 truncate" x-text="u"></span>
+              <button @click="scraperUrls.splice(i, 1)" class="text-red-400 hover:text-red-600">✕</button>
+            </div>
+          </template>
+          <button @click="ingestAllScraperUrls" class="mt-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition" x-show="scraperUrls.length > 0" x-text="'استيراد الكل (' + scraperUrls.length + ')'"></button>
+        </div>
+      </div>
+
+      <!-- Scraper Results -->
+      <div x-show="scraperResults.length > 0" class="border-t border-gray-100 pt-3 mt-3">
+        <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+          <span>🔄 آخر تشغيل:</span>
+          <template x-for="r in scraperResults" :key="r.scraper">
+            <span :class="r.status === 'running' ? 'text-blue-600' : r.new > 0 ? 'text-green-600' : 'text-gray-400'" x-text="r.scraper + ': +' + r.new + ' جديد'"></span>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- History -->
   <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -116,9 +168,15 @@ function ingestionApp() {
     textInput: '',
     history: [],
     stats: {total: 0, completed: 0, failed: 0, by_type: {}},
+    scrapers: {},
+    scraperKeywords: {},
+    scraperUrlInput: '',
+    scraperUrls: [],
+    scraperResults: [],
 
     async init() {
       await this.refresh();
+      await this.loadScrapers();
     },
 
     async refresh() {
@@ -131,6 +189,63 @@ function ingestionApp() {
         this.stats = s;
       } catch(e) {
         console.error('Refresh error:', e);
+      }
+    },
+
+    async loadScrapers() {
+      try {
+        const res = await fetch('/api/scrapers');
+        this.scrapers = await res.json();
+        for (const name in this.scrapers) {
+          if (!this.scraperKeywords[name]) this.scraperKeywords[name] = '';
+        }
+      } catch(e) {
+        console.error('Scrapers load error:', e);
+      }
+    },
+
+    async runScraper(name) {
+      const keyword = this.scraperKeywords[name] || '';
+      const entry = {scraper: name, status: 'running', new: 0};
+      this.scraperResults.push(entry);
+      try {
+        const res = await fetch('/api/scrapers/run', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({scraper: name, keyword, max_items: 10}),
+        });
+        const data = await res.json();
+        entry.new = data.results?.new || 0;
+        entry.status = 'done';
+      } catch(e) {
+        entry.status = 'error';
+      }
+      this.loadScrapers();
+      this.refresh();
+      setTimeout(() => { this.scraperResults = []; }, 8000);
+    },
+
+    importScraperUrls() {
+      const url = this.scraperUrlInput.trim();
+      if (url && !this.scraperUrls.includes(url)) {
+        this.scraperUrls.push(url);
+        this.scraperUrlInput = '';
+      }
+    },
+
+    async ingestAllScraperUrls() {
+      if (this.scraperUrls.length === 0) return;
+      try {
+        const res = await fetch('/api/scrapers/ingest-urls', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({scraper: 'adala', urls: this.scraperUrls}),
+        });
+        const data = await res.json();
+        this.scraperUrls = [];
+        this.refresh();
+      } catch(e) {
+        console.error('URL ingest error:', e);
       }
     },
 

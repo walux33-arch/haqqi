@@ -307,3 +307,52 @@ async def ingestion_history(limit: int = 20):
 @router.get("/ingestion/stats")
 async def ingestion_stats():
     return ingestion_pipeline.get_stats()
+
+
+# ─── Scraper API ───
+
+from app.ingestion.scrapers.adala import SCRAPERS
+
+
+@router.get("/scrapers")
+async def list_scrapers():
+    return {
+        name: {
+            "name": s.name,
+            "label": s.label,
+            "base_url": s.base_url,
+            "stats": s.stats(),
+        }
+        for name, s in SCRAPERS.items()
+    }
+
+
+@router.post("/scrapers/run")
+async def run_scraper(data: dict):
+    """Run a specific scraper."""
+    name = data.get("scraper", "")
+    keyword = data.get("keyword", "")
+    max_items = min(data.get("max_items", 10), 50)
+    if name not in SCRAPERS:
+        raise HTTPException(status_code=400, detail=f"Scraper '{name}' غير معروف")
+    scraper = SCRAPERS[name]
+    results = scraper.scrape_and_ingest(keyword=keyword, max_items=max_items)
+    return {
+        "scraper": name,
+        "keyword": keyword,
+        "results": results,
+    }
+
+
+@router.post("/scrapers/ingest-urls")
+async def ingest_scraper_urls(data: dict):
+    """Ingest specific URLs from a scraper source."""
+    scraper_name = data.get("scraper", "adala")
+    urls = data.get("urls", [])
+    if scraper_name not in SCRAPERS:
+        raise HTTPException(status_code=400, detail=f"Scraper '{scraper_name}' غير معروف")
+    scraper = SCRAPERS[scraper_name]
+    if hasattr(scraper, "ingest_urls"):
+        results = scraper.ingest_urls(urls)
+        return {"results": results}
+    return {"error": "هذا المصدر لا يدعم استيراد الروابط يدوياً"}
