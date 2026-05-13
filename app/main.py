@@ -183,6 +183,14 @@ async def how_it_works(request: Request):
     user = get_user(request)
     return render("how_it_works.html", active="howitworks", user=user)
 
+@app.get("/admin/ingestion", response_class=HTMLResponse)
+async def admin_ingestion(request: Request):
+    user = get_user(request)
+    if not user:
+        return RedirectResponse(url="/auth/login")
+    return render("admin_ingestion.html", user=user)
+
+
 @app.get("/about", response_class=HTMLResponse)
 async def about(request: Request):
     user = get_user(request)

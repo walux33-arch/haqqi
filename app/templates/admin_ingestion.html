@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تغذية حقي - HaqiTech</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+{% include '_navbar.html' %}
+
+<main class="max-w-6xl mx-auto px-4 py-8" x-data="ingestionApp()" x-init="init()">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">تغذية حقي بالبيانات</h1>
+      <p class="text-sm text-gray-500 mt-1">رفع الوثائق القانونية — استخراج ← إخفاء المعطيات ← هيكلة ← فهرسة</p>
+    </div>
+    <div class="flex gap-2 text-xs">
+      <span class="bg-green-50 text-green-700 px-3 py-1.5 rounded-full border border-green-200" x-text="'تم: ' + stats.completed"></span>
+      <span class="bg-red-50 text-red-700 px-3 py-1.5 rounded-full border border-red-200" x-text="'فشل: ' + stats.failed"></span>
+      <span class="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full border border-blue-200" x-text="'المجموع: ' + stats.total"></span>
+    </div>
+  </div>
+
+  <!-- Upload Zone -->
+  <div class="bg-white rounded-2xl border-2 border-dashed border-gray-200 p-8 mb-6 text-center hover:border-green-300 transition-colors"
+       @dragover.prevent="dragging = true"
+       @dragleave.prevent="dragging = false"
+       @drop.prevent="handleDrop($event)">
+    <div class="mb-4">
+      <svg class="w-12 h-12 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+    </div>
+    <p class="text-gray-600 font-medium">أسقط الملفات هنا أو <label class="text-green-600 cursor-pointer hover:text-green-700">اختر<input type="file" class="hidden" id="fileInput" @change="handleFiles($event.target.files)" multiple accept=".pdf,.png,.jpg,.jpeg,.tiff,.docx,.txt"></label></p>
+    <p class="text-xs text-gray-400 mt-2">PDF, صور, DOCX, TXT — يتم إخفاء المعطيات الشخصية تلقائياً (Loi 09.08)</p>
+
+    <!-- Upload Progress -->
+    <div class="mt-4 space-y-2" x-show="uploads.length > 0">
+      <template x-for="up in uploads" :key="up.id">
+        <div class="bg-gray-50 rounded-xl px-4 py-2 flex items-center gap-3 text-sm">
+          <span class="text-gray-500" x-text="up.status === 'uploading' ? '📤' : up.status === 'processing' ? '⚙️' : up.status === 'done' ? '✅' : '❌'"></span>
+          <span class="text-gray-700 font-medium flex-1 truncate" x-text="up.name"></span>
+          <span class="text-xs text-gray-400" x-text="up.status"></span>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- URL & Text Import -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+    <div class="bg-white rounded-xl border border-gray-200 p-4">
+      <h3 class="text-sm font-bold text-gray-800 mb-3">🌐 استيراد من رابط</h3>
+      <form @submit.prevent="importUrl" class="flex gap-2">
+        <input type="url" x-model="urlInput" class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="https://adala.justice.gov.ma/..." required>
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition whitespace-nowrap">استيراد</button>
+      </form>
+      <p class="text-xs text-gray-400 mt-2">بوابة عدالة، الجريدة الرسمية، مواقع وزارية</p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 p-4">
+      <h3 class="text-sm font-bold text-gray-800 mb-3">📝 لصق نص مباشر</h3>
+      <form @submit.prevent="importText">
+        <textarea x-model="textInput" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent mb-2" rows="3" placeholder="الصق النص القانوني هنا..." required></textarea>
+        <button type="submit" class="px-4 py-2 bg-amber-600 text-white text-sm rounded-lg hover:bg-amber-700 transition">استيراد النص</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <h2 class="font-bold text-gray-800">سجل التغذية</h2>
+      <button @click="refresh" class="text-xs text-green-600 hover:text-green-700">🔄 تحديث</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 text-xs text-gray-500">
+          <tr>
+            <th class="text-right px-4 py-3">العنوان</th>
+            <th class="text-right px-4 py-3">النوع</th>
+            <th class="text-right px-4 py-3">المجال</th>
+            <th class="text-right px-4 py-3">المحكمة</th>
+            <th class="text-right px-4 py-3">الحالة</th>
+            <th class="text-right px-4 py-3">التاريخ</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <template x-for="doc in history" :key="doc.id">
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 text-gray-800 font-medium truncate max-w-[200px]" x-text="doc.title"></td>
+              <td class="px-4 py-3"><span class="text-xs px-2 py-0.5 rounded-full" :class="doc.doc_type === 'judgement' ? 'bg-purple-50 text-purple-700' : doc.doc_type === 'law' ? 'bg-blue-50 text-blue-700' : 'bg-gray-50 text-gray-600'" x-text="doc.doc_type"></span></td>
+              <td class="px-4 py-3 text-gray-600" x-text="doc.law_domain || '—'"></td>
+              <td class="px-4 py-3 text-gray-600" x-text="doc.court || '—'"></td>
+              <td class="px-4 py-3">
+                <span class="text-xs px-2 py-0.5 rounded-full" :class="doc.status === 'completed' ? 'bg-green-50 text-green-700' : doc.status === 'failed' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700'" x-text="doc.status"></span>
+              </td>
+              <td class="px-4 py-3 text-gray-400 text-xs" x-text="new Date(doc.created_at).toLocaleDate('ar-MA')"></td>
+            </tr>
+          </template>
+          <tr x-show="history.length === 0">
+            <td colspan="6" class="px-4 py-8 text-center text-gray-400">لا يوجد سجل بعد. ارفع ملفاً للبدء.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+function ingestionApp() {
+  return {
+    dragging: false,
+    uploads: [],
+    urlInput: '',
+    textInput: '',
+    history: [],
+    stats: {total: 0, completed: 0, failed: 0, by_type: {}},
+
+    async init() {
+      await this.refresh();
+    },
+
+    async refresh() {
+      try {
+        const [h, s] = await Promise.all([
+          fetch('/api/ingestion/history').then(r => r.json()),
+          fetch('/api/ingestion/stats').then(r => r.json()),
+        ]);
+        this.history = h.documents || [];
+        this.stats = s;
+      } catch(e) {
+        console.error('Refresh error:', e);
+      }
+    },
+
+    handleDrop(e) {
+      this.dragging = false;
+      this.handleFiles(e.dataTransfer.files);
+    },
+
+    handleFiles(files) {
+      for (const file of files) {
+        this.uploadFile(file);
+      }
+    },
+
+    async uploadFile(file) {
+      const entry = {id: Date.now() + Math.random(), name: file.name, status: 'uploading'};
+      this.uploads.push(entry);
+
+      try {
+        const form = new FormData();
+        form.append('file', file);
+        entry.status = 'processing';
+        const res = await fetch('/api/ingestion/upload', {method: 'POST', body: form});
+        const data = await res.json();
+        entry.status = data.status === 'completed' ? 'done' : 'failed';
+        if (data.error) entry.name += ' (' + data.error + ')';
+      } catch(e) {
+        entry.status = 'failed';
+        entry.name += ' (خطأ تقني)';
+      }
+
+      this.refresh();
+      setTimeout(() => { this.uploads = this.uploads.filter(u => u.id !== entry.id); }, 5000);
+    },
+
+    async importUrl() {
+      const url = this.urlInput;
+      if (!url) return;
+      const entry = {id: Date.now(), name: url.slice(0, 50) + '...', status: 'processing'};
+      this.uploads.push(entry);
+      this.urlInput = '';
+
+      try {
+        const res = await fetch('/api/ingestion/url', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({url}),
+        });
+        const data = await res.json();
+        entry.status = data.status === 'completed' ? 'done' : 'failed';
+      } catch(e) {
+        entry.status = 'failed';
+      }
+
+      this.refresh();
+      setTimeout(() => { this.uploads = this.uploads.filter(u => u.id !== entry.id); }, 5000);
+    },
+
+    async importText() {
+      const text = this.textInput;
+      if (!text) return;
+      const entry = {id: Date.now(), name: 'نص مباشر...', status: 'processing'};
+      this.uploads.push(entry);
+      this.textInput = '';
+
+      try {
+        const res = await fetch('/api/ingestion/text', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({text, title: 'نص منشور' + new Date().toLocaleDate('ar-MA')}),
+        });
+        const data = await res.json();
+        entry.status = data.status === 'completed' ? 'done' : 'failed';
+      } catch(e) {
+        entry.status = 'failed';
+      }
+
+      this.refresh();
+      setTimeout(() => { this.uploads = this.uploads.filter(u => u.id !== entry.id); }, 5000);
+    },
+  };
+}
+</script>
+</body>
+</html>

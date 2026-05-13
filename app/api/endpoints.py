@@ -1,5 +1,5 @@
-import json, os, re, uuid, time
-from fastapi import APIRouter, HTTPException, Query
+import json, os, re, uuid, time, tempfile
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 from app.agent.legal_agent import agent, groq_client
@@ -248,3 +248,62 @@ async def pleading_types():
 @router.get("/health")
 async def health():
     return {"status": "ok", "service": "haqqi"}
+
+
+# ─── Ingestion API ───
+
+from app.ingestion import pipeline as ingestion_pipeline
+
+
+@router.post("/ingestion/upload")
+async def ingest_upload(file: UploadFile = File(...)):
+    """Upload a document (PDF, image, TXT, DOCX) for ingestion."""
+    ext = os.path.splitext(file.filename or "doc.pdf")[1].lower()
+    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
+        content = await file.read()
+        tmp.write(content)
+        tmp_path = tmp.name
+
+    try:
+        doc = ingestion_pipeline.ingest_file(
+            tmp_path,
+            title=os.path.splitext(file.filename or "document")[0],
+        )
+        return doc.to_dict()
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+
+@router.post("/ingestion/url")
+async def ingest_url(data: dict):
+    """Import a document from a URL."""
+    url = data.get("url", "")
+    title = data.get("title", "")
+    if not url:
+        raise HTTPException(status_code=400, detail="URL مطلوب")
+    doc = ingestion_pipeline.ingest_url(url, title=title)
+    return doc.to_dict()
+
+
+@router.post("/ingestion/text")
+async def ingest_text(data: dict):
+    """Ingest pasted text directly."""
+    text = data.get("text", "")
+    title = data.get("title", "")
+    if not text:
+        raise HTTPException(status_code=400, detail="النص مطلوب")
+    doc = ingestion_pipeline.ingest_text(text, title=title)
+    return doc.to_dict()
+
+
+@router.get("/ingestion/history")
+async def ingestion_history(limit: int = 20):
+    return {"documents": ingestion_pipeline.get_history(limit=limit)}
+
+
+@router.get("/ingestion/stats")
+async def ingestion_stats():
+    return ingestion_pipeline.get_stats()
