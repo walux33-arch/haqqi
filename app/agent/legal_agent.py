@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from supabase import create_client, Client
 from app.data_gov import fetch_gov_stats
+from app.agent.legal_reasoning import qualifier
 
 load_dotenv()
 
@@ -53,21 +54,23 @@ DARIJA_PROMPT_SHORT = """نت حقي (Haqi)، العقل الرقمي لشركة
 1. المصادر أولاً: المعلومات القانونية لي كيجيوك فـ "المعلومات القانونية" هي مصدرك الوحيد. استشهد بيهم فكل مرة. ما تعطيش جواب من ذاكرتك ولا من التدريب ديالك.
 
 2. الهيكلة الإجبارية لكل جواب قانوني:
-   أ. **المقدمة**: سياق عام للموضوع (جملة وحدة)
-   ب. **الإطار القانوني**: ذكر القانون ورقم المادة والمقتضى بشكل دقيق
-   ج. **التحليل**: شرح كيفاش القانون كيطبق على الحالة ديال المستخدم
-   د. **الاجتهاد القضائي** (إذا كانت المعلومات موجودة): "قضت محكمة النقض بأن..."
+   أ. **المقدمة**: سياق المجال القانوني ودرجة التدرج المعياري
+   ب. **الإطار القانوني**: ذكر القانون ورقم المادة والمقتضى بصيغة "بناء على الفصل... من..."
+   ج. **التحليل**: شرح كيفاش القانون كيطبق على الحالة، مع استعمال المصطلحات التقنية (التكييف القانوني، المسؤولية التقصيرية/التعاقدية)
+   د. **الاجتهاد القضائي** (إذا كانت المعلومات موجودة): "قضت محكمة النقض بغرفتها التجارية بأن..."
    ه. **الخلاصة**: "الرأي القانوني" (Avis Juridique) بشكل واضح ومباشر
 
 3. الطول: بين 8 و 16 جملة. الجواب خاص يكون "شامل ومتكامل" — ما توجزش.
 
-4. اللغة: الدارجة المغربية القانونية. استعمل المصطلحات التقنية بالفصحى والفرنسية (Qualification juridique, Sécurité juridique, التكييف القانوني, محكمة النقض, Cour de Cassation, المادة 34 من القانون 49.16...)
+4. اللغة: الدارجة المغربية القانونية. استعمل المصطلحات التقنية بالفصحى والفرنسية (Qualification juridique, Sécurité juridique, التكييف القانوني, محكمة النقض, Cour de Cassation, المادة 34 من القانون 49.16, الدفع بعدم القبول, القوة الملزمة للعقد)
 
-5. النبرة: متزنة، رسمية، ثقة. ما تستعملش الرموز التعبيرية (emojis). ما تكتبش بزاف ديال "!" فالنهاية. ما تستعملش العبارات الدارجة العامة (بزاف، شي حاجة، هاداك...).
+5. النبرة: متزنة، رسمية، ثقة. ما تستعملش الرموز التعبيرية (emojis). ما تكتبش بزاف ديال "!" فالنهاية.
 
 6. التنوع: كل جواب خاص تكون عندو هيكلة مختلفة. تبدل فالصياغة، ترتيب الأقسام، وطريقة العرض.
 
-7. فالنهاية، قل: "خلاصة: [الرأي القانوني المختصر]. هاد معلومات عامة للاسترشاد، راجع محامي معتمد."\""""
+7. فالنهاية، قل: "خلاصة: [الرأي القانوني المختصر]. هاد معلومات عامة للاسترشاد، راجع محامي معتمد."
+
+8. إذا كان النص القانوني موسوماً بـ ⚠️ تنبيه (منسوخ أو ملغى)، وجب التنبيه عليه فالجواب.\""""
 
 CAPABILITIES_DESC = """أهلاً بك سيدي المؤسس. أنا **حقي (Haqi)**، العقل الرقمي لشركة HaqiTech. لست مجرد مساعد قانوني، بل منظومة ذكاء قانوني متكاملة مبنية على الهندسة المعمارية التالية:
 
@@ -296,6 +299,23 @@ class LegalAgent:
             except Exception as e:
                 print(f"Jurisprudence search error: {e}")
 
+        # 5. Apply norm hierarchy boost and check abrogation
+        qual = qualifier.qualify(question)
+        for r in combined:
+            law_key = r.get("law", "")
+            hierarchy_priority = LAW_PRIORITY.get(law_key, 8)
+            hierarchy_boost = (8 - hierarchy_priority) * 0.1
+            r["score"] = r.get("score", 0) + hierarchy_boost
+            r["domain"] = qual.get("primary_domain", "")
+            # Check abrogation
+            abrogated = qualifier.check_abrogation(law_key)
+            if abrogated:
+                r["abrogated"] = abrogated
+
+        # Sort: higher scores first, constitution always on top
+        combined.sort(key=lambda x: x.get("score", 0), reverse=True)
+        combined.sort(key=lambda x: 0 if x.get("law") == "constitution" else 1)
+
         return combined[:5]
 
     _laws_cache = None
@@ -481,25 +501,54 @@ class LegalAgent:
         return results[:3]
 
     def _build_messages(self, question: str, context, history=None):
-        messages = [{"role": "system", "content": DARIJA_PROMPT_SHORT}]
+        system = DARIJA_PROMPT_SHORT
+
+        # Add legal qualification context
+        qual = qualifier.qualify(question)
+        if qual.get("primary_domain") != "عام":
+            system += f"""
+
+الإطار القانوني المحدد (Qualification Juridique):
+- المجال القانوني: {qual['primary_domain']}
+- التدرج المعياري: {qual['norm_label']}
+- وصف: {qual['description']}"""
+
+        messages = [{"role": "system", "content": system}]
+
         if history and isinstance(history, list) and len(history) > 0:
             for msg in history:
                 if msg.get("role") in ("user", "assistant"):
                     messages.append(msg)
+
         if isinstance(context, list) and context:
-            context_text = "\n\n".join(
-                f"[{c['law']} - المادة {c['article']}]\n{c['content']}"
-                for c in context[:5]
-            )
-            user_content = f"""هاذي هي المعلومات القانونية لي خاصك تعتمد عليها فالجواب ديالك. استشهد بيهم بشكل دقيق وذكر رقم المادة والقانون فكل مرة:
+            parts = []
+            for c in context[:5]:
+                entry = f"[{c['law']} - المادة {c['article']}]\n{c['content']}"
+                # Check for abrogation
+                abrogated = c.get("abrogated") or qualifier.check_abrogation(c.get("law", ""))
+                if abrogated:
+                    entry += f"\n⚠️ تنبيه: هذا النص القانوني ({abrogated.get('status', 'ملغى')}) حل محله {abrogated.get('replaced_by', 'نص أحدث')} ({abrogated.get('replaced_date', '')})"
+                parts.append(entry)
+            context_text = "\n\n".join(parts)
+            user_content = f"""المجال القانوني: {qual['primary_domain']}
+
+المعلومات القانونية المستخرجة (استعملها حصراً فالجواب):
 
 {context_text}
 
-سؤال: {question}"""
+سؤال المستخدم:
+{question}
+
+صغ جوابك القانوني وفق الهيكلة التالية:
+1. مقدمة (سياق المجال القانوني)
+2. الإطار القانوني مع ذكر المواد والأرقام
+3. التحليل القانوني
+4. الخلاصة والرأي القانوني"""
         elif isinstance(context, str) and context.strip():
             user_content = f"المعلومات:\n{context}\n\nسؤال: {question}"
         else:
             user_content = f"سؤال: {question}"
+
         messages.append({"role": "user", "content": user_content})
         return messages
 
