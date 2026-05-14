@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الامتثال القانوني - حقي | HaqiTech</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+{% include '_navbar.html' %}
+
+<main class="max-w-4xl mx-auto px-4 py-8">
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+    <div class="bg-gradient-to-l from-gray-800 to-gray-900 px-6 py-6">
+      <h1 class="text-2xl font-bold text-white">شهادة الامتثال القانوني</h1>
+      <p class="text-gray-300 text-sm mt-1">Conformité Juridique & Protection des Données</p>
+    </div>
+
+    <div class="p-6 space-y-6">
+      <!-- Loi 09.08 -->
+      <div class="border border-green-100 rounded-xl p-5 bg-green-50/30">
+        <h2 class="font-bold text-gray-800">📜 الامتثال للقانون 09.08</h2>
+        <p class="text-xs text-gray-500 mt-1">حماية الأشخاص الذاتيين تجاه معالجة المعطيات ذات الطابع الشخصي</p>
+        <ul class="text-sm text-gray-600 mt-3 space-y-2">
+          <li>✅ <strong>إخفاء الهوية (Anonymization):</strong> جميع المعطيات الشخصية (CIN، الهاتف، البريد، ICE، العنوان) يتم إخفاؤها تلقائياً قبل الفهرسة</li>
+          <li>✅ <strong>الموافقة المسبقة:</strong> لا يتم جمع أي معطيات شخصية دون موافقة صريحة من المستخدم</li>
+          <li>✅ <strong>حق الوصول والتصحيح:</strong> المستخدم له الحق في طلب حذف أو تصحيح معطياته الشخصية في أي وقت</li>
+          <li>✅ <strong>تحديد الغرض:</strong> المعطيات تجمع فقط لغرض تحسين الخدمة القانونية ولا تستخدم لأغراض أخرى</li>
+          <li>✅ <strong>مبدأ التقليص:</strong> نجمع فقط المعطيات الضرورية لتقديم الخدمة</li>
+        </ul>
+      </div>
+
+      <!-- CNDP -->
+      <div class="border border-blue-100 rounded-xl p-5 bg-blue-50/30">
+        <h2 class="font-bold text-gray-800">🏛️ التصريح لدى CNDP</h2>
+        <p class="text-xs text-gray-500 mt-1">اللجنة الوطنية لمراقبة حماية المعطيات ذات الطابع الشخصي</p>
+        <p class="text-sm text-gray-600 mt-3">تلتزم HaqiTech بإجراء التصريح اللازم لدى CNDP وفق المادة 24 من القانون 09.08. رقم التصريح: قيد الإيداع.</p>
+      </div>
+
+      <!-- Loi 55.19 -->
+      <div class="border border-amber-100 rounded-xl p-5 bg-amber-50/30">
+        <h2 class="font-bold text-gray-800">⚖️ الامتثال للقانون 55.19</h2>
+        <p class="text-xs text-gray-500 mt-1">تبسيط المساطر والإجراءات الإدارية</p>
+        <ul class="text-sm text-gray-600 mt-3 space-y-2">
+          <li>✅ شرح المساطر الإدارية بلغة مبسطة (الدارجة + العربية + الأمازيغية)</li>
+          <li>✅ الإحالة على منصة "الرشادة" (Rachad.ma) للمتابعة الإلكترونية</li>
+          <li>✅ تحديد الوثائق المطلوبة والآجال القانونية بدقة لكل مسطرة</li>
+          <li>✅ التذكير بحقوق المرتفق وفق القانون 55.19</li>
+        </ul>
+      </div>
+
+      <!-- Security -->
+      <div class="border border-purple-100 rounded-xl p-5 bg-purple-50/30">
+        <h2 class="font-bold text-gray-800">🔐 الأمن السيبراني وحماية البيانات</h2>
+        <ul class="text-sm text-gray-600 mt-3 space-y-2">
+          <li>🔒 <strong>التشفير:</strong> جميع الاتصالات عبر HTTPS (TLS 1.3)</li>
+          <li>🔒 <strong>المصادقة:</strong> JWT tokens + Supabase Auth مع صلاحيات محددة</li>
+          <li>🔒 <strong>التخزين:</strong> قاعدة بيانات مشفرة — ChromaDB محلية</li>
+          <li>🔒 <strong>التدقيق:</strong> سجل وصول (Access Log) لجميع العمليات</li>
+          <li>🔒 <strong>النسخ الاحتياطي:</strong> نسخ يومي لجميع البيانات</li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="bg-gray-50 rounded-xl p-4 text-center">
+        <p class="text-sm text-gray-600">لمزيد من المعلومات حول الامتثال القانوني:</p>
+        <p class="text-sm font-bold text-gray-800 mt-1">contact@haqqi.ma | HaqiTech Inc.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% include '_footer.html' %}
+</body>
+</html>

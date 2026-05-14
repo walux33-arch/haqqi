@@ -13,7 +13,37 @@ load_dotenv()
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 env = Environment(loader=FileSystemLoader(template_dir))
 
-app = FastAPI(title="حقي - Haqqi", version="1.0.0")
+app = FastAPI(
+    title="حقي (Haqqi) - Moroccan Legal AI Platform",
+    description="""المنصة القانونية المغربية بالذكاء الاصطناعي.
+    - استشارات قانونية بالدارجة والعربية والأمازيغية
+    - فهرسة شاملة لأكثر من 5,757 مادة قانونية
+    - تحليل الاجتهاد القضائي لمحكمة النقض
+    - تبسيط المساطر الإدارية وفق القانون 55.19
+    - API عمومي لدمج الخدمات القانونية
+    
+    جهة الاتصال: HaqiTech Inc. | https://haqqi.ma
+    التوافق: القانون 09.08 (حماية المعطيات) | القانون 55.19 (تبسيط المساطر)
+    """,
+    version="2.0.0",
+    contact={
+        "name": "الواليد فوزي - المؤسس",
+        "email": "contact@haqqi.ma",
+        "url": "https://haqqi.ma",
+    },
+    license_info={
+        "name": "HaqiTech Proprietary",
+        "url": "https://haqqi.ma/license",
+    },
+    openapi_tags=[
+        {"name": "Chat", "description": "الاستشارة القانونية بالذكاء الاصطناعي"},
+        {"name": "Ingestion", "description": "تغذية النظام بالبيانات القانونية"},
+        {"name": "Scrapers", "description": "السكربيرات التلقائية للمصادر الرسمية"},
+        {"name": "Legal Data", "description": "البيانات القانونية (الأحكام، العقود، المقالات)"},
+        {"name": "Admin", "description": "واجهة الإدارة والإحصائيات"},
+        {"name": "Health", "description": "فحص صحة النظام"},
+    ],
+)
 
 from fastapi.staticfiles import StaticFiles
 
@@ -189,6 +219,34 @@ async def admin_ingestion(request: Request):
     if not user:
         return RedirectResponse(url="/auth/login")
     return render("admin_ingestion.html", user=user)
+
+
+@app.get("/ministere", response_class=HTMLResponse)
+async def ministere_page(request: Request):
+    """صفحة مخصصة لوزارة الانتقال الرقمي - التقييم الاستراتيجي."""
+    from app.agent.legal_agent import agent
+    from app.agent.modules import list_modules
+    stats = agent.admin_stats()
+    modules = list_modules()
+    return render("ministere.html", stats=stats, modules=modules)
+
+
+@app.get("/ministere/conformite", response_class=HTMLResponse)
+async def conformite_page(request: Request):
+    """صفحة الامتثال للقانون 09.08 والمتطلبات القانونية."""
+    return render("conformite.html")
+
+
+@app.get("/api/public", response_class=HTMLResponse)
+async def api_documentation(request: Request):
+    """صفحة توثيق API العمومي للوزارات."""
+    return render("api_docs.html")
+
+
+@app.get("/contact", response_class=HTMLResponse)
+async def contact_page(request: Request):
+    user = get_user(request)
+    return render("contact.html", user=user)
 
 
 @app.get("/about", response_class=HTMLResponse)

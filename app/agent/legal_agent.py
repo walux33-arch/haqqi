@@ -10,6 +10,8 @@ from openai import OpenAI
 from supabase import create_client, Client
 from app.data_gov import fetch_gov_stats
 from app.agent.legal_reasoning import qualifier
+from app.agent.modules import match_modules
+from app.agent.prompts.amazigh import is_amazigh, enhance_system_prompt, AMAZIGH_GREETING
 
 load_dotenv()
 
@@ -173,6 +175,16 @@ class LegalAgent:
             return self._ask_groq(question, context, history)
         if self._is_about_self(question):
             return self._ask_groq(question, CAPABILITIES_DESC, history)
+        # Check specialized modules first
+        modules = match_modules(question)
+        if modules:
+            for module in modules:
+                try:
+                    result = module.process(question)
+                    if result:
+                        return result
+                except Exception:
+                    pass
         ck = self._cache_key(question)
         if history is None and ck in _answer_cache:
             return _answer_cache[ck]
@@ -192,6 +204,17 @@ class LegalAgent:
         if self._is_about_self(question):
             yield from self._ask_groq_stream(question, CAPABILITIES_DESC, history)
             return
+        # Check specialized modules first
+        modules = match_modules(question)
+        if modules:
+            for module in modules:
+                try:
+                    result = module.process(question)
+                    if result:
+                        yield result
+                        return
+                except Exception:
+                    pass
         ck = self._cache_key(question)
         if history is None and ck in _answer_cache:
             yield _answer_cache[ck]
@@ -502,6 +525,9 @@ class LegalAgent:
 
     def _build_messages(self, question: str, context, history=None):
         system = DARIJA_PROMPT_SHORT
+        # Amazigh detection
+        if is_amazigh(question):
+            system = enhance_system_prompt(system)
 
         # Add legal qualification context
         qual = qualifier.qualify(question)

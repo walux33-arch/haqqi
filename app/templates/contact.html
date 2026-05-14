@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اتصل بنا - حقي | HaqiTech</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+{% include '_navbar.html' %}
+
+<main class="max-w-3xl mx-auto px-4 py-12">
+  <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+    <div class="text-center mb-8">
+      <span class="inline-block bg-green-50 text-green-700 text-xs px-3 py-1 rounded-full mb-3">📬 جميع المراسلات</span>
+      <h1 class="text-2xl font-bold text-gray-900">تواصل مع HaqiTech</h1>
+      <p class="text-gray-500 text-sm mt-2">للشراكات الوزارية والمؤسساتية</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div class="border border-gray-100 rounded-xl p-5 text-center hover:border-green-200 transition-all">
+        <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-3">📧</div>
+        <h3 class="font-bold text-gray-800">البريد الإلكتروني</h3>
+        <p class="text-sm text-green-700 mt-1">contact@haqqi.ma</p>
+        <p class="text-xs text-gray-400 mt-1">الرد خلال 24 ساعة</p>
+      </div>
+      <div class="border border-gray-100 rounded-xl p-5 text-center hover:border-green-200 transition-all">
+        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-3">📱</div>
+        <h3 class="font-bold text-gray-800">WhatsApp Business</h3>
+        <p class="text-sm text-blue-700 mt-1">+212 6XX-XXXXXX</p>
+        <p class="text-xs text-gray-400 mt-1">رد فوري</p>
+      </div>
+      <div class="border border-gray-100 rounded-xl p-5 text-center hover:border-green-200 transition-all sm:col-span-2">
+        <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mx-auto mb-3">🏢</div>
+        <h3 class="font-bold text-gray-800">المؤسس والرئيس</h3>
+        <p class="text-sm text-gray-700 mt-1"><strong>الواليد فوزي</strong> — الواليد فوزي</p>
+        <p class="text-xs text-gray-500 mt-1">HaqiTech Inc. — الداخلة، المغرب</p>
+      </div>
+    </div>
+
+    <div class="mt-8 bg-gray-50 rounded-xl p-5 text-center">
+      <p class="text-sm text-gray-600">للوزارات والمؤسسات العمومية: نستقبل طلبات الاجتماع التقييمي والشراكة</p>
+      <p class="text-xs text-gray-400 mt-1">نمتثل للقانون 09.08 لحماية المعطيات والقانون 55.19 لتبسيط المساطر</p>
+    </div>
+  </div>
+</main>
+
+{% include '_footer.html' %}
+</body>
+</html>

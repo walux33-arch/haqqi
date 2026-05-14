@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التقييم الاستراتيجي - حقي | HaqiTech</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');*{font-family:'Tajawal',sans-serif;}</style>
+</head>
+<body class="bg-gray-50">
+{% include '_navbar.html' %}
+
+<main class="max-w-6xl mx-auto px-4 py-8">
+  <!-- Header Sector -->
+  <div class="bg-gradient-to-l from-green-700 to-green-800 rounded-3xl px-8 py-10 mb-8 text-white shadow-lg">
+    <div class="max-w-3xl">
+      <span class="inline-block bg-white/20 text-white text-xs px-3 py-1 rounded-full mb-4">🇲🇦 منصة وطنية للذكاء القانوني</span>
+      <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight">حقي (Haqqi)</h1>
+      <p class="text-green-100 text-lg mt-2">المنصة المغربية للذكاء القانوني — العقل الرقمي للعدالة والإدارة</p>
+      <div class="flex flex-wrap gap-4 mt-6">
+        <span class="bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-sm">📊 {{ stats.total_articles }}+ مادة قانونية</span>
+        <span class="bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-sm">⚖️ {{ stats.jurisprudence }}+ قرار قضائي</span>
+        <span class="bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-sm">🌐 3 لغات: العربية · الدارجة · الأمازيغية</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Strategic Alignment Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+    <div class="bg-white rounded-2xl border border-blue-100 p-5 shadow-sm">
+      <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-3">📋</div>
+      <h3 class="font-bold text-gray-800 text-sm">مواءمة القانون 55.19</h3>
+      <p class="text-xs text-gray-500 mt-1">تبسيط المساطر الإدارية عبر الذكاء الاصطناعي — دعم مباشر لمنصة الرشادة</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-green-100 p-5 shadow-sm">
+      <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center mb-3">🛡️</div>
+      <h3 class="font-bold text-gray-800 text-sm">الامتثال للقانون 09.08</h3>
+      <p class="text-xs text-gray-500 mt-1">حماية المعطيات الشخصية — إخفاء الهوية تلقائياً — التوافق مع CNDP</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-purple-100 p-5 shadow-sm">
+      <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mb-3">🗣️</div>
+      <h3 class="font-bold text-gray-800 text-sm">الأمازيغية لغة رسمية</h3>
+      <p class="text-xs text-gray-500 mt-1">دعم حروف Tifinagh — المصطلحات القانونية بالأمازيغية — تفعيل الفصل 5 من الدستور</p>
+    </div>
+  </div>
+
+  <!-- Modules -->
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-gray-100">
+      <h2 class="font-bold text-gray-800">الوحدات المتخصصة (Modules Stratégiques)</h2>
+      <p class="text-xs text-gray-500 mt-1">الوحدات القابلة للتكامل مع البنية التحتية للوزارات</p>
+    </div>
+    <div class="p-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {% for m in modules %}
+        <div class="border border-gray-100 rounded-xl p-4 hover:border-green-200 transition-all">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            <h3 class="font-bold text-sm text-gray-800">{{ m.label }}</h3>
+          </div>
+          <p class="text-xs text-gray-500">{{ m.description }}</p>
+        </div>
+        {% endfor %}
+        <div class="border border-gray-100 rounded-xl p-4 hover:border-green-200 transition-all">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            <h3 class="font-bold text-sm text-gray-800">🧩 API عمومي (Public API)</h3>
+          </div>
+          <p class="text-xs text-gray-500">OpenAPI/Swagger — REST — Webhook — لتكامل الوزارات والجماعات الترابية</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Sovereignty -->
+  <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100">
+      <h2 class="font-bold text-gray-800">🇲🇦 السيادة التكنولوجية (Souveraineté Numérique)</h2>
+    </div>
+    <div class="p-5">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="border border-gray-100 rounded-xl p-4 text-center">
+          <div class="text-2xl font-extrabold text-green-700">المغرب</div>
+          <div class="text-xs text-gray-500 mt-1">الاستضافة على خوادم مغربية (MedZI / N+One)</div>
+        </div>
+        <div class="border border-gray-100 rounded-xl p-4 text-center">
+          <div class="text-2xl font-extrabold text-green-700">البيانات السيادية</div>
+          <div class="text-xs text-gray-500 mt-1">جميع النصوص القانونية من الجريدة الرسمية وعدالة</div>
+        </div>
+        <div class="border border-gray-100 rounded-xl p-4 text-center">
+          <div class="text-2xl font-extrabold text-green-700">Open Source Ready</div>
+          <div class="text-xs text-gray-500 mt-1">إمكانية النشر في المصادر المفتوحة للوزارات</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="mt-8 bg-gradient-to-l from-blue-700 to-blue-800 rounded-2xl px-6 py-6 text-center shadow-sm">
+    <h3 class="text-white font-bold text-lg">للاتصال بالشراكة مع الوزارة</h3>
+    <p class="text-blue-100 text-sm mt-1">HaqiTech Inc. — الواليد فوزي، المؤسس</p>
+    <a href="/contact" class="inline-block mt-3 bg-white text-blue-800 px-6 py-2 rounded-xl text-sm font-bold hover:bg-blue-50 transition">طلب اجتماع تقييمي</a>
+  </div>
+</main>
+
+{% include '_footer.html' %}
+</body>
+</html>
