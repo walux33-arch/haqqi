@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from supabase import create_client, Client
 from app.data_gov import fetch_gov_stats
-from app.agent.legal_reasoning import qualifier
+from app.agent.legal_reasoning import qualifier, LAW_PRIORITY
 from app.agent.modules import match_modules
 from app.agent.prompts.amazigh import is_amazigh, enhance_system_prompt, AMAZIGH_GREETING
 
@@ -118,7 +118,7 @@ def _load_embedding_model():
             return _embedding_model
     try:
         from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer("all-MiniLM-L6-v2")
+        model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
         with _embedding_lock:
             _embedding_model = model
     except Exception as e:
@@ -132,9 +132,37 @@ def _get_embedding_model():
     _embedding_event.wait(timeout=120)
     return _embedding_model
 
+# ─── Reranker model (cross-encoder, loaded lazily) ───
+_reranker_model = None
+_reranker_lock = threading.Lock()
+_reranker_event = threading.Event()
+
+def _load_reranker_model():
+    global _reranker_model
+    with _reranker_lock:
+        if _reranker_model is not None:
+            _reranker_event.set()
+            return _reranker_model
+    try:
+        from sentence_transformers import CrossEncoder
+        model = CrossEncoder("cross-encoder/mmarco-mMiniLMv2-L12-H384-v1", max_length=512)
+        with _reranker_lock:
+            _reranker_model = model
+    except Exception as e:
+        print(f"Reranker model load error: {e}")
+    _reranker_event.set()
+    return _reranker_model
+
+def _get_reranker_model():
+    if _reranker_model is not None:
+        return _reranker_model
+    _reranker_event.wait(timeout=120)
+    return _reranker_model
+
 # Start loading in background
 import threading
 threading.Thread(target=_load_embedding_model, daemon=True).start()
+threading.Thread(target=_load_reranker_model, daemon=True).start()
 
 
 class LegalAgent:
@@ -153,7 +181,7 @@ class LegalAgent:
 
     def _get_collection(self):
         if self._collection is None:
-            self._collection = chroma_client.get_or_create_collection("moroccan_laws")
+            self._collection = chroma_client.get_or_create_collection("moroccan_laws_v2")
         return self._collection
 
     def _cache_key(self, question: str) -> str:
@@ -230,11 +258,145 @@ class LegalAgent:
                 oldest = next(iter(_answer_cache))
                 del _answer_cache[oldest]
 
+    @staticmethod
+    def _rrf_merge(results_keyword, results_vector, k=60):
+        """Reciprocal Rank Fusion: merge two ranked result lists."""
+        scores = {}
+        for rank, r in enumerate(results_keyword):
+            doc_id = f"{r['law']}_{r['article']}"
+            if doc_id not in scores:
+                scores[doc_id] = {
+                    "law": r["law"], "article": r["article"],
+                    "chapter": r.get("chapter", ""), "content": r["content"],
+                    "rrf_score": 0.0,
+                }
+            scores[doc_id]["rrf_score"] += 1.0 / (k + rank)
+        for rank, r in enumerate(results_vector):
+            doc_id = f"{r['law']}_{r['article']}"
+            if doc_id not in scores:
+                scores[doc_id] = {
+                    "law": r["law"], "article": r["article"],
+                    "chapter": r.get("chapter", ""), "content": r["content"],
+                    "rrf_score": 0.0,
+                }
+            scores[doc_id]["rrf_score"] += 1.0 / (k + rank)
+        merged = sorted(scores.values(), key=lambda x: x["rrf_score"], reverse=True)
+        for item in merged:
+            item["score"] = item["rrf_score"]
+        return merged
+
+    def _search_chromadb(self, question: str, n_results=20):
+        """Search ChromaDB vector store."""
+        collection = self._get_collection()
+        embedding = self._generate_embedding(question)
+        if embedding is None:
+            return []
+        chroma_results = collection.query(
+            query_embeddings=[embedding],
+            n_results=n_results,
+        )
+        results = []
+        if chroma_results["documents"] and chroma_results["documents"][0]:
+            for i, doc in enumerate(chroma_results["documents"][0]):
+                dist = chroma_results["distances"][0][i] if chroma_results.get("distances") else 1.0
+                if dist < 1.5:
+                    meta = chroma_results["metadatas"][0][i] if chroma_results["metadatas"] else {}
+                    results.append({
+                        "law": meta.get("law", "unknown"),
+                        "article": meta.get("article_number", ""),
+                        "chapter": meta.get("chapter", ""),
+                        "content": doc,
+                        "score": 1.0 - dist,
+                    })
+        return results
+
+    def _lexical_rerank(self, question: str, candidates: list, top_k=15):
+        """Fast lexical reranker: position, proximity, phrase density, article/law match."""
+        import re
+        q_words = self._extract_words(question)
+        q_lower = question.lower()
+
+        art_match = re.search(r"(?:المادة|الفصل|article)\s*(\d+)", question, re.IGNORECASE)
+        target_art = art_match.group(1) if art_match else None
+
+        target_law = None
+        for law_key, law_name in LAW_NAMES.items():
+            if law_name in question:
+                target_law = law_key
+                break
+
+        for r in candidates:
+            content = r.get("content", "")
+            content_lower = content.lower()
+
+            lexical_score = 0.0
+
+            if target_art and re.search(rf"(?:المادة|الفصل)\s*{target_art}", content):
+                lexical_score += 2.0
+
+            if target_law and r.get("law") == target_law:
+                lexical_score += 0.5
+
+            bigram_matches = 0
+            for i in range(len(q_words) - 1):
+                bigram = q_words[i] + " " + q_words[i + 1]
+                if bigram in content_lower:
+                    bigram_matches += 1
+            if len(q_words) > 1:
+                lexical_score += (bigram_matches / max(len(q_words) - 1, 1)) * 0.8
+
+            first_match_pos = len(content)
+            for w in q_words:
+                pos = content_lower.find(w)
+                if pos != -1 and pos < first_match_pos:
+                    first_match_pos = pos
+            lexical_score += max(0, 1.0 - first_match_pos / max(len(content), 1)) * 0.3
+
+            content_words = set(self._extract_words(content))
+            coverage = len(set(q_words) & content_words) / max(len(q_words), 1)
+            lexical_score += coverage * 0.4
+
+            r["lexical_score"] = lexical_score
+
+        for r in candidates:
+            r["rerank_score"] = r.get("rrf_score", 0) + r.get("lexical_score", 0)
+
+        candidates.sort(key=lambda x: x.get("rerank_score", 0), reverse=True)
+        return candidates[:top_k]
+
+    def _neural_rerank(self, question: str, candidates: list, top_k=10):
+        """Neural reranker using cross-encoder (multilingual, supports Arabic)."""
+        try:
+            model = _get_reranker_model()
+            if model is None:
+                return self._lexical_rerank(question, candidates, top_k)
+
+            pairs = [(question, c.get("content", "")[:512]) for c in candidates]
+            scores = model.predict(pairs, show_progress_bar=False)
+
+            for i, r in enumerate(candidates):
+                r["neural_score"] = float(scores[i])
+                r["rerank_score"] = r.get("rrf_score", 0) * 0.3 + float(scores[i]) * 0.7
+
+            candidates.sort(key=lambda x: x.get("rerank_score", 0), reverse=True)
+            return candidates[:top_k]
+        except Exception as e:
+            print(f"Neural rerank error: {e}, falling back to lexical")
+            return self._lexical_rerank(question, candidates, top_k)
+
+    def _rerank(self, question: str, candidates: list, top_k=5):
+        """Two-stage reranker: neural first, fallback to lexical."""
+        if len(candidates) <= top_k:
+            return candidates
+
+        neural_top = self._neural_rerank(question, candidates, top_k=top_k * 2)
+        return self._lexical_rerank(question, neural_top, top_k=top_k)
+
     def _search_all(self, question: str):
         seen = set()
         combined = []
 
-        # 0. Direct article number lookup (highest priority)
+        # 0. Direct article number lookup (highest priority, bypasses RRF)
         try:
             article_results = self._search_by_article_number(question)
             for r in article_results:
@@ -245,101 +407,62 @@ class LegalAgent:
         except Exception as e:
             print(f"Article number search error: {e}")
 
-        # 1. JSON keyword search (best for Arabic legal content)
+        # 1. Hybrid: keyword + vector search with RRF merge
         try:
-            json_results = self._search_json_files(question)
-            for r in json_results:
+            keyword_results = self._search_json_files(question, top_k=30)
+            vector_results = self._search_chromadb(question, n_results=30)
+            merged = self._rrf_merge(keyword_results, vector_results)
+            for r in merged:
                 doc_id = f"{r['law']}_{r['article']}"
                 if doc_id not in seen:
                     seen.add(doc_id)
                     combined.append(r)
         except Exception as e:
-            print(f"JSON search error: {e}")
-
-        # 2. Supplement with close ChromaDB vector matches if < 3 results
-        if len(combined) < 3:
+            print(f"Hybrid search error: {e}")
             try:
-                collection = self._get_collection()
-                embedding = self._generate_embedding(question)
-                chroma_results = collection.query(
-                    query_embeddings=[embedding],
-                    n_results=5,
-                )
-                if chroma_results["documents"] and chroma_results["documents"][0]:
-                    for i, doc in enumerate(chroma_results["documents"][0]):
-                        dist = chroma_results["distances"][0][i] if chroma_results.get("distances") else 1.0
-                        if dist < 1.2:
-                            meta = chroma_results["metadatas"][0][i] if chroma_results["metadatas"] else {}
-                            doc_id = f"{meta.get('law','')}_{meta.get('article_number','')}"
-                            if doc_id not in seen:
-                                seen.add(doc_id)
-                                combined.append({
-                                    "law": meta.get("law", "unknown"),
-                                    "article": meta.get("article_number", ""),
-                                    "chapter": meta.get("chapter", ""),
-                                    "content": doc,
-                                })
-            except Exception as e:
-                print(f"ChromaDB search error: {e}")
+                keyword_results = self._search_json_files(question, top_k=5)
+                for r in keyword_results:
+                    doc_id = f"{r['law']}_{r['article']}"
+                    if doc_id not in seen:
+                        seen.add(doc_id)
+                        combined.append(r)
+            except Exception as e2:
+                print(f"Keyword fallback error: {e2}")
 
-        # 3. Supabase as last resort
-        if not combined and supabase:
-            try:
-                embedding = self._generate_embedding(question)
-                rpc_result = supabase.rpc(
-                    "match_documents",
-                    {"query_embedding": embedding, "match_threshold": 0.3, "match_count": 5}
-                ).execute()
-                if rpc_result.data:
-                    for doc in rpc_result.data:
-                        meta = doc.get("metadata", {})
-                        if isinstance(meta, str):
-                            try:
-                                meta = json.loads(meta)
-                            except (json.JSONDecodeError, TypeError):
-                                meta = {}
-                        doc_id = f"{meta.get('law','')}_{meta.get('article_number','')}"
-                        if doc_id not in seen:
-                            seen.add(doc_id)
-                            combined.append({
-                                "law": meta.get("law", "unknown"),
-                                "article": meta.get("article_number", ""),
-                                "chapter": meta.get("chapter", ""),
-                                "content": doc.get("content", ""),
-                            })
-            except Exception as e:
-                print(f"Supabase search error: {e}")
+        # 2. Rerank: RRF results → reranker → top candidates
+        reranked = self._rerank(question, combined, top_k=10)
 
-        # 4. Search jurisprudence (court decisions)
-        if len(combined) < 3:
+        # 3. Supplement with jurisprudence if few results
+        if len(reranked) < 3:
             try:
                 jur_results = self._search_jurisprudence(question)
                 for r in jur_results:
                     doc_id = f"jur_{r['article']}"
                     if doc_id not in seen:
                         seen.add(doc_id)
-                        combined.append(r)
+                        reranked.append(r)
             except Exception as e:
                 print(f"Jurisprudence search error: {e}")
 
         # 5. Apply norm hierarchy boost and check abrogation
         qual = qualifier.qualify(question)
-        for r in combined:
+        for r in reranked:
             law_key = r.get("law", "")
             hierarchy_priority = LAW_PRIORITY.get(law_key, 8)
-            hierarchy_boost = (8 - hierarchy_priority) * 0.1
-            r["score"] = r.get("score", 0) + hierarchy_boost
+            hierarchy_boost = (8 - hierarchy_priority) * 0.05
+            rrf = r.get("rrf_score", 0)
+            rn = r.get("rerank_score", r.get("rrf_score", r.get("score", 0)))
+            r["score"] = rn + hierarchy_boost
             r["domain"] = qual.get("primary_domain", "")
-            # Check abrogation
             abrogated = qualifier.check_abrogation(law_key)
             if abrogated:
                 r["abrogated"] = abrogated
 
-        # Sort: higher scores first, constitution always on top
-        combined.sort(key=lambda x: x.get("score", 0), reverse=True)
-        combined.sort(key=lambda x: 0 if x.get("law") == "constitution" else 1)
+        # Sort: constitution first, then by score
+        reranked.sort(key=lambda x: x.get("score", 0), reverse=True)
+        reranked.sort(key=lambda x: 0 if x.get("law") == "constitution" else 1)
 
-        return combined[:5]
+        return reranked[:5]
 
     _laws_cache = None
     _laws_by_number = None
@@ -419,7 +542,7 @@ class LegalAgent:
                     }]
         return []
 
-    def _search_json_files(self, question: str):
+    def _search_json_files(self, question: str, top_k=20):
         all_articles = self._load_all_laws()
         q_words = self._extract_words(question)
         if not q_words:
@@ -452,7 +575,7 @@ class LegalAgent:
                 "score": score,
             })
         results.sort(key=lambda x: x["score"], reverse=True)
-        return results[:5]
+        return results[:top_k]
 
     def _load_jurisprudence(self):
         if LegalAgent._jurisprudence_cache is not None:
@@ -628,11 +751,6 @@ class LegalAgent:
         stats = {"total_articles": 0, "laws": {}, "jurisprudence": 0}
         for law_key, law_name in LAW_NAMES.items():
             stats["laws"][law_key] = {"name": law_name, "articles": 0}
-        try:
-            collection = chroma_client.get_collection("moroccan_laws")
-            stats["total_articles"] = collection.count()
-        except Exception:
-            pass
         laws_dir = os.path.join(os.path.dirname(__file__), "..", "..", "data", "laws")
         if os.path.isdir(laws_dir):
             total = 0
@@ -650,8 +768,7 @@ class LegalAgent:
                     total += count
                 except (json.JSONDecodeError, FileNotFoundError):
                     pass
-            if stats["total_articles"] == 0:
-                stats["total_articles"] = total
+            stats["total_articles"] = total
         jur_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "judgements", "juricaf_decisions.json")
         if os.path.exists(jur_path):
             try:
@@ -661,6 +778,13 @@ class LegalAgent:
             except (json.JSONDecodeError, FileNotFoundError):
                 pass
         stats["gov"] = fetch_gov_stats()
+        # Ingestion pipeline stats
+        try:
+            from app.ingestion.pipeline import ingestion_pipeline
+            ingest = ingestion_pipeline.get_stats()
+            stats["ingestion"] = ingest
+        except Exception:
+            stats["ingestion"] = {"total": 0, "completed": 0, "failed": 0, "by_type": {}}
         return stats
 
 

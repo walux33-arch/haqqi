@@ -2,18 +2,32 @@ services:
   app:
     build: .
     ports:
-      - "8000:8000"
+      - "8000"
     env_file: .env
     volumes:
       - chroma_data:/app/chroma_db
-      - ./data:/app/data:ro
+      - ./data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 15s
+      start_period: 30s
+
+  caddy:
+    image: caddy:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   chroma_data:
+  caddy_data:

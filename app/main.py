@@ -77,6 +77,11 @@ app.include_router(api_router, prefix="/api")
 from app.whatsapp.routes import router as whatsapp_router
 app.include_router(whatsapp_router, prefix="/api")
 
+from app.accounting.router import router as accounting_router
+app.include_router(accounting_router)
+
+from app.subscriptions.plans import list_plans
+
 # ─── SEO & Static Pages ───
 
 @app.get("/robots.txt", response_class=PlainTextResponse)
@@ -133,7 +138,8 @@ def get_user(request: Request):
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     user = get_user(request)
-    return render("index.html", user=user)
+    ga_id = os.environ.get("GA_ID", "")
+    return render("index.html", user=user, ga_id=ga_id)
 
 
 @app.get("/admin", response_class=HTMLResponse)
@@ -188,11 +194,6 @@ async def dashboard(request: Request):
     with open(path, "r", encoding="utf-8") as f:
         return HTMLResponse(f.read())
 
-@app.get("/pricing", response_class=HTMLResponse)
-async def pricing(request: Request):
-    user = get_user(request)
-    return render("index.html", user=user)
-
 @app.get("/cv", response_class=HTMLResponse)
 async def cv(request: Request):
     user = get_user(request)
@@ -242,6 +243,17 @@ async def api_documentation(request: Request):
     """صفحة توثيق API العمومي للوزارات."""
     return render("api_docs.html")
 
+
+@app.get("/comptabilite", response_class=HTMLResponse)
+async def comptabilite_page(request: Request):
+    user = get_user(request)
+    return render("accounting/dashboard.html", user=user)
+
+@app.get("/pricing", response_class=HTMLResponse)
+async def pricing_page(request: Request):
+    user = get_user(request)
+    plans = list_plans()
+    return render("pricing.html", user=user, plans=plans)
 
 @app.get("/contact", response_class=HTMLResponse)
 async def contact_page(request: Request):

@@ -18,7 +18,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
     sys.exit(1)
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-model = SentenceTransformer("all-MiniLM-L6-v2")
+model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "laws")
 

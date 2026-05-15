@@ -1,0 +1,284 @@
+{% extends "saas_base.html" %}
+{% block title %}المحاسبة - حقي{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
+      <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="text-2xl font-extrabold text-gray-900">المحاسبة الذكية</h1>
+      <p class="text-gray-500 text-sm">متوافق مع النظام الضريبي المغربي — Loi 16.23</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex gap-2 mb-6 border-b border-gray-200" x-data="{ tab: 'ir' }">
+    <button @click="tab='ir'" :class="tab==='ir'?'border-emerald-600 text-emerald-700':'border-transparent text-gray-500 hover:text-gray-700'" class="px-4 py-2 text-sm font-medium border-b-2 transition-colors">حساب IR</button>
+    <button @click="tab='is'" :class="tab==='is'?'border-emerald-600 text-emerald-700':'border-transparent text-gray-500 hover:text-gray-700'" class="px-4 py-2 text-sm font-medium border-b-2 transition-colors">حساب IS</button>
+    <button @click="tab='tva'" :class="tab==='tva'?'border-emerald-600 text-emerald-700':'border-transparent text-gray-500 hover:text-gray-700'" class="px-4 py-2 text-sm font-medium border-b-2 transition-colors">TVA</button>
+    <button @click="tab='facture'" :class="tab==='facture'?'border-emerald-600 text-emerald-700':'border-transparent text-gray-500 hover:text-gray-700'" class="px-4 py-2 text-sm font-medium border-b-2 transition-colors">الفاتورة</button>
+    <button @click="tab='simulation'" :class="tab==='simulation'?'border-emerald-600 text-emerald-700':'border-transparent text-gray-500 hover:text-gray-700'" class="px-4 py-2 text-sm font-medium border-b-2 transition-colors">محاكاة</button>
+  </div>
+
+  <!-- IR Calculator -->
+  <div x-show="tab==='ir'" x-cloak>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">حساب ضريبة الدخل (IR)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">الدخل السنوي (MAD)</label>
+          <input type="number" x-model="ir_revenu" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="مثال: 120000">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">المصاريف السنوية (MAD)</label>
+          <input type="number" x-model="ir_frais" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="مثال: 30000">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">عدد الأطفال</label>
+          <input type="number" x-model="ir_enfants" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="0">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">النظام</label>
+          <select x-model="ir_regime" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+            <option value="reel">حقيقي</option>
+            <option value="forfaitaire">مقطوع</option>
+          </select>
+        </div>
+      </div>
+      <button @click="calculerIR()" class="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium">احسب</button>
+
+      <div x-show="ir_result" x-cloak class="mt-6 p-4 bg-emerald-50 rounded-xl">
+        <h3 class="font-bold text-gray-900 mb-3">النتيجة</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+          <div><span class="text-gray-500">الوعاء الضريبي:</span><br><span class="font-bold text-gray-900" x-text="ir_result?.net_imposable?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+          <div><span class="text-gray-500">IR السنوي:</span><br><span class="font-bold text-emerald-600" x-text="ir_result?.ir_annuel?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+          <div><span class="text-gray-500">المعدل الفعلي:</span><br><span class="font-bold text-gray-900" x-text="ir_result?.ir_taux_effectif + ' %'"></span></div>
+          <div><span class="text-gray-500">CNSS:</span><br><span class="font-bold text-gray-900" x-text="ir_result?.cnss_annuelle?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+          <div><span class="text-gray-500">الصافي شهرياً:</span><br><span class="font-bold text-emerald-600" x-text="ir_result?.mensuel?.net?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IS Calculator -->
+  <div x-show="tab==='is'" x-cloak>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">حساب ضريبة الشركات (IS)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">الربح الصافي السنوي (MAD)</label>
+          <input type="number" x-model="is_benefice" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="مثال: 500000">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">القطاع</label>
+          <select x-model="is_secteur" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+            <option value="standard">عام</option>
+            <option value="export">تصدير</option>
+            <option value="agriculture">فلاحة</option>
+            <option value="hotels">فنادق</option>
+          </select>
+        </div>
+      </div>
+      <button @click="calculerIS()" class="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium">احسب</button>
+
+      <div x-show="is_result" x-cloak class="mt-6 p-4 bg-emerald-50 rounded-xl">
+        <h3 class="font-bold text-gray-900 mb-3">النتيجة</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+          <div><span class="text-gray-500">الربح الصافي:</span><br><span class="font-bold text-gray-900" x-text="is_result?.benefice_net?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+          <div><span class="text-gray-500">نسبة IS:</span><br><span class="font-bold text-emerald-600" x-text="is_result?.taux_is + ' %'"></span></div>
+          <div><span class="text-gray-500">IS المستحق:</span><br><span class="font-bold text-emerald-600" x-text="is_result?.is_a_payer?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+          <div><span class="text-gray-500">الحد الأدنى:</span><br><span class="font-bold text-gray-900" x-text="is_result?.cotisation_minimale?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TVA Calculator -->
+  <div x-show="tab==='tva'" x-cloak>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">حساب TVA</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">المبلغ HT (MAD)</label>
+          <input type="number" x-model="tva_ht" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="10000">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">نسبة TVA</label>
+          <select x-model="tva_taux" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+            <option value="0.20">20% (عام)</option>
+            <option value="0.14">14% (نقل، فنادق)</option>
+            <option value="0.10">10% (طاقة، بنوك)</option>
+            <option value="0.07">7% (ماء، كهرباء)</option>
+          </select>
+        </div>
+      </div>
+      <button @click="calculerTVA()" class="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors font-medium">احسب</button>
+
+      <div x-show="tva_result" x-cloak class="mt-6 p-4 bg-emerald-50 rounded-xl">
+        <h3 class="font-bold text-gray-900 mb-3">النتيجة</h3>
+        <div class="grid grid-cols-3 gap-4 text-sm">
+          <div><span class="text-gray-500">HT:</span><br><span class="font-bold text-gray-900" x-text="tva_result?.ht?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+          <div><span class="text-gray-500">TVA:</span><br><span class="font-bold text-emerald-600" x-text="tva_result?.tva?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+          <div><span class="text-gray-500">TTC:</span><br><span class="font-bold text-gray-900" x-text="tva_result?.ttc?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice Generator -->
+  <div x-show="tab==='facture'" x-cloak>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">توليد الفاتورة الإلكترونية (Loi 16.23)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">اسم المورد</label>
+          <input type="text" x-model="inv_seller_name" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ICE</label>
+          <input type="text" x-model="inv_seller_ice" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">RC</label>
+          <input type="text" x-model="inv_seller_rc" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">اسم الزبون</label>
+          <input type="text" x-model="inv_buyer_name" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ICE الزبون</label>
+          <input type="text" x-model="inv_buyer_ice" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ الاستحقاق</label>
+          <input type="date" x-model="inv_due_date" class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm">
+        </div>
+      </div>
+
+      <h3 class="font-bold text-gray-800 mb-2">المواد</h3>
+      <template x-for="(item, i) in inv_items" :key="i">
+        <div class="grid grid-cols-5 gap-2 mb-2">
+          <input type="text" x-model="item.description" class="px-3 py-1 border border-gray-300 rounded-lg text-sm" placeholder="البيان">
+          <input type="number" x-model="item.quantity" class="px-3 py-1 border border-gray-300 rounded-lg text-sm" placeholder="الكمية">
+          <input type="number" x-model="item.unit_price" class="px-3 py-1 border border-gray-300 rounded-lg text-sm" placeholder="ثمن الوحدة">
+          <select x-model="item.tva_rate" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+            <option value="0.20">TVA 20%</option>
+            <option value="0.14">TVA 14%</option>
+            <option value="0.10">TVA 10%</option>
+            <option value="0.07">TVA 7%</option>
+          </select>
+          <button @click="inv_items.splice(i,1)" class="text-red-500 text-sm">✕</button>
+        </div>
+      </template>
+      <button @click="inv_items.push({description:'', quantity:1, unit_price:0, tva_rate:0.20})" class="text-emerald-600 text-sm font-medium mb-4">+ إضافة مادة</button>
+
+      <div class="mt-4 flex gap-3">
+        <button @click="genererFacture()" class="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium">توليد الفاتورة</button>
+        <button @click="telechargerFacture()" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium" x-show="facture_html">تحميل HTML</button>
+      </div>
+
+      <div x-show="facture_html" x-cloak class="mt-6">
+        <iframe :srcdoc="facture_html" class="w-full h-96 border border-gray-200 rounded-xl"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simulation -->
+  <div x-show="tab==='simulation'" x-cloak>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">محاكاة الوضعية الجبائية</h2>
+      <p class="text-sm text-gray-500 mb-4">احسب جميع الالتزامات (IR + CNSS + TVA) بناءً على رقم المعاملات الشهري</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">رقم المعاملات الشهري (MAD)</label>
+          <input type="number" x-model="sim_ca" class="w-full px-4 py-2 border border-gray-300 rounded-xl" placeholder="50000">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">المصاريف الشهرية (MAD)</label>
+          <input type="number" x-model="sim_frais" class="w-full px-4 py-2 border border-gray-300 rounded-xl" placeholder="20000">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">النظام</label>
+          <select x-model="sim_regime" class="w-full px-4 py-2 border border-gray-300 rounded-xl">
+            <option value="auto_entrepreneur">مقاول ذاتي</option>
+            <option value="reel">حقيقي</option>
+          </select>
+        </div>
+      </div>
+      <button @click="simuler()" class="px-6 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 font-medium">محاكاة</button>
+
+      <div x-show="sim_result" x-cloak class="mt-6 p-4 bg-emerald-50 rounded-xl">
+        <h3 class="font-bold text-gray-900 mb-3">نتيجة المحاكاة</h3>
+        <template x-if="sim_result?.regime === 'auto_entrepreneur'">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+            <div><span class="text-gray-500">CA الشهري:</span><br><span class="font-bold" x-text="sim_result?.chiffre_affaires_mensuel?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+            <div><span class="text-gray-500">النسبة:</span><br><span class="font-bold" x-text="sim_result?.taux_global + ' %'"></span></div>
+            <div><span class="text-gray-500">الواجبات الشهرية:</span><br><span class="font-bold text-emerald-600" x-text="sim_result?.charges_mensuelles?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+            <div><span class="text-gray-500">الصافي الشهري:</span><br><span class="font-bold text-emerald-600" x-text="sim_result?.revenu_net_mensuel?.toLocaleString('fr-FR') + ' MAD'"></span></div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = '/api/comptabilite';
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('accounting', () => ({
+      // IR
+      ir_revenu: 120000, ir_frais: 30000, ir_enfants: 0, ir_regime: 'reel', ir_result: null,
+      async calculerIR() {
+        const r = await fetch(API+'/ir', {method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({revenu_annuel: +this.ir_revenu, frais: +this.ir_frais, nb_enfants: +this.ir_enfants, regime: this.ir_regime})});
+        this.ir_result = await r.json();
+      },
+      // IS
+      is_benefice: 500000, is_secteur: 'standard', is_result: null,
+      async calculerIS() {
+        const r = await fetch(API+'/is', {method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({benefice_net: +this.is_benefice, secteur: this.is_secteur})});
+        this.is_result = await r.json();
+      },
+      // TVA
+      tva_ht: 10000, tva_taux: 0.20, tva_result: null,
+      async calculerTVA() {
+        const r = await fetch(API+'/tva', {method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({montant_ht: +this.tva_ht, taux_tva: +this.tva_taux})});
+        this.tva_result = await r.json();
+      },
+      // Invoice
+      inv_seller_name: '', inv_seller_ice: '', inv_seller_rc: '',
+      inv_buyer_name: '', inv_buyer_ice: '', inv_due_date: '',
+      inv_items: [{description: '', quantity: 1, unit_price: 0, tva_rate: 0.20}],
+      facture_html: null, facture_data: null,
+      async genererFacture() {
+        const body = {
+          seller_name: this.inv_seller_name, seller_ice: this.inv_seller_ice, seller_rc: this.inv_seller_rc,
+          buyer_name: this.inv_buyer_name, buyer_ice: this.inv_buyer_ice, due_date: this.inv_due_date,
+          items: this.inv_items.filter(i => i.description)
+        };
+        const r = await fetch(API+'/facture/html', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+        this.facture_html = await r.text();
+      },
+      telechargerFacture() {
+        const blob = new Blob([this.facture_html], {type: 'text/html'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = `facture_${Date.now()}.html`; a.click();
+      },
+      // Simulation
+      sim_ca: 50000, sim_frais: 20000, sim_regime: 'auto_entrepreneur', sim_result: null,
+      async simuler() {
+        const r = await fetch(API+'/simulation', {method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ca_mensuel: +this.sim_ca, frais_mensuels: +this.sim_frais, regime: this.sim_regime})});
+        this.sim_result = await r.json();
+      },
+    }));
+  });
+</script>
+{% endblock %}

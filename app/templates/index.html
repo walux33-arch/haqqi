@@ -17,13 +17,15 @@
 <meta name="twitter:card" content="summary">
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+{% if ga_id and ga_id != 'G-XXXXXXXXXX' %}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
+  gtag('config', '{{ ga_id }}');
 </script>
+{% endif %}
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
   * { font-family: 'Tajawal', sans-serif; }
@@ -78,6 +80,7 @@
       <div class="text-xs text-gray-500 mt-1">سنوات التغطية</div>
     </div>
   </div>
+  <div class="text-center text-xs text-gray-400 mb-6" id="ingestionStats"></div>
 
   <!-- Chat Card -->
   <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
@@ -193,6 +196,123 @@
     </div>
   </div>
 
+  <!-- Modules: Loi 55.19 -->
+  <div class="mt-8 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-bold text-gray-800">تبسيط المساطر الإدارية</h2>
+        <p class="text-xs text-gray-500 mt-0.5">وفق القانون 55.19 — 17 مسطرة إدارية متاحة</p>
+      </div>
+      <a href="/ministere" class="text-xs text-green-600 hover:text-green-700 font-medium">التفاصيل ←</a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-0">
+      <div class="p-3 text-center border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg>
+        </div>
+        <h4 class="text-[10px] font-semibold text-gray-700">بطاقة التعريف</h4>
+      </div>
+      <div class="p-3 text-center border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        </div>
+        <h4 class="text-[10px] font-semibold text-gray-700">جواز السفر</h4>
+      </div>
+      <div class="p-3 text-center border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h4 class="text-[10px] font-semibold text-gray-700">رخصة السياقة</h4>
+      </div>
+      <div class="p-3 text-center border-b sm:border-b-0 border-gray-100">
+        <div class="w-7 h-7 bg-purple-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <h4 class="text-[10px] font-semibold text-gray-700">السجل التجاري</h4>
+      </div>
+      <div class="p-3 text-center sm:border-l border-gray-100">
+        <div class="w-7 h-7 bg-red-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </div>
+        <h4 class="text-[10px] font-semibold text-gray-700">شهادة السكنى</h4>
+      </div>
+      <div class="p-3 text-center sm:border-l border-gray-100">
+        <div class="w-7 h-7 bg-indigo-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        </div>
+        <h4 class="text-[10px] font-semibold text-gray-700">شهادة الإزدياد</h4>
+      </div>
+      <div class="p-3 text-center border-l border-gray-100">
+        <div class="w-7 h-7 bg-teal-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-3.5 h-3.5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        </div>
+        <h4 class="text-[10px] font-semibold text-gray-700">بطاقة السوابق</h4>
+      </div>
+      <div class="p-3 text-center">
+        <div class="w-7 h-7 bg-orange-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-3.5 h-3.5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <h4 class="text-[10px] font-semibold text-gray-700">مقاول ذاتي</h4>
+      </div>
+    </div>
+    <div class="border-t border-gray-100 px-4 py-2 text-center">
+      <span class="text-[10px] text-gray-400">و 9 مساطر أخرى: الجنسية · الملكية · الإعانة القضائية · CNSS · العمل · عدل · ...</span>
+    </div>
+  </div>
+      <a href="/ministere" class="text-xs text-green-600 hover:text-green-700 font-medium">التفاصيل ←</a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-0 divide-x-reverse">
+      <div class="p-4 text-center border-b border-l border-gray-100">
+        <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">بطاقة التعريف</h4>
+      </div>
+      <div class="p-4 text-center border-b border-l border-gray-100">
+        <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">جواز السفر</h4>
+      </div>
+      <div class="p-4 text-center border-b border-l border-gray-100">
+        <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">رخصة السياقة</h4>
+      </div>
+      <div class="p-4 text-center border-b border-gray-100">
+        <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">السجل التجاري</h4>
+      </div>
+      <div class="p-4 text-center border-b sm:border-b-0 border-l border-gray-100">
+        <div class="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">شهادة السكنى</h4>
+      </div>
+      <div class="p-4 text-center border-b sm:border-b-0 border-l border-gray-100">
+        <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">تصحيح الحالة</h4>
+      </div>
+      <div class="p-4 text-center border-l border-gray-100">
+        <div class="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">مشاريع INDH</h4>
+      </div>
+      <div class="p-4 text-center">
+        <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">رخصة البناء</h4>
+      </div>
+    </div>
+  </div>
+
   <!-- WhatsApp bot promotion -->
   <div class="mt-6 bg-gradient-to-l from-green-600 to-emerald-700 rounded-2xl px-6 py-5 text-center shadow-sm">
     <div class="flex items-center justify-center gap-3">
@@ -234,6 +354,43 @@
           <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"><span class="text-xs font-bold text-green-700">س.ب</span></div>
           <div><p class="text-xs font-bold text-gray-800">سعيد بنموسى</p><p class="text-[10px] text-gray-400">باحث فالقانون بجامعة محمد الخامس</p></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Pipeline -->
+  <div class="mt-8 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-bold text-gray-800">منصة التكوين القانوني</h2>
+        <p class="text-xs text-gray-500 mt-0.5">استيراد وتحليل وتصنيف الوثائق القانونية تلقائياً</p>
+      </div>
+      <a href="/admin/ingestion" class="text-xs text-green-600 hover:text-green-700 font-medium">لوحة التحكم ←</a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-0">
+      <div class="p-4 text-center border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">PDF · DOCX · TXT</h4>
+      </div>
+      <div class="p-4 text-center border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">OCR تلقائي</h4>
+      </div>
+      <div class="p-4 text-center border-b sm:border-b-0 sm:border-l border-gray-100">
+        <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">إخفاء المعطيات</h4>
+      </div>
+      <div class="p-4 text-center">
+        <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center mx-auto mb-1">
+          <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+        </div>
+        <h4 class="text-[11px] font-semibold text-gray-700">فهرسة ChromaDB</h4>
       </div>
     </div>
   </div>
@@ -417,11 +574,21 @@ function askQuick(q) {
 
 // ─── Stats ───
 fetch('/api/stats').then(r=>r.json()).then(d=>{
-  document.getElementById('statArticles').textContent = d.total_articles || 0;
-  document.getElementById('statLaws').textContent = Object.keys(d.laws||{}).length || 0;
-  document.getElementById('statJurisprudence').textContent = d.jurisprudence || 0;
-  document.getElementById('statDatasets').textContent = d.gov?.summary?.total_datasets || '—';
-  document.getElementById('statYears').textContent = d.gov?.summary?.years_range || '—';
+  const arts = d.total_articles || 5757;
+  const nLaws = Object.keys(d.laws||{}).length || 11;
+  const juris = d.jurisprudence || 212;
+  const gov = d.gov?.summary;
+  document.getElementById('statArticles').textContent = arts.toLocaleString() + '+';
+  document.getElementById('statLaws').textContent = nLaws;
+  document.getElementById('statJurisprudence').textContent = juris;
+  document.getElementById('statDatasets').textContent = gov?.total_datasets || '83';
+  document.getElementById('statYears').textContent = gov?.years_range || '2016-2024';
+  // Ingestion stats
+  const ingest = d.ingestion;
+  if (ingest && ingest.total > 0) {
+    const el = document.getElementById('ingestionStats');
+    if (el) el.textContent = '📄 ' + ingest.total + ' وثيقة مستوردة';
+  }
 }).catch(()=>{
   document.getElementById('statArticles').textContent = '5,757+';
   document.getElementById('statLaws').textContent = '11';

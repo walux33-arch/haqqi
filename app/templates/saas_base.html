@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}حقي - المنصة القانونية والمحاسبية{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#15803d">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+    * { font-family: 'Tajawal', sans-serif; }
+    [x-cloak] { display: none !important; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Navbar -->
+  <nav class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-6">
+          <a href="/" class="flex items-center gap-2">
+            <div class="w-9 h-9 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-xl flex items-center justify-center">
+              <span class="text-white font-extrabold text-sm">ح</span>
+            </div>
+            <span class="font-extrabold text-gray-900">حقي</span>
+          </a>
+          <div class="hidden md:flex items-center gap-1">
+            <a href="/comptabilite" class="px-3 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg">محاسبة</a>
+            <a href="/" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">قانون</a>
+            <a href="/pricing" class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg">الباقات</a>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          {% if user %}
+          <span class="text-sm text-gray-500">{{ user.email }}</span>
+          <a href="/auth/logout" class="text-sm text-gray-500 hover:text-red-600">خروج</a>
+          {% else %}
+          <a href="/auth/login" class="text-sm text-gray-600 hover:text-gray-900">دخول</a>
+          <a href="/auth/signup" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700">تسجيل</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-gray-100 mt-12">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+        <div>
+          <h4 class="font-bold text-gray-900 mb-3">المنتجات</h4>
+          <ul class="space-y-2 text-gray-500">
+            <li><a href="/" class="hover:text-emerald-600">الاستشارة القانونية</a></li>
+            <li><a href="/comptabilite" class="hover:text-emerald-600">المحاسبة الذكية</a></li>
+            <li><a href="/contracts" class="hover:text-emerald-600">العقود</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-900 mb-3">الشركة</h4>
+          <ul class="space-y-2 text-gray-500">
+            <li><a href="/about" class="hover:text-emerald-600">من نحن</a></li>
+            <li><a href="/contact" class="hover:text-emerald-600">اتصل بنا</a></li>
+            <li><a href="/pricing" class="hover:text-emerald-600">الباقات</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-900 mb-3">قانوني</h4>
+          <ul class="space-y-2 text-gray-500">
+            <li><a href="/privacy" class="hover:text-emerald-600">سياسة الخصوصية</a></li>
+            <li><a href="/ministere/conformite" class="hover:text-emerald-600">Loi 09.08</a></li>
+            <li><a href="/disclaimer" class="hover:text-emerald-600">إخلاء مسؤولية</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-900 mb-3">مغرب رقمي 2030</h4>
+          <ul class="space-y-2 text-gray-500">
+            <li><a href="/ministere" class="hover:text-emerald-600">وزارة الانتقال الرقمي</a></li>
+            <li><a href="/api/public" class="hover:text-emerald-600">API عمومي</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-8 pt-6 border-t border-gray-100 text-center text-sm text-gray-400">
+        © 2026 حقي (Haqqi) — منصة مغربية 100% للخدمات القانونية والمحاسبية
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -65,6 +65,22 @@ def fetch_url(url: str, timeout: int = 15) -> Optional[str]:
         return None
 
 
+def fetch_url_js(url: str, timeout: int = 30, headless: bool = True) -> Optional[str]:
+    """Fetch URL content using Playwright (renders JS)."""
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=headless)
+            page = browser.new_page()
+            page.goto(url, wait_until="networkidle", timeout=timeout * 1000)
+            content = page.content()
+            browser.close()
+            return content
+    except Exception as e:
+        print(f"Playwright fetch error for {url}: {e}")
+        return None
+
+
 def extract_nextjs_data(html: str) -> Optional[dict]:
     """Extract __NEXT_DATA__ from Next.js pages (static/SSG only)."""
     import re

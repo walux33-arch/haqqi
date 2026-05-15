@@ -65,7 +65,7 @@
 | **Frontend** | Jinja2, Tailwind CSS (CDN), Alpine.js |
 | **LLM** | Groq API — Llama 3.3 70B (streaming) |
 | **Vector Store** | ChromaDB (local) + Supabase pgvector |
-| **Embeddings** | Sentence-Transformers (all-MiniLM-L6-v2) |
+| **Embeddings** | paraphrase-multilingual-MiniLM-L12-v2 |
 | **Auth** | Supabase Auth (email/password, cookies) |
 | **PDF** | PyMuPDF |
 | **Infra** | Docker, docker-compose |

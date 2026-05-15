@@ -1,0 +1,17 @@
+{
+  "year": 2026,
+  "currency": "MAD",
+  "tva_standard_rate": 0.20,
+  "tva_reduced_rates": [
+    {"rate": 0.14, "label": "TVA 14%", "sectors": ["Transport", "Hôtellerie", "Restauration"]},
+    {"rate": 0.10, "label": "TVA 10%", "sectors": ["Énergie", "Banques", "Assurances"]},
+    {"rate": 0.07, "label": "TVA 7%", "sectors": ["Eau", "Électricité", "Produits de base"]}
+  ],
+  "tva_exempt_sectors": ["Exportation", "Éducation", "Santé", "Services financiers"],
+  "tva_franchise_seuil": 2000000,
+  "tva_declaration_periods": [
+    {"type": "mensuelle", "threshold": 1000000, "description": "CA annuel > 1M MAD"},
+    {"type": "trimestrielle", "threshold_min": 500000, "threshold_max": 1000000, "description": "CA entre 500K et 1M MAD"},
+    {"type": "annuelle", "threshold_max": 500000, "description": "CA < 500K MAD"}
+  ]
+}

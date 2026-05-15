@@ -1,0 +1,14 @@
+{
+  "year": 2026,
+  "currency": "MAD",
+  "is_base_rate": 0.20,
+  "is_reduced_rate": 0.15,
+  "is_high_rate": 0.31,
+  "is_threshold_base": 100000000,
+  "is_threshold_reduced": 500000,
+  "sectors": {
+    "export": {"rate": 0.175, "conditions": "Entreprises exportatrices"},
+    "agriculture": {"rate": 0.175, "conditions": "Secteur agricole"},
+    "hotels": {"rate": 0.175, "conditions": "Établissements hôteliers"}
+  }
+}

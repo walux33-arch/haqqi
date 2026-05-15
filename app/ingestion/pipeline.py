@@ -225,7 +225,7 @@ class IngestionPipeline:
     def _index_to_chromadb(self, doc: IngestedDocument):
         """Add document to ChromaDB for semantic search."""
         try:
-            collection = chroma_client.get_or_create_collection("moroccan_laws")
+            collection = chroma_client.get_or_create_collection("moroccan_laws_v2")
             content_hash = hashlib.md5(doc.content.encode()).hexdigest()
             existing = collection.get(ids=[content_hash])
             if existing and existing["ids"]:
